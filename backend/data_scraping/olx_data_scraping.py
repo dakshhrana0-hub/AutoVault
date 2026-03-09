@@ -16,12 +16,27 @@ car_data = []
 
 def extract_car_info(card):
     title = card.find('div',{'class':'_2Gr10'}).text.strip()
+    
     link = "https://www.olx.in" + card.find('a')['href']
+    
     image = card.find('img')['src']
-    location = card.find('div', {'class': '_3VRSm'}).text.strip()
+    location_item = card.find('div', {'class': '_3VRSm'})
+    location =location_item.find('span').text.strip()
+    
     price = card.find('span', {"class":"_1zgtX"}).text.strip()
     info = card.find('div',{'class':'_21gnE'}).text.strip()
-    print(info)
+
+    
+    detail_response = requests.get(link, headers=HEADERS)
+    detail_soup = BeautifulSoup(detail_response.text, 'html.parser')
+
+    # Extract only the data you mentioned: div._3rMkw
+    data_blocks = detail_soup.find_all('h2', {'class': '_3rMkw'})
+    detail_data = None
+    if data_blocks:
+        detail_data = " , ".join(block.text.strip() for block in data_blocks)
+    
+    print(detail_data)
     
     return {
         'Title': title,
@@ -29,7 +44,8 @@ def extract_car_info(card):
         'Location': location,
         'Price': price,
         'Information': info,
-        'Image':image
+        'Image':image,
+        'Detail':detail_data
     }
 
 for brand in brands:
@@ -52,5 +68,5 @@ for brand in brands:
 df = pd.DataFrame(car_data)
 print(df.head())
 
-path = os.path.join(os.getcwd(),'data','raw_data','olx_car_listings_delhi.csv')
+path = os.path.join(os.getcwd(),'data','raw_data','olx_listings_delhi.csv')
 df.to_csv(path, index=False)
