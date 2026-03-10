@@ -238,398 +238,6 @@
     .nav-avatar-dropdown a.logout { color: rgba(255,100,100,.7); }
     .nav-avatar-dropdown a.logout:hover { color: #ff6464; background: rgba(255,68,68,.05); }
 
-    /* ── AUTH MODAL ── */
-    @keyframes fieldSlideIn   { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes goldPulse      { 0%,100% { box-shadow: 0 0 0 0 rgba(200,144,58,0); } 50% { box-shadow: 0 0 18px 4px rgba(200,144,58,.18); } }
-    @keyframes shimmerBar     { 0% { left: -100%; } 100% { left: 200%; } }
-    @keyframes floatOrb       { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(30px,-20px) scale(1.08); } 66% { transform: translate(-20px,15px) scale(.93); } }
-    @keyframes fadeUp         { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes spinRing       { to { transform: rotate(360deg); } }
-    @keyframes checkDraw      { from { stroke-dashoffset: 30; } to { stroke-dashoffset: 0; } }
-    @keyframes errorShake     { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-6px); } 40%,80% { transform: translateX(6px); } }
-    @keyframes tyreSpin    { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    @keyframes tyreSpinRev { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
-    @keyframes floatTyre   {
-      0%  { transform: translateY(0px) rotate(-2deg); }
-      30% { transform: translateY(-10px) rotate(0deg); }
-      60% { transform: translateY(-16px) rotate(2deg); }
-      100%{ transform: translateY(0px) rotate(-2deg); }
-    }
-    @keyframes roadScroll  { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -60; } }
-    @keyframes tyreGlowPulse {
-      0%,100% { filter: drop-shadow(0 0 10px rgba(200,144,58,.25)) drop-shadow(0 8px 24px rgba(0,0,0,.6)); }
-      50%     { filter: drop-shadow(0 0 22px rgba(200,144,58,.55)) drop-shadow(0 8px 24px rgba(0,0,0,.6)); }
-    }
-
-    /* ── OVERLAY ── */
-    .auth-overlay {
-      position: fixed; inset: 0;
-      background: rgba(4,6,8,.88);
-      backdrop-filter: blur(20px) saturate(.7);
-      z-index: 1000;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none;
-      transition: opacity .4s ease;
-      padding: 20px;
-    }
-    .auth-overlay.open { opacity: 1; pointer-events: all; }
-
-    /* ── MODAL ── */
-    .auth-modal {
-      display: flex;
-      width: 100%; max-width: 560px;
-      min-height: 560px;
-      position: relative;
-      opacity: 0; transform: translateY(36px) scale(.96);
-      transition: opacity .45s cubic-bezier(.25,.46,.45,.94), transform .45s cubic-bezier(.25,.46,.45,.94);
-      overflow: hidden;
-      border: 1px solid rgba(200,144,58,.18);
-      box-shadow: 0 40px 100px rgba(0,0,0,.7), 0 0 0 1px rgba(200,144,58,.06);
-    }
-    .auth-overlay.open .auth-modal { opacity: 1; transform: translateY(0) scale(1); }
-
-    /* ── LEFT PANEL (tyre decoration) ── */
-    .auth-left {
-      width: 340px; flex-shrink: 0;
-      background: linear-gradient(160deg, #0e0a04 0%, #1a1108 50%, #0a0e10 100%);
-      position: relative;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      overflow: hidden;
-      padding: 40px 30px;
-    }
-    /* gold vertical line accent */
-    .auth-left::before {
-      content: '';
-      position: absolute; top: 0; right: 0; bottom: 0;
-      width: 1px;
-      background: linear-gradient(to bottom, transparent 0%, rgba(200,144,58,.4) 30%, rgba(200,144,58,.6) 50%, rgba(200,144,58,.4) 70%, transparent 100%);
-    }
-    /* corner brackets */
-    .auth-left::after {
-      content: '';
-      position: absolute; top: 16px; left: 16px;
-      width: 28px; height: 28px;
-      border-top: 1px solid rgba(200,144,58,.5);
-      border-left: 1px solid rgba(200,144,58,.5);
-    }
-    .auth-left-corner-br {
-      position: absolute; bottom: 16px; right: 17px;
-      width: 28px; height: 28px;
-      border-bottom: 1px solid rgba(200,144,58,.5);
-      border-right: 1px solid rgba(200,144,58,.5);
-    }
-
-    /* ambient glow blob */
-    .auth-left-glow {
-      position: absolute;
-      width: 280px; height: 280px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(200,144,58,.14) 0%, transparent 70%);
-      filter: blur(40px);
-      top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      animation: floatOrb 8s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    /* tyre SVG wrapper */
-    .auth-tyre-wrap {
-      position: relative; z-index: 2;
-    }
-    /* tyre outer rubber - static */
-    .auth-tyre-outer { }
-    /* rim - static */
-    .auth-tyre-inner { }
-
-    /* road lines below */
-    .auth-road {
-      position: absolute; bottom: 60px; left: 20px; right: 17px;
-      z-index: 2; opacity: .5;
-    }
-    .auth-road line {
-      stroke: rgba(200,144,58,.4);
-      stroke-width: 1;
-      stroke-dasharray: 12 8;
-      animation: roadScroll 1.5s linear infinite;
-    }
-
-    /* left panel text */
-    .auth-left-brand {
-      position: absolute; top: 32px; left: 0; right: 17px;
-      display: flex; flex-direction: column; align-items: center;
-      z-index: 3;
-    }
-    .auth-left-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.5rem; font-weight: 600; letter-spacing: .02em;
-      line-height: 1;
-    }
-    .auth-left-logo span:first-child { color: var(--gold); }
-    .auth-left-tagline {
-      font-size: .52rem; letter-spacing: .3em;
-      text-transform: uppercase; color: rgba(200,144,58,.5);
-      margin-top: 4px;
-    }
-
-    .auth-left-stats {
-      position: absolute; bottom: 38px; left: 0; right: 17px;
-      display: flex; justify-content: center; gap: 28px;
-      z-index: 3;
-    }
-    .auth-left-stat { text-align: center; }
-    .auth-left-stat-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.3rem; color: var(--gold); font-weight: 300; line-height: 1;
-    }
-    .auth-left-stat-lbl {
-      font-size: .48rem; letter-spacing: .18em;
-      text-transform: uppercase; color: rgba(240,237,232,.3);
-      margin-top: 2px;
-    }
-
-    /* ── RIGHT PANEL (form) ── */
-    .auth-right {
-      flex: 1;
-      background: linear-gradient(160deg, #0d1014 0%, #0a0c0f 100%);
-      position: relative;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-    .auth-scan { display: none; }
-
-    /* close button */
-    .auth-modal-close {
-      position: absolute; top: 14px; right: 14px;
-      width: 32px; height: 32px;
-      border: 1px solid rgba(255,255,255,.1);
-      background: transparent; color: var(--muted);
-      font-size: .9rem; cursor: pointer; z-index: 10;
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color .3s, color .3s, transform .3s, background .3s;
-    }
-    .auth-modal-close:hover {
-      border-color: var(--gold); color: var(--gold);
-      transform: rotate(90deg); background: rgba(200,144,58,.08);
-    }
-
-    .auth-modal-top { padding: 36px 40px 0; position: relative; z-index: 2; }
-
-    /* welcome text on right */
-    .auth-welcome {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem; font-weight: 600;
-      color: var(--text); line-height: 1.2;
-      margin-bottom: 4px;
-      animation: fadeUp .5s .1s ease both;
-    }
-    .auth-welcome span { color: var(--gold); }
-
-    .auth-tagline {
-      font-size: .6rem; color: var(--muted);
-      letter-spacing: .16em; text-transform: uppercase;
-      margin-bottom: 24px;
-      animation: fadeUp .5s .2s ease both;
-    }
-
-    /* tabs */
-    .auth-tabs {
-      display: flex; position: relative;
-      border-bottom: 1px solid rgba(255,255,255,.07);
-      animation: fadeUp .5s .3s ease both;
-    }
-    .auth-tab {
-      flex: 1; padding: 11px;
-      text-align: center;
-      font-size: .64rem; letter-spacing: .2em;
-      text-transform: uppercase; color: var(--muted);
-      cursor: pointer; position: relative;
-      transition: color .3s;
-    }
-    .auth-tab::after {
-      content: '';
-      position: absolute; bottom: -1px; left: 0; right: 0;
-      height: 2px; background: var(--gold);
-      transform: scaleX(0);
-      transition: transform .35s cubic-bezier(.25,.46,.45,.94);
-    }
-    .auth-tab.active { color: var(--gold); }
-    .auth-tab.active::after { transform: scaleX(1); }
-
-    /* form area */
-    .auth-form { padding: 24px 40px 36px; position: relative; z-index: 2; }
-    .auth-panel { display: none; }
-    .auth-panel.active { display: block; animation: fadeUp .4s ease both; }
-
-    /* staggered fields */
-    .auth-panel.active .auth-field:nth-child(1) { animation: fieldSlideIn .35s .05s ease both; }
-    .auth-panel.active .auth-field:nth-child(2) { animation: fieldSlideIn .35s .10s ease both; }
-    .auth-panel.active .auth-field:nth-child(3) { animation: fieldSlideIn .35s .15s ease both; }
-    .auth-panel.active .auth-field:nth-child(4) { animation: fieldSlideIn .35s .20s ease both; }
-    .auth-panel.active .auth-field:nth-child(5) { animation: fieldSlideIn .35s .25s ease both; }
-    .auth-panel.active .auth-row               { animation: fieldSlideIn .35s .28s ease both; }
-    .auth-panel.active .auth-submit            { animation: fieldSlideIn .35s .32s ease both; }
-
-    .auth-field { margin-bottom: 16px; }
-    .auth-field label {
-      display: block; font-size: .58rem; letter-spacing: .18em;
-      text-transform: uppercase; color: var(--muted);
-      margin-bottom: 7px; transition: color .3s;
-    }
-    .auth-field:focus-within label { color: var(--gold); }
-
-    .auth-input-wrap { position: relative; }
-    .auth-input-wrap .field-icon {
-      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
-      pointer-events: none;
-    }
-    .auth-input-wrap .field-icon svg { stroke: rgba(200,144,58,.35); transition: stroke .3s; }
-    .auth-field:focus-within .field-icon svg { stroke: var(--gold); }
-
-    .auth-field input {
-      width: 100%;
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.07);
-      padding: 12px 14px 12px 40px;
-      color: var(--text);
-      font-family: 'Barlow', sans-serif;
-      font-size: .86rem; outline: none;
-      transition: border-color .3s, background .3s, box-shadow .3s;
-    }
-    .auth-field input:focus {
-      border-color: rgba(200,144,58,.45);
-      background: rgba(200,144,58,.04);
-      box-shadow: 0 0 0 3px rgba(200,144,58,.06);
-    }
-    .auth-field input.valid   { border-color: rgba(74,220,128,.4); }
-    .auth-field input.invalid { border-color: rgba(255,80,80,.4); animation: errorShake .35s ease; }
-    .auth-field input::placeholder { color: rgba(240,237,232,.16); }
-
-    /* password strength */
-    .pw-strength { margin-top: 6px; display: none; }
-    .pw-strength.show { display: block; }
-    .pw-strength-bar { height: 2px; background: rgba(255,255,255,.07); position: relative; }
-    .pw-strength-fill { height: 100%; width: 0; transition: width .4s ease, background .4s ease; }
-    .pw-strength-label { font-size: .56rem; letter-spacing: .12em; text-transform: uppercase; margin-top: 4px; transition: color .4s; }
-
-    .auth-row {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 18px; margin-top: 2px;
-    }
-    .auth-remember {
-      display: flex; align-items: center; gap: 7px;
-      font-size: .62rem; color: var(--muted); cursor: pointer;
-    }
-    .auth-remember input { width: auto; accent-color: var(--gold); }
-    .auth-forgot {
-      font-size: .62rem; color: var(--gold);
-      text-decoration: none; position: relative; transition: opacity .3s;
-    }
-    .auth-forgot::after {
-      content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
-      height: 1px; background: var(--gold);
-      transform: scaleX(0); transition: transform .3s ease;
-    }
-    .auth-forgot:hover::after { transform: scaleX(1); }
-
-    /* submit button */
-    .auth-submit {
-      width: 100%; padding: 14px;
-      background: var(--gold); border: none; color: var(--dark);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: .8rem; letter-spacing: .24em;
-      text-transform: uppercase; font-weight: 700;
-      cursor: pointer; position: relative; overflow: hidden;
-      transition: background .3s, transform .2s, box-shadow .3s;
-    }
-    .auth-submit::before {
-      content: ''; position: absolute; top: 0; left: -100%;
-      width: 60%; height: 100%;
-      background: linear-gradient(to right, transparent, rgba(255,255,255,.22), transparent);
-    }
-    .auth-submit:hover { background: var(--gold-light); box-shadow: 0 6px 28px rgba(200,144,58,.35); }
-    .auth-submit:hover::before { animation: shimmerBar .6s ease forwards; }
-    .auth-submit:active { transform: scale(.98); }
-    .auth-submit.loading { pointer-events: none; }
-    .auth-submit .btn-label { transition: opacity .2s; }
-    .auth-submit.loading .btn-label { opacity: 0; }
-    .auth-submit .btn-spinner { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; }
-    .auth-submit.loading .btn-spinner { display: flex; }
-    .btn-spinner-ring {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(10,12,14,.25);
-      border-top-color: var(--dark); border-radius: 50%;
-      animation: spinRing .7s linear infinite;
-    }
-
-    /* success overlay */
-    .auth-check-wrap {
-      display: none; position: absolute; inset: 0;
-      align-items: center; justify-content: center;
-      background: rgba(10,12,14,.93);
-      flex-direction: column; gap: 14px; z-index: 20;
-    }
-    .auth-check-wrap.show { display: flex; animation: fadeUp .3s ease both; }
-    .auth-check-circle {
-      width: 56px; height: 56px; border-radius: 50%;
-      border: 1.5px solid var(--gold);
-      display: flex; align-items: center; justify-content: center;
-      animation: goldPulse 1.5s ease infinite;
-    }
-    .auth-check-circle svg { stroke: var(--gold); stroke-dasharray: 30; stroke-dashoffset: 30; animation: checkDraw .5s .2s ease forwards; }
-    .auth-check-msg { font-size: .66rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); animation: fadeUp .4s .4s ease both; opacity: 0; }
-
-    /* divider + social */
-    .auth-divider { display: flex; align-items: center; gap: 12px; margin: 18px 0; }
-    .auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.06); }
-    .auth-divider span { font-size: .55rem; color: rgba(240,237,232,.28); letter-spacing: .16em; text-transform: uppercase; }
-    .auth-social { display: flex; gap: 10px; }
-    .auth-social-btn {
-      flex: 1; padding: 10px;
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.07);
-      color: var(--muted); font-family: 'Barlow', sans-serif;
-      font-size: .63rem; letter-spacing: .12em; text-transform: uppercase;
-      cursor: pointer; transition: border-color .3s, color .3s, background .3s, transform .2s;
-      display: flex; align-items: center; justify-content: center; gap: 7px;
-    }
-    .auth-social-btn:hover { border-color: rgba(200,144,58,.35); color: var(--text); background: rgba(200,144,58,.05); transform: translateY(-2px); }
-
-    /* error / success banners */
-    .auth-error {
-      background: rgba(255,68,68,.07); border-left: 2px solid rgba(255,80,80,.6);
-      color: #ffaaaa; font-size: .68rem; padding: 9px 13px;
-      margin-bottom: 14px; display: none; letter-spacing: .04em; line-height: 1.5;
-    }
-    .auth-error.show { display: block; animation: errorShake .35s ease; }
-    .auth-success {
-      background: rgba(74,220,128,.07); border-left: 2px solid rgba(74,220,128,.5);
-      color: #90ffb8; font-size: .68rem; padding: 9px 13px;
-      margin-bottom: 14px; display: none; letter-spacing: .04em; line-height: 1.5;
-    }
-    .auth-success.show { display: block; animation: fadeUp .3s ease both; }
-
-    .auth-terms {
-      font-size: .58rem; color: rgba(240,237,232,.26);
-      text-align: center; margin-top: 14px; line-height: 1.7;
-    }
-    .auth-terms a { color: rgba(200,144,58,.65); text-decoration: none; transition: color .3s; }
-    .auth-terms a:hover { color: var(--gold); }
-
-    /* hide old orbs (no longer needed) */
-    .auth-orb { display: none; }
-
-    /* responsive: collapse left panel on small screens */
-    @media(max-width: 700px) {
-      .auth-modal { flex-direction: column; max-width: 420px; }
-      .auth-left { width: 100%; min-height: 160px; padding: 24px; }
-      .auth-tyre-wrap svg { width: 110px; height: 110px; }
-      .auth-left-stats { bottom: 12px; gap: 16px; }
-      .auth-left-brand { top: 16px; }
-      .auth-modal-top { padding: 24px 24px 0; }
-      .auth-form { padding: 18px 24px 28px; }
-    }
-
     .menu-icon {
       width: 28px; cursor: pointer;
       display: none; flex-direction: column; gap: 5px;
@@ -1787,9 +1395,9 @@
     </ul>
 
     <!-- Profile icon button -->
-    <div class="nav-profile-btn" id="openAuthBtn" title="My Profile">
+    <a class="nav-profile-btn" href="login.html" title="My Profile">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    </div>
+    </a>
 
     <!-- Logged-in avatar (hidden until auth) -->
     <div class="nav-avatar" id="navAvatar">
@@ -1863,130 +1471,7 @@
     </div>
 
     <div class="mobile-menu-divider"></div>
-    <a href="#" class="mobile-menu-cta" id="mobileAuthBtn">My Profile</a>
-  </div>
-
-  <!-- ── AUTH MODAL ── -->
-  <div class="auth-overlay" id="authOverlay">
-    <div class="auth-modal" id="authModal">
-
-      <!-- ── RIGHT FORM PANEL ── -->
-      <div class="auth-right">
-        <div class="auth-scan"></div>
-        <button class="auth-modal-close" id="closeAuthBtn">✕</button>
-
-        <div class="auth-modal-top">
-          <div class="auth-welcome"><span>Auto</span>Vault</div>
-          <div class="auth-tagline">Access your profile</div>
-          <div class="auth-tabs">
-            <div class="auth-tab active" data-tab="signin">Sign In</div>
-            <div class="auth-tab" data-tab="signup">Create Account</div>
-          </div>
-        </div>
-
-        <div class="auth-form">
-
-        <!-- ── SIGN IN ── -->
-        <div class="auth-panel active" id="panel-signin">
-          <div class="auth-error" id="signin-error"></div>
-          <div class="auth-success" id="signin-success"></div>
-          <div class="auth-field">
-            <label>Email Address</label>
-            <div class="auth-input-wrap">
-              <span class="field-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg></span>
-              <input type="email" id="signin-email" placeholder="you@example.com"/>
-            </div>
-          </div>
-          <div class="auth-field">
-            <label>Password</label>
-            <div class="auth-input-wrap">
-              <span class="field-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-              <input type="password" id="signin-password" placeholder="••••••••"/>
-            </div>
-          </div>
-          <div class="auth-row">
-            <label class="auth-remember"><input type="checkbox" id="rememberMe"/> Remember me</label>
-            <a href="#" class="auth-forgot">Forgot password?</a>
-          </div>
-          <button class="auth-submit" id="signinBtn" data-label="Unlock My Profile">
-            <span class="btn-label">Unlock My Profile</span>
-            <span class="btn-spinner"><span class="btn-spinner-ring"></span></span>
-          </button>
-          <div class="auth-divider"><span>or continue with</span></div>
-          <div class="auth-social">
-            <button class="auth-social-btn" onclick="socialAuth('Google')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15.5 9.3A6 6 0 1 0 18 14h-6"/></svg>
-              Google
-            </button>
-            <button class="auth-social-btn" onclick="socialAuth('Apple')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4zm0 10c4 0 7 1.8 7 4v2H5v-2c0-2.2 3-4 7-4z"/></svg>
-              Apple
-            </button>
-          </div>
-        </div>
-
-        <!-- ── SIGN UP ── -->
-        <div class="auth-panel" id="panel-signup">
-          <div class="auth-error" id="signup-error"></div>
-          <div class="auth-success" id="signup-success"></div>
-          <div style="display:flex;gap:12px;">
-            <div class="auth-field" style="flex:1;">
-              <label>First Name</label>
-              <div class="auth-input-wrap">
-                <span class="field-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg></span>
-                <input type="text" id="signup-firstname" placeholder="James"/>
-              </div>
-            </div>
-            <div class="auth-field" style="flex:1;">
-              <label>Last Name</label>
-              <div class="auth-input-wrap">
-                <span class="field-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg></span>
-                <input type="text" id="signup-lastname" placeholder="Prescott"/>
-              </div>
-            </div>
-          </div>
-          <div class="auth-field">
-            <label>Email Address</label>
-            <div class="auth-input-wrap">
-              <span class="field-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg></span>
-              <input type="email" id="signup-email" placeholder="you@example.com"/>
-            </div>
-          </div>
-          <div class="auth-field">
-            <label>Password</label>
-            <div class="auth-input-wrap">
-              <span class="field-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-              <input type="password" id="signup-password" placeholder="Min. 8 characters"/>
-            </div>
-            <div class="pw-strength" id="pwStrength">
-              <div class="pw-strength-bar"><div class="pw-strength-fill" id="pwFill"></div></div>
-              <div class="pw-strength-label" id="pwLabel"></div>
-            </div>
-          </div>
-          <div class="auth-field">
-            <label>Confirm Password</label>
-            <div class="auth-input-wrap">
-              <span class="field-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-              <input type="password" id="signup-confirm" placeholder="Repeat password"/>
-            </div>
-          </div>
-          <button class="auth-submit" id="signupBtn" data-label="Create My Profile">
-            <span class="btn-label">Create My Profile</span>
-            <span class="btn-spinner"><span class="btn-spinner-ring"></span></span>
-          </button>
-          <p class="auth-terms">By creating an account you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
-        </div>
-
-      </div>
-
-        <div class="auth-check-wrap" id="authCheckWrap">
-          <div class="auth-check-circle">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <p class="auth-check-msg" id="authCheckMsg">Welcome to AutoVault</p>
-        </div>
-      </div><!-- end auth-right -->
-    </div>
+    <a href="login.html" class="mobile-menu-cta" id="mobileAuthBtn">My Profile</a>
   </div>
 
   <!-- ── HERO CAROUSEL ── -->
@@ -2400,6 +1885,15 @@
     <span class="footer-copy">© 2026 AutoVault. All rights reserved.</span>
   </footer>
 
+  <!-- ── SUPABASE ── -->
+  <!-- Credentials: config.js is gitignored, never committed -->
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Credentials loaded from config.js (gitignored)
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  </script>
+
   <script>
     /* ─ Custom cursor ─ */
     const cursor = document.getElementById('cursor');
@@ -2629,205 +2123,50 @@
 
 
     /* ─────────────────────────────────────────
-       AUTH SYSTEM
+       SUPABASE SESSION — index.html
     ───────────────────────────────────────── */
-    const authOverlay  = document.getElementById('authOverlay');
-    const authModal    = document.getElementById('authModal');
-    const openAuthBtn  = document.getElementById('openAuthBtn');
-    const closeAuthBtn = document.getElementById('closeAuthBtn');
-    const navAvatar    = document.getElementById('navAvatar');
-    const navInitial   = document.getElementById('navInitial');
-    const navName      = document.getElementById('navName');
-    const logoutBtn    = document.getElementById('logoutBtn');
+    const navAvatar  = document.getElementById('navAvatar');
+    const navInitial = document.getElementById('navInitial');
+    const navName    = document.getElementById('navName');
+    const logoutBtn  = document.getElementById('logoutBtn');
 
-    let users = JSON.parse(sessionStorage.getItem('av_users') || '[]');
-    let currentUser = JSON.parse(sessionStorage.getItem('av_current') || 'null');
-
-    function saveUsers()   { sessionStorage.setItem('av_users', JSON.stringify(users)); }
-    function saveSession() { sessionStorage.setItem('av_current', JSON.stringify(currentUser)); }
-
-    function openAuth() {
-      authOverlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
-      document.body.classList.add('auth-open');
-    }
-    function closeAuth() {
-      authOverlay.classList.remove('open');
-      document.body.style.overflow = '';
-      document.body.classList.remove('auth-open');
-      clearErrors();
-      document.getElementById('authCheckWrap').classList.remove('show');
-    }
-
-    openAuthBtn.addEventListener('click', () => { openAuth(); });
-    closeAuthBtn.addEventListener('click', closeAuth);
-    authOverlay.addEventListener('click', e => { if (e.target === authOverlay) closeAuth(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAuth(); });
-
-    // ── Tabs with slide animation ──
-    document.querySelectorAll('.auth-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.auth-panel').forEach(p => { p.classList.remove('active'); });
-        tab.classList.add('active');
-        const panel = document.getElementById('panel-' + tab.dataset.tab);
-        panel.classList.add('active');
-        clearErrors();
-      });
-    });
-
-    // ── Helpers ──
-    function clearErrors() {
-      document.querySelectorAll('.auth-error, .auth-success').forEach(el => {
-        el.classList.remove('show'); el.textContent = '';
-      });
-      document.querySelectorAll('.auth-field input').forEach(i => {
-        i.classList.remove('valid','invalid');
-      });
-    }
-    function showError(id, msg) {
-      const el = document.getElementById(id);
-      el.textContent = msg; el.classList.add('show');
-    }
-    function showSuccess(id, msg) {
-      const el = document.getElementById(id);
-      el.textContent = msg; el.classList.add('show');
-    }
-    function validateEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-
-    function setLoading(btn, on) {
-      btn.classList.toggle('loading', on);
-    }
-
-    function showSuccessOverlay(msg) {
-      const wrap = document.getElementById('authCheckWrap');
-      document.getElementById('authCheckMsg').textContent = msg;
-      wrap.classList.add('show');
-    }
-
-    // ── Password strength ──
-    document.getElementById('signup-password').addEventListener('input', function() {
-      const val = this.value;
-      const strengthEl = document.getElementById('pwStrength');
-      const fill = document.getElementById('pwFill');
-      const label = document.getElementById('pwLabel');
-      if (!val) { strengthEl.classList.remove('show'); return; }
-      strengthEl.classList.add('show');
-      let score = 0;
-      if (val.length >= 8) score++;
-      if (/[A-Z]/.test(val)) score++;
-      if (/[0-9]/.test(val)) score++;
-      if (/[^A-Za-z0-9]/.test(val)) score++;
-      const levels = [
-        { w: '20%', color: '#ff5555', text: 'Weak' },
-        { w: '45%', color: '#ffaa44', text: 'Fair' },
-        { w: '70%', color: '#f0d060', text: 'Good' },
-        { w: '100%', color: '#4adc80', text: 'Strong' },
-      ];
-      const lvl = levels[Math.max(0, score - 1)];
-      fill.style.width = lvl.w;
-      fill.style.background = lvl.color;
-      label.textContent = lvl.text;
-      label.style.color = lvl.color;
-    });
-
-    // ── Real-time field border feedback ──
-    document.getElementById('signin-email').addEventListener('blur', function() {
-      this.classList.toggle('valid', validateEmail(this.value));
-      this.classList.toggle('invalid', this.value && !validateEmail(this.value));
-    });
-    document.getElementById('signup-email').addEventListener('blur', function() {
-      this.classList.toggle('valid', validateEmail(this.value));
-      this.classList.toggle('invalid', this.value && !validateEmail(this.value));
-    });
-    document.getElementById('signup-confirm').addEventListener('blur', function() {
-      const pw = document.getElementById('signup-password').value;
-      this.classList.toggle('valid', this.value && this.value === pw);
-      this.classList.toggle('invalid', this.value && this.value !== pw);
-    });
-
-    // ── Update nav after login ──
     function updateNavUser(user) {
-      const initials = (user.first[0] + user.last[0]).toUpperCase();
+      const meta = user.user_metadata || {};
+      const first = meta.first_name || user.email.split('@')[0];
+      const last  = meta.last_name  || '';
+      const initials = (first[0] + (last[0] || '')).toUpperCase();
       navInitial.textContent = initials;
-      navName.textContent    = user.first;
+      navName.textContent    = first;
       navAvatar.classList.add('show');
-      openAuthBtn.style.display = 'none';
+      const profileBtn = document.querySelector('.nav-profile-btn');
+      if (profileBtn) profileBtn.style.display = 'none';
     }
+
     function clearNavUser() {
       navAvatar.classList.remove('show');
-      openAuthBtn.style.display = '';
+      const profileBtn = document.querySelector('.nav-profile-btn');
+      if (profileBtn) profileBtn.style.display = '';
     }
 
-    // ── Sign In ──
-    document.getElementById('signinBtn').addEventListener('click', () => {
-      clearErrors();
-      const email    = document.getElementById('signin-email').value.trim();
-      const password = document.getElementById('signin-password').value;
-      const btn      = document.getElementById('signinBtn');
-      if (!email)    return showError('signin-error', '⚠ Please enter your email address.');
-      if (!validateEmail(email)) return showError('signin-error', '⚠ Please enter a valid email address.');
-      if (!password) return showError('signin-error', '⚠ Please enter your password.');
-      setLoading(btn, true);
-      setTimeout(() => {
-        setLoading(btn, false);
-        const user = users.find(u => u.email === email.toLowerCase());
-        if (!user) return showError('signin-error', '⚠ No account found with that email.');
-        if (user.password !== btoa(password)) return showError('signin-error', '⚠ Incorrect password. Please try again.');
-        currentUser = user;
-        saveSession();
-        showSuccessOverlay(`Welcome back, ${user.first}.`);
-        setTimeout(() => { closeAuth(); updateNavUser(user); }, 1800);
-      }, 900);
+    (async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session && session.user) updateNavUser(session.user);
+      } catch(e) { console.warn('Session check failed', e); }
+    })();
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session && session.user) updateNavUser(session.user);
+      else clearNavUser();
     });
 
-    // ── Sign Up ──
-    document.getElementById('signupBtn').addEventListener('click', () => {
-      clearErrors();
-      const first   = document.getElementById('signup-firstname').value.trim();
-      const last    = document.getElementById('signup-lastname').value.trim();
-      const email   = document.getElementById('signup-email').value.trim();
-      const password = document.getElementById('signup-password').value;
-      const confirm  = document.getElementById('signup-confirm').value;
-      const btn      = document.getElementById('signupBtn');
-      if (!first || !last)       return showError('signup-error', '⚠ Please enter your full name.');
-      if (!validateEmail(email)) return showError('signup-error', '⚠ Please enter a valid email address.');
-      if (password.length < 8)   return showError('signup-error', '⚠ Password must be at least 8 characters.');
-      if (password !== confirm)  return showError('signup-error', '⚠ Passwords do not match.');
-      if (users.find(u => u.email === email.toLowerCase()))
-        return showError('signup-error', '⚠ An account with this email already exists.');
-      setLoading(btn, true);
-      setTimeout(() => {
-        setLoading(btn, false);
-        const newUser = { first, last, email: email.toLowerCase(), password: btoa(password) };
-        users.push(newUser);
-        saveUsers();
-        currentUser = newUser;
-        saveSession();
-        showSuccessOverlay(`Garage created. Welcome, ${first}.`);
-        setTimeout(() => { closeAuth(); updateNavUser(newUser); }, 1900);
-      }, 1000);
-    });
-
-    // ── Sign Out ──
-    logoutBtn.addEventListener('click', e => {
-      e.preventDefault();
-      currentUser = null;
-      sessionStorage.removeItem('av_current');
-      clearNavUser();
-    });
-
-    // ── Social auth (demo) ──
-    function socialAuth(provider) {
-      const demoUser = { first: 'Guest', last: 'Driver', email: 'guest@autovault.com', password: '' };
-      currentUser = demoUser;
-      saveSession();
-      showSuccessOverlay(`Signed in via ${provider}`);
-      setTimeout(() => { closeAuth(); updateNavUser(demoUser); }, 1600);
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async e => {
+        e.preventDefault();
+        await supabase.auth.signOut();
+        clearNavUser();
+      });
     }
-
-    // ── Restore session ──
-    if (currentUser) updateNavUser(currentUser);
   </script>
 </body>
 </html>
