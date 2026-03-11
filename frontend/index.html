@@ -5,1358 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AutoVault – Drive with Power</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@700;800&family=Bebas+Neue&family=Playfair+Display:ital,wght@0,700;1,400&family=Black+Ops+One&family=Russo+One&family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet"/>
-  <style>
-
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --gold: #C8903A;
-      --gold-light: #E8B060;
-      --dark: #0a0c0e;
-      --dark2: #111416;
-      --smoke: rgba(255,255,255,0.07);
-      --text: #f0ede8;
-      --muted: rgba(240,237,232,0.55);
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--dark);
-      color: var(--text);
-      font-family: 'Barlow', sans-serif;
-      overflow-x: hidden;
-    }
-
-    /* ── CURSOR ── */
-    .cursor {
-      width: 10px; height: 10px;
-      background: var(--gold);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9999;
-      transform: translate(-50%,-50%);
-      transition: transform .15s ease, width .3s, height .3s, background .3s, opacity .3s;
-      mix-blend-mode: screen;
-    }
-    .cursor-ring {
-      width: 36px; height: 36px;
-      border: 1px solid rgba(200,144,58,.5);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none; z-index: 9998;
-      transform: translate(-50%,-50%);
-      transition: transform .35s cubic-bezier(.25,.46,.45,.94), width .3s, height .3s, opacity .3s;
-    }
-    body.auth-open .cursor,
-    body.auth-open .cursor-ring { opacity: 0; }
-
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 28px 60px;
-      background: linear-gradient(to bottom, rgba(10,12,14,.95) 0%, transparent 100%);
-      animation: fadeDown .8s ease both;
-    }
-    @keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
-
-    .logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.7rem;
-      font-weight: 600;
-      letter-spacing: .02em;
-    }
-    .logo span:first-child { color: var(--gold); }
-
-    .nav-links {
-      display: flex; gap: 42px;
-      list-style: none;
-    }
-    .nav-links a {
-      text-decoration: none;
-      font-size: .72rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 500;
-      transition: color .3s;
-      position: relative;
-    }
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px; left: 0; right: 0;
-      height: 1px;
-      background: var(--gold);
-      transform: scaleX(0);
-      transition: transform .3s ease;
-    }
-    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
-    .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
-
-    /* dropdown nav */
-    .nav-links li { position: relative; }
-    .nav-dropdown {
-      position: absolute; top: 100%; left: 50%;
-      transform: translateX(-50%) translateY(0);
-      padding-top: 18px;
-      background: transparent;
-      min-width: 180px;
-      opacity: 0; pointer-events: none;
-      transition: opacity .25s ease;
-      z-index: 200;
-    }
-    .nav-dropdown-inner {
-      background: rgba(10,12,14,.97);
-      border: 1px solid rgba(200,144,58,.15);
-      backdrop-filter: blur(16px);
-      display: flex; flex-direction: column;
-      position: relative;
-    }
-    .nav-dropdown-inner::before {
-      content: '';
-      position: absolute; top: -5px; left: 50%;
-      transform: translateX(-50%);
-      width: 8px; height: 8px;
-      background: rgba(200,144,58,.3);
-      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    }
-    .nav-links li:hover .nav-dropdown {
-      opacity: 1; pointer-events: all;
-    }
-    .nav-dropdown a {
-      padding: 11px 20px;
-      font-size: .65rem; letter-spacing: .16em;
-      text-transform: uppercase; color: var(--muted);
-      text-decoration: none;
-      border-bottom: 1px solid rgba(255,255,255,.04);
-      display: flex; align-items: center; gap: 10px;
-      transition: color .25s, background .25s, padding-left .25s;
-      white-space: nowrap;
-    }
-    .nav-dropdown a::after { display: none; }
-    .nav-dropdown a:last-child { border-bottom: none; }
-    .nav-dropdown a:hover {
-      color: var(--gold);
-      background: rgba(200,144,58,.05);
-      padding-left: 26px;
-    }
-    .nav-dropdown a svg { stroke: rgba(200,144,58,.5); flex-shrink: 0; transition: stroke .25s; }
-    .nav-dropdown a:hover svg { stroke: var(--gold); }
-
-    /* chevron on links with dropdown */
-    .has-dropdown > a::after {
-      display: inline-block !important;
-      content: '';
-      position: static !important;
-      width: 5px; height: 5px;
-      border-right: 1px solid currentColor;
-      border-bottom: 1px solid currentColor;
-      transform: rotate(45deg) translateY(-2px) !important;
-      margin-left: 6px;
-      background: none;
-      transition: transform .3s !important;
-    }
-    .has-dropdown:hover > a::after {
-      transform: rotate(-135deg) translateY(2px) !important;
-    }
-
-    /* profile icon button */
-    .nav-profile-btn {
-      width: 36px; height: 36px;
-      border: 1px solid rgba(200,144,58,.4);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      background: rgba(200,144,58,.06);
-      transition: background .3s, border-color .3s;
-      flex-shrink: 0;
-    }
-    .nav-profile-btn:hover { background: rgba(200,144,58,.15); border-color: var(--gold); }
-    .nav-profile-btn svg { stroke: var(--gold); }
-
-    .nav-garage {
-      display: flex; align-items: center; gap: 9px;
-      padding: 9px 22px !important;
-      border: 1px solid rgba(200,144,58,.45) !important;
-      color: var(--gold) !important;
-      font-size: .7rem !important;
-      letter-spacing: .16em !important;
-      text-transform: uppercase !important;
-      font-weight: 500 !important;
-      transition: background .3s, color .3s !important;
-      cursor: pointer;
-      background: rgba(200,144,58,.06);
-      position: relative;
-    }
-    .nav-garage::after { display: none !important; }
-    .nav-garage:hover { background: var(--gold) !important; color: var(--dark) !important; }
-    .nav-garage svg { transition: stroke .3s; }
-    .nav-garage:hover svg { stroke: var(--dark) !important; }
-
-    /* avatar shown when logged in */
-    .nav-avatar {
-      display: none;
-      align-items: center; gap: 10px;
-      cursor: pointer;
-      position: relative;
-    }
-    .nav-avatar.show { display: flex; }
-    .nav-avatar-circle {
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      background: var(--gold);
-      color: var(--dark);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem; font-weight: 700;
-    }
-    .nav-avatar-name {
-      font-size: .7rem; letter-spacing: .12em;
-      text-transform: uppercase; color: var(--text);
-    }
-    .nav-avatar-dropdown {
-      position: absolute; top: calc(100% + 14px); right: 0;
-      background: #16191c;
-      border: 1px solid rgba(200,144,58,.2);
-      min-width: 180px;
-      display: none; flex-direction: column;
-      z-index: 200;
-    }
-    .nav-avatar:hover .nav-avatar-dropdown { display: flex; }
-    .nav-avatar-dropdown a {
-      padding: 12px 20px;
-      font-size: .7rem; letter-spacing: .14em;
-      text-transform: uppercase; color: var(--muted);
-      text-decoration: none;
-      border-bottom: 1px solid rgba(255,255,255,.04);
-      transition: color .3s, background .3s;
-    }
-    .nav-avatar-dropdown a:hover { color: var(--gold); background: rgba(200,144,58,.05); }
-    .nav-avatar-dropdown a.logout { color: rgba(255,100,100,.7); }
-    .nav-avatar-dropdown a.logout:hover { color: #ff6464; background: rgba(255,68,68,.05); }
-
-    .menu-icon {
-      width: 28px; cursor: pointer;
-      display: none; flex-direction: column; gap: 5px;
-      position: relative; z-index: 110; flex-shrink: 0;
-    }
-    .menu-icon span {
-      display: block; height: 1.5px;
-      background: var(--text);
-      transition: .3s;
-    }
-    .menu-icon span:nth-child(2) { width: 70%; }
-    .menu-icon.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-    .menu-icon.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-    .menu-icon.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-
-    /* Mobile dropdown menu — compact top-right panel */
-    @keyframes menuSlideIn  { from { opacity:0; transform: translateY(-12px) scale(.96); } to { opacity:1; transform: translateY(0) scale(1); } }
-    @keyframes itemFadeUp   { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-    @keyframes goldLineDraw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-
-    .mobile-menu {
-      position: fixed;
-      top: 72px; right: 20px;
-      width: 230px;
-      background: rgba(10,12,14,.97);
-      border: 1px solid rgba(200,144,58,.2);
-      backdrop-filter: blur(24px);
-      z-index: 200;
-      padding: 6px 0 10px;
-      pointer-events: none;
-      opacity: 0;
-      transform: translateY(-14px) scale(.95);
-      transform-origin: top right;
-      transition: opacity .25s ease, transform .25s cubic-bezier(.25,.46,.45,.94);
-      visibility: hidden;
-    }
-    .mobile-menu::before {
-      content: '';
-      position: absolute; top: -5px; right: 24px;
-      width: 8px; height: 8px;
-      background: rgba(200,144,58,.22);
-      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    }
-    .mobile-menu::after {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
-    }
-    .mobile-menu.open {
-      pointer-events: all;
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      visibility: visible;
-    }
-
-    /* Section label */
-    .mobile-menu-label {
-      font-size: .52rem; letter-spacing: .28em;
-      text-transform: uppercase; color: rgba(200,144,58,.4);
-      padding: 10px 20px 6px;
-      font-family: 'Barlow', sans-serif;
-    }
-
-    /* Nav items with expandable sub-menus */
-    .m-item {
-      border-bottom: 1px solid rgba(255,255,255,.04);
-      transform: translateY(6px);
-      opacity: 0;
-      transition: opacity .22s ease, transform .22s ease;
-    }
-    .mobile-menu.open .m-item:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:.06s; }
-    .mobile-menu.open .m-item:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:.11s; }
-    .mobile-menu.open .m-item:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:.16s; }
-    .mobile-menu.open .m-item:nth-child(5) { opacity:1; transform:translateY(0); transition-delay:.21s; }
-
-    .m-row {
-      display: flex; align-items: center; justify-content: space-between;
-      font-family: 'Barlow', sans-serif;
-      font-size: .76rem; font-weight: 500;
-      letter-spacing: .13em; text-transform: uppercase;
-      color: rgba(240,237,232,.7);
-      padding: 12px 20px;
-      cursor: pointer;
-      transition: color .2s, background .2s;
-    }
-    .m-row:hover { color: var(--gold); background: rgba(200,144,58,.04); }
-
-    .m-chevron {
-      width: 6px; height: 6px;
-      border-right: 1.5px solid currentColor;
-      border-bottom: 1.5px solid currentColor;
-      transform: rotate(-45deg);
-      opacity: .5; flex-shrink: 0;
-      transition: opacity .2s, transform .25s ease;
-    }
-    .m-item.open .m-chevron { transform: rotate(45deg); opacity: 1; }
-    .m-item.open .m-row { color: var(--gold); }
-
-    /* Sub-menu */
-    .m-sub {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height .3s cubic-bezier(.25,.46,.45,.94);
-      background: rgba(200,144,58,.03);
-      border-top: 1px solid rgba(200,144,58,.08);
-    }
-    .m-item.open .m-sub { max-height: 300px; }
-
-    .m-sub a {
-      display: flex; align-items: center; gap: 10px;
-      font-family: 'Barlow', sans-serif;
-      font-size: .68rem; font-weight: 400;
-      letter-spacing: .12em; text-transform: uppercase;
-      color: rgba(240,237,232,.45);
-      text-decoration: none;
-      padding: 9px 20px 9px 28px;
-      border-bottom: 1px solid rgba(255,255,255,.03);
-      transition: color .2s, padding-left .2s, background .2s;
-      opacity: 1; transform: none;
-    }
-    .m-sub a:last-child { border-bottom: none; }
-    .m-sub a:hover { color: var(--gold); background: rgba(200,144,58,.06); padding-left: 34px; }
-    .m-sub a svg { stroke: rgba(200,144,58,.45); flex-shrink: 0; transition: stroke .2s; }
-    .m-sub a:hover svg { stroke: var(--gold); }
-
-    .mobile-menu > a {
-      display: flex; align-items: center; justify-content: space-between;
-      font-family: 'Barlow', sans-serif;
-      font-size: .76rem; font-weight: 500;
-      letter-spacing: .13em; text-transform: uppercase;
-      color: rgba(240,237,232,.65); text-decoration: none;
-      padding: 11px 20px;
-      border-bottom: 1px solid rgba(255,255,255,.04);
-      transition: color .2s, background .2s, padding-left .2s, opacity .22s ease, transform .22s ease;
-      transform: translateY(6px);
-      opacity: 0;
-    }
-    .mobile-menu.open > a:last-of-type { opacity:1; transform:translateY(0); transition-delay: .27s; }
-    .mobile-menu > a:last-child { border-bottom: none; }
-    .mobile-menu > a:hover { color: var(--gold); background: rgba(200,144,58,.05); padding-left: 26px; }
-
-    /* Driver portal CTA at bottom */
-    .mobile-menu-cta {
-      margin: 6px 14px 2px !important;
-      padding: 9px 16px !important;
-      background: rgba(200,144,58,.09) !important;
-      border: 1px solid rgba(200,144,58,.28) !important;
-      border-bottom: 1px solid rgba(200,144,58,.28) !important;
-      color: var(--gold) !important;
-      letter-spacing: .16em !important;
-      font-size: .7rem !important;
-      justify-content: center !important;
-      border-radius: 1px;
-    }
-    .mobile-menu-cta:hover { background: rgba(200,144,58,.18) !important; padding-left: 16px !important; }
-    .mobile-menu-divider { height: 1px; background: rgba(255,255,255,.06); margin: 6px 0; }
-
-
-    /* ── HERO CAROUSEL ── */
-    .hero-carousel {
-      position: relative;
-      width: 100%; 
-      overflow: hidden;
-    }
-
-    .hero-carousel-track {
-      display: flex;
-      transition: transform .8s cubic-bezier(.25,.46,.45,.94);
-    }
-
-    .hero {
-      position: relative;
-      width: 100%; height: 100vh;
-      overflow: hidden;
-      display: flex; align-items: center;
-      flex-shrink: 0;
-    }
-
-    /* Background image via CSS + dark overlay */
-    .hero-bg {
-      position: absolute; inset: 0;
-      background:
-        linear-gradient(110deg, rgba(10,12,14,.88) 0%, rgba(10,12,14,.35) 55%, rgba(10,12,14,.6) 100%),
-        url('/mnt/user-data/uploads/4b10ac32-1701-4be5-8c5e-ceb4bbf380c9-cover.png') center/cover no-repeat;
-      transform: scale(1.08);
-      animation: zoomIn 10s ease forwards;
-    }
-    .hero:nth-child(2) .hero-bg {
-      background:
-        linear-gradient(110deg, rgba(10,12,14,.88) 0%, rgba(10,12,14,.35) 55%, rgba(10,12,14,.6) 100%),
-        linear-gradient(135deg, #1a0f05 0%, #2d1810 50%, #0a1418 100%);
-    }
-    .hero:nth-child(3) .hero-bg {
-      background:
-        linear-gradient(110deg, rgba(10,12,14,.88) 0%, rgba(10,12,14,.35) 55%, rgba(10,12,14,.6) 100%),
-        linear-gradient(135deg, #0f1a1a 0%, #152a2a 50%, #1a0f0f 100%);
-    }
-
-    @keyframes zoomIn { to { transform: scale(1); } }
-
-    /* Animated smoke/fog particles */
-    .particles { position: absolute; inset: 0; pointer-events: none; }
-    .particle {
-      position: absolute;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(200,144,58,.12) 0%, transparent 70%);
-      animation: floatParticle linear infinite;
-      filter: blur(40px);
-    }
-
-    @keyframes floatParticle {
-      0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-      10%  { opacity: 1; }
-      90%  { opacity: .6; }
-      100% { transform: translateY(-120vh) translateX(40px) scale(1.4); opacity: 0; }
-    }
-
-    /* Scanline overlay */
-    .hero::before {
-      content: '';
-      position: absolute; inset: 0; z-index: 1;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,.03) 2px,
-        rgba(0,0,0,.03) 4px
-      );
-      pointer-events: none;
-    }
-
-    /* Vignette */
-    .hero::after {
-      content: '';
-      position: absolute; inset: 0; z-index: 1;
-      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.6) 100%);
-      pointer-events: none;
-    }
-
-    .hero-content {
-      position: relative; z-index: 10;
-      padding: 0 60px;
-      max-width: 700px;
-    }
-
-    .hero-eyebrow {
-      display: flex; align-items: center; gap: 14px;
-      margin-bottom: 20px;
-      opacity: 0;
-      animation: slideUp .7s .6s ease forwards;
-    }
-    .hero-eyebrow::before {
-      content: '';
-      display: block;
-      width: 50px; height: 1px;
-      background: var(--gold);
-    }
-    .hero-eyebrow span {
-      font-size: .7rem;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: var(--gold);
-      font-weight: 500;
-    }
-
-    .hero-subtitle {
-      font-family: 'Barlow', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 300;
-      color: var(--muted);
-      line-height: 1.7;
-      letter-spacing: .01em;
-      opacity: 0;
-      animation: slideUp .7s .75s ease forwards;
-      margin-bottom: 8px;
-    }
-
-    .hero-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(5rem, 12vw, 11rem);
-      font-weight: 800;
-      line-height: .88;
-      text-transform: uppercase;
-      letter-spacing: -.02em;
-      color: var(--text);
-      opacity: 0;
-      animation: slideUp .9s .9s ease forwards;
-      position: relative;
-    }
-    .hero-title .accent {
-      color: transparent;
-      -webkit-text-stroke: 1.5px var(--gold-light);
-      display: block;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── RIGHT PANEL ── */
-    .hero-right {
-      position: absolute; right: 60px; bottom: 0; top: 0;
-      z-index: 10;
-      display: flex; flex-direction: column;
-      align-items: flex-end; justify-content: center;
-      max-width: 420px;
-      text-align: right;
-    }
-
-    .hero-desc {
-      font-size: 1rem;
-      line-height: 1.8;
-      color: rgba(240,237,232,.75);
-      font-weight: 300;
-      margin-bottom: 36px;
-      opacity: 0;
-      animation: slideUp .8s 1.1s ease forwards;
-    }
-
-    .btn-explore, .btn-primary {
-      display: inline-flex; align-items: center; gap: 14px;
-      padding: 16px 36px;
-      border: 1px solid rgba(200,144,58,.6);
-      color: var(--text);
-      text-decoration: none;
-      font-size: .75rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      font-weight: 500;
-      position: relative;
-      overflow: hidden;
-      opacity: 0;
-      animation: slideUp .8s 1.3s ease forwards;
-      cursor: pointer;
-      background: transparent;
-      transition: color .4s;
-    }
-    .btn-explore::before, .btn-primary::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: var(--gold);
-      transform: translateX(-101%);
-      transition: transform .4s cubic-bezier(.77,0,.18,1);
-      z-index: -1;
-    }
-    .btn-explore:hover::before, .btn-primary:hover::before { transform: translateX(0); }
-    .btn-explore:hover, .btn-primary:hover { color: var(--dark); border-color: var(--gold); }
-
-    /* ── BOTTOM BAR ── */
-    .hero-bottom {
-      position: absolute; bottom: 40px; left: 60px; right: 60px;
-      z-index: 10;
-      display: flex; align-items: flex-end; justify-content: space-between;
-      opacity: 0;
-      animation: slideUp .8s 1.5s ease forwards;
-    }
-
-    .scroll-line {
-      display: flex; align-items: center; gap: 14px;
-      font-size: .65rem; letter-spacing: .2em;
-      text-transform: uppercase; color: var(--muted);
-    }
-    .scroll-line::before {
-      content: '';
-      display: block; width: 1px; height: 50px;
-      background: linear-gradient(to bottom, transparent, var(--gold));
-      animation: growLine 2s 1.8s ease forwards;
-      transform-origin: top;
-      transform: scaleY(0);
-    }
-    @keyframes growLine { to { transform: scaleY(1); } }
-
-    .arrow-btn {
-      width: 52px; height: 52px;
-      border: 1px solid rgba(240,237,232,.25);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      transition: border-color .3s, transform .3s;
-      background: transparent;
-    }
-    .arrow-btn:hover {
-      border-color: var(--gold);
-      transform: translateX(4px);
-    }
-    .arrow-btn svg { stroke: var(--text); }
-
-    /* slide counter */
-    .slide-counter {
-      font-size: .65rem; letter-spacing: .15em;
-      color: var(--muted);
-    }
-    .slide-counter strong { color: var(--gold); font-size: .85rem; }
-
-    /* progress bar */
-    .progress-bar {
-      width: 200px; height: 1px;
-      background: rgba(255,255,255,.12);
-      position: relative; overflow: hidden;
-    }
-    .progress-fill {
-      position: absolute; left: 0; top: 0; bottom: 0;
-      background: var(--gold);
-      width: 33%;
-      animation: progressSlide 12s linear infinite;
-    }
-    @keyframes progressSlide {
-      0%   { left: 0; width: 0; }
-      33%  { width: 33%; }
-      66%  { width: 33%; left: 33%; }
-      100% { width: 0; left: 100%; }
-    }
-
-    /* ── STATS STRIP ── */
-    .stats {
-      background: var(--dark2);
-      border-top: 1px solid rgba(200,144,58,.15);
-      display: flex;
-      overflow: hidden;
-    }
-    .stat-item {
-      flex: 1;
-      padding: 40px 48px;
-      border-right: 1px solid rgba(255,255,255,.06);
-      position: relative;
-      opacity: 0;
-      animation: slideUp .6s ease forwards;
-    }
-    .stat-item:nth-child(1) { animation-delay: .2s; }
-    .stat-item:nth-child(2) { animation-delay: .35s; }
-    .stat-item:nth-child(3) { animation-delay: .5s; }
-    .stat-item:nth-child(4) { animation-delay: .65s; border-right: none; }
-
-    .stat-item::after {
-      content: '';
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 2px;
-      background: linear-gradient(to right, var(--gold), transparent);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform .5s ease;
-    }
-    .stat-item:hover::after { transform: scaleX(1); }
-
-    .stat-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 3.2rem;
-      font-weight: 300;
-      color: var(--gold);
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-    .stat-label {
-      font-size: .68rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    /* ── MARQUEE ── */
-    .marquee-wrap {
-      overflow: hidden;
-      border-top: 1px solid rgba(255,255,255,.06);
-      border-bottom: 1px solid rgba(255,255,255,.06);
-      padding: 16px 0;
-      background: var(--dark);
-    }
-    .marquee-track {
-      display: flex; gap: 60px;
-      white-space: nowrap;
-      animation: marqueeScroll 20s linear infinite;
-      width: max-content;
-    }
-    .marquee-item {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: .7rem;
-      letter-spacing: .25em;
-      text-transform: uppercase;
-      color: var(--muted);
-      display: flex; align-items: center; gap: 60px;
-    }
-    .marquee-item::after {
-      content: '◆';
-      color: var(--gold);
-      font-size: .5rem;
-    }
-    @keyframes marqueeScroll {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
-    }
-
-    /* ── FEATURED SECTION ── */
-    .featured {
-      padding: 100px 60px;
-      background: var(--dark);
-    }
-    .section-header {
-      display: flex; align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 60px;
-    }
-    .section-tag {
-      font-size: .68rem; letter-spacing: .22em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 12px;
-      display: block;
-    }
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2.5rem, 5vw, 4rem);
-      font-weight: 300;
-      line-height: 1.1;
-      color: var(--text);
-    }
-    .section-title strong { font-weight: 600; }
-
-    .view-all {
-      font-size: .72rem; letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--gold);
-      text-decoration: none;
-      display: flex; align-items: center; gap: 10px;
-      transition: gap .3s;
-      white-space: nowrap;
-    }
-    .view-all:hover { gap: 18px; }
-
-    .cars-grid {
-      display: grid;
-      grid-template-columns: 1.6fr 1fr 1fr;
-      grid-template-rows: auto auto;
-      gap: 2px;
-    }
-    .car-card {
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      aspect-ratio: 4/3;
-      background: var(--dark2);
-    }
-    .car-card:first-child { grid-row: span 2; aspect-ratio: auto; }
-    .car-card.wide { grid-column: span 2; aspect-ratio: 16/6; }
-
-    .car-card-img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: transform .7s cubic-bezier(.25,.46,.45,.94);
-      filter: brightness(.7);
-    }
-    .car-card:hover .car-card-img { transform: scale(1.08); filter: brightness(.85); }
-
-    /* fallback gradient cards */
-    .car-fallback {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem;
-      color: rgba(255,255,255,.3);
-    }
-
-    .car-info {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      padding: 30px;
-      background: linear-gradient(to top, rgba(10,12,14,.95) 0%, transparent 100%);
-      transform: translateY(20px);
-      opacity: 0;
-      transition: transform .4s ease, opacity .4s ease;
-    }
-    .car-card:hover .car-info { transform: translateY(0); opacity: 1; }
-
-    .car-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.6rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .car-price {
-      font-size: .78rem;
-      color: var(--gold);
-      letter-spacing: .1em;
-    }
-
-    .car-badge {
-      position: absolute; top: 20px; left: 20px;
-      background: var(--gold);
-      color: var(--dark);
-      font-size: .6rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      padding: 5px 12px;
-      font-weight: 600;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid rgba(255,255,255,.06);
-      padding: 50px 60px;
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--dark2);
-    }
-    footer .logo { font-size: 1.4rem; }
-    .footer-links { display: flex; gap: 32px; list-style: none; }
-    .footer-links a {
-      font-size: .68rem; letter-spacing: .15em;
-      text-transform: uppercase; color: var(--muted);
-      text-decoration: none; transition: color .3s;
-    }
-    .footer-links a:hover { color: var(--gold); }
-    .footer-copy {
-      font-size: .65rem; color: rgba(255,255,255,.25);
-      letter-spacing: .1em;
-    }
-
-    /* ── HOW IT WORKS ── */
-    .how-it-works {
-      padding: 120px 60px;
-      background: var(--dark2);
-      position: relative;
-      overflow: hidden;
-    }
-    .how-it-works::before {
-      content: '';
-      position: absolute;
-      top: -200px; right: -200px;
-      width: 600px; height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(200,144,58,.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2px;
-      margin-top: 70px;
-      position: relative;
-    }
-    .steps-grid::before {
-      content: '';
-      position: absolute;
-      top: 48px; left: 12.5%; right: 12.5%;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
-      opacity: .35;
-    }
-    .step-card {
-      padding: 48px 36px;
-      background: rgba(255,255,255,.02);
-      border: 1px solid rgba(255,255,255,.05);
-      position: relative;
-      transition: background .4s, border-color .4s;
-      cursor: default;
-    }
-    .step-card:hover {
-      background: rgba(200,144,58,.04);
-      border-color: rgba(200,144,58,.2);
-    }
-    .step-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 4.5rem;
-      font-weight: 300;
-      color: rgba(200,144,58,.15);
-      line-height: 1;
-      margin-bottom: 24px;
-      transition: color .4s;
-    }
-    .step-card:hover .step-num { color: rgba(200,144,58,.35); }
-    .step-icon {
-      width: 48px; height: 48px;
-      border: 1px solid rgba(200,144,58,.3);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 24px;
-      transition: background .4s, border-color .4s;
-    }
-    .step-card:hover .step-icon {
-      background: var(--gold);
-      border-color: var(--gold);
-    }
-    .step-card:hover .step-icon svg { stroke: var(--dark); }
-    .step-icon svg { stroke: var(--gold); transition: stroke .4s; }
-    .step-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.4rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: var(--text);
-    }
-    .step-desc {
-      font-size: .85rem;
-      line-height: 1.75;
-      color: var(--muted);
-      font-weight: 300;
-    }
-
-    /* ── AI DETECT SECTION ── */
-    .ai-detect {
-      padding: 120px 60px;
-      background: var(--dark);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 100px;
-      align-items: center;
-    }
-    .ai-visual {
-      position: relative;
-      height: 480px;
-    }
-    .ai-scan-box {
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, #0d1a1a 0%, #1a2520 100%);
-      border: 1px solid rgba(200,144,58,.15);
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .scan-line-anim {
-      position: absolute; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
-      box-shadow: 0 0 20px rgba(200,144,58,.6);
-      animation: scanMove 3s ease-in-out infinite;
-    }
-    @keyframes scanMove {
-      0% { top: 10%; opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { top: 90%; opacity: 0; }
-    }
-    .car-scan-svg { opacity: .5; }
-    .damage-dot {
-      position: absolute;
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      background: #ff4444;
-      box-shadow: 0 0 12px rgba(255,68,68,.8);
-      animation: pulseDot 2s ease-in-out infinite;
-    }
-    .damage-dot::after {
-      content: '';
-      position: absolute; inset: -6px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,68,68,.4);
-      animation: expandRing 2s ease-in-out infinite;
-    }
-    @keyframes pulseDot { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
-    @keyframes expandRing { 0%{transform:scale(1);opacity:1} 100%{transform:scale(2.5);opacity:0} }
-    .damage-label {
-      position: absolute;
-      background: rgba(255,68,68,.15);
-      border: 1px solid rgba(255,68,68,.4);
-      padding: 4px 10px;
-      font-size: .6rem;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-      color: #ff8888;
-      white-space: nowrap;
-      backdrop-filter: blur(8px);
-    }
-    .scan-status {
-      position: absolute; top: 20px; right: 20px;
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(0,0,0,.5);
-      padding: 8px 16px;
-      border: 1px solid rgba(200,144,58,.2);
-      backdrop-filter: blur(10px);
-    }
-    .scan-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #4aff8a;
-      animation: pulseDot 1.5s ease-in-out infinite;
-    }
-    .scan-status span {
-      font-size: .62rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: #4aff8a;
-    }
-    .score-panel {
-      position: absolute; bottom: 20px; left: 20px;
-      background: rgba(0,0,0,.6);
-      border: 1px solid rgba(255,255,255,.08);
-      padding: 16px 20px;
-      backdrop-filter: blur(10px);
-      min-width: 180px;
-    }
-    .score-label { font-size: .6rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-    .score-bar-wrap { background: rgba(255,255,255,.08); height: 4px; border-radius: 2px; overflow: hidden; }
-    .score-bar-fill { height: 100%; background: linear-gradient(to right, var(--gold), #4aff8a); border-radius: 2px; width: 78%; animation: growBar 2s 1s ease forwards; transform-origin: left; transform: scaleX(0); }
-    @keyframes growBar { to { transform: scaleX(1); } }
-    .score-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--gold); margin-top: 6px; }
-
-    .ai-content .section-tag { display: block; margin-bottom: 12px; }
-    .ai-content .section-title { margin-bottom: 24px; }
-    .ai-desc {
-      font-size: 1rem; line-height: 1.85;
-      color: var(--muted); font-weight: 300;
-      margin-bottom: 40px;
-    }
-    .ai-features {
-      display: flex; flex-direction: column; gap: 16px;
-      margin-bottom: 40px;
-    }
-    .ai-feature {
-      display: flex; align-items: flex-start; gap: 16px;
-      padding: 16px 20px;
-      border: 1px solid rgba(255,255,255,.06);
-      transition: border-color .3s, background .3s;
-    }
-    .ai-feature:hover {
-      border-color: rgba(200,144,58,.25);
-      background: rgba(200,144,58,.03);
-    }
-    .ai-feature-icon {
-      width: 36px; height: 36px; flex-shrink: 0;
-      border: 1px solid rgba(200,144,58,.25);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .ai-feature-icon svg { stroke: var(--gold); }
-    .ai-feature-text strong {
-      display: block; font-size: .82rem;
-      letter-spacing: .05em; margin-bottom: 3px;
-    }
-    .ai-feature-text span {
-      font-size: .78rem; color: var(--muted); line-height: 1.5;
-    }
-
-    /* ── TESTIMONIALS ── */
-    .testimonials {
-      padding: 120px 60px;
-      background: var(--dark2);
-      position: relative;
-      overflow: hidden;
-    }
-    .testimonials::after {
-      content: '"';
-      position: absolute;
-      top: 40px; right: 60px;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 20rem;
-      color: rgba(200,144,58,.04);
-      line-height: 1;
-      pointer-events: none;
-    }
-    .testimonials-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-top: 60px;
-    }
-    .testi-card {
-      padding: 40px;
-      border: 1px solid rgba(255,255,255,.06);
-      background: rgba(255,255,255,.02);
-      position: relative;
-      transition: border-color .4s, transform .4s;
-    }
-    .testi-card:hover {
-      border-color: rgba(200,144,58,.2);
-      transform: translateY(-6px);
-    }
-    .testi-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(to right, var(--gold), transparent);
-      opacity: 0;
-      transition: opacity .4s;
-    }
-    .testi-card:hover::before { opacity: 1; }
-    .stars {
-      display: flex; gap: 4px; margin-bottom: 20px;
-    }
-    .star { color: var(--gold); font-size: .85rem; }
-    .testi-text {
-      font-size: .95rem;
-      line-height: 1.8;
-      color: rgba(240,237,232,.8);
-      font-weight: 300;
-      font-style: italic;
-      margin-bottom: 28px;
-    }
-    .testi-author {
-      display: flex; align-items: center; gap: 14px;
-      border-top: 1px solid rgba(255,255,255,.06);
-      padding-top: 20px;
-    }
-    .author-avatar {
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      border: 1px solid rgba(200,144,58,.3);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      color: var(--gold);
-      background: rgba(200,144,58,.08);
-      flex-shrink: 0;
-    }
-    .author-name { font-weight: 500; font-size: .88rem; margin-bottom: 2px; }
-    .author-car { font-size: .72rem; color: var(--gold); letter-spacing: .08em; }
-
-    /* ── COMPARE CTA ── */
-    .compare-cta {
-      padding: 100px 60px;
-      background: var(--dark);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
-    }
-    .compare-visual {
-      position: relative;
-    }
-    .compare-cards {
-      display: flex; gap: 0;
-      position: relative;
-    }
-    .compare-car-card {
-      flex: 1;
-      padding: 32px;
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.07);
-      position: relative;
-      transition: transform .4s, border-color .4s;
-    }
-    .compare-car-card:first-child { transform: translateX(12px) rotate(-1deg); }
-    .compare-car-card:last-child { transform: translateX(-12px) rotate(1deg); }
-    .compare-car-card:first-child:hover { transform: translateX(-4px) rotate(-1deg); }
-    .compare-car-card:last-child:hover { transform: translateX(4px) rotate(1deg); }
-    .vs-badge {
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      background: var(--gold);
-      color: var(--dark);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: .75rem; font-weight: 700;
-      letter-spacing: .08em;
-      z-index: 10;
-    }
-    .compare-car-mini-svg { margin: 0 auto 16px; display: block; }
-    .compare-car-label { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; margin-bottom: 6px; }
-    .compare-car-specs { display: flex; flex-direction: column; gap: 6px; }
-    .compare-spec {
-      display: flex; justify-content: space-between;
-      font-size: .7rem; color: var(--muted);
-      padding: 5px 0;
-      border-bottom: 1px solid rgba(255,255,255,.04);
-    }
-    .compare-spec strong { color: var(--text); }
-    .compare-badge-winner {
-      position: absolute; top: -10px; right: 16px;
-      background: rgba(200,144,58,.15);
-      border: 1px solid rgba(200,144,58,.4);
-      padding: 3px 10px;
-      font-size: .58rem; letter-spacing: .18em;
-      text-transform: uppercase; color: var(--gold);
-    }
-
-    .compare-content .section-tag { display: block; margin-bottom: 12px; }
-    .compare-content .section-title { margin-bottom: 20px; }
-    .compare-perks {
-      display: flex; flex-direction: column; gap: 12px;
-      margin: 32px 0;
-    }
-    .compare-perk {
-      display: flex; align-items: center; gap: 14px;
-      font-size: .85rem; color: var(--muted);
-    }
-    .perk-check {
-      width: 22px; height: 22px; flex-shrink: 0;
-      border: 1px solid rgba(200,144,58,.4);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .perk-check svg { stroke: var(--gold); }
-
-    /* ── BRANDS STRIP ── */
-    .brands {
-      padding: 80px 60px;
-      background: var(--dark2);
-      border-top: 1px solid rgba(255,255,255,.05);
-    }
-    .brands-title {
-      text-align: center;
-      font-size: .68rem;
-      letter-spacing: .28em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 50px;
-    }
-    .brands-row {
-      display: flex; align-items: center; justify-content: center;
-      flex-wrap: wrap; gap: 60px;
-    }
-    .brand-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.4rem;
-      font-weight: 300;
-      color: rgba(240,237,232,.2);
-      letter-spacing: .08em;
-      transition: color .4s;
-      cursor: default;
-    }
-    .brand-logo:hover { color: rgba(200,144,58,.7); }
-
-    /* ── NEWSLETTER ── */
-    .newsletter {
-      padding: 100px 60px;
-      background: var(--dark);
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .newsletter::before {
-      content: '';
-      position: absolute; top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 600px; height: 300px;
-      background: radial-gradient(ellipse, rgba(200,144,58,.07) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .newsletter .section-tag { display: inline-block; margin-bottom: 16px; }
-    .newsletter .section-title { margin-bottom: 16px; }
-    .newsletter-sub {
-      font-size: 1rem; color: var(--muted);
-      font-weight: 300; margin-bottom: 44px;
-    }
-    .newsletter-form {
-      display: flex; gap: 0;
-      max-width: 520px; margin: 0 auto;
-    }
-    .newsletter-input {
-      flex: 1;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.1);
-      border-right: none;
-      padding: 16px 24px;
-      color: var(--text);
-      font-family: 'Barlow', sans-serif;
-      font-size: .88rem;
-      outline: none;
-      transition: border-color .3s;
-    }
-    .newsletter-input::placeholder { color: rgba(240,237,232,.3); }
-    .newsletter-input:focus { border-color: rgba(200,144,58,.5); }
-    .newsletter-btn {
-      padding: 16px 32px;
-      background: var(--gold);
-      border: none;
-      color: var(--dark);
-      font-family: 'Barlow', sans-serif;
-      font-size: .72rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background .3s;
-    }
-    .newsletter-btn:hover { background: var(--gold-light); }
-    .newsletter-note {
-      margin-top: 16px;
-      font-size: .7rem;
-      color: rgba(240,237,232,.3);
-      letter-spacing: .06em;
-    }
-
-    /* responsive */
-    /* ── RESPONSIVE ── */
-
-    /* When nav items don't fit, show hamburger */
-    @media(max-width: 1100px) {
-      .menu-icon { display: flex; }
-      .nav-links { display: none !important; }
-      .nav-profile-btn { display: none; }
-      .nav-avatar { display: none !important; }
-    }
-
-    @media(max-width: 900px) {
-      nav { padding: 20px 24px; }
-      .hero-content { padding: 0 24px; }
-      .hero-right { display: none; }
-      .hero-bottom { left: 24px; right: 24px; }
-      .hero-title { font-size: clamp(3.5rem, 15vw, 7rem); }
-      .cars-grid { grid-template-columns: 1fr; }
-      .car-card:first-child { grid-row: auto; aspect-ratio: 4/3; }
-      .car-card.wide { grid-column: auto; aspect-ratio: 4/3; }
-      .featured { padding: 60px 24px; }
-      .section-header { flex-direction: column; align-items: flex-start; gap: 20px; }
-      footer { flex-direction: column; gap: 24px; text-align: center; padding: 40px 24px; }
-      .footer-links { flex-wrap: wrap; justify-content: center; gap: 20px; }
-      .stats { flex-direction: column; }
-      .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.06); }
-      .steps-grid { grid-template-columns: 1fr 1fr; }
-      .steps-grid::before { display: none; }
-      .compare-cta { grid-template-columns: 1fr; gap: 60px; }
-      .how-it-works, .compare-cta, .brands, .newsletter { padding: 60px 24px; }
-      .brands-row { gap: 24px; flex-wrap: wrap; }
-      .newsletter-form { flex-direction: column; }
-      .newsletter-input { border-right: 1px solid rgba(255,255,255,.1); border-bottom: none; }
-      .hero-eyebrow { margin-bottom: 12px; }
-      .scroll-line { display: none; }
-    }
-
-    @media(max-width: 520px) {
-      .steps-grid { grid-template-columns: 1fr; }
-      .hero-title { font-size: clamp(2.8rem, 16vw, 5rem); }
-      .stat-num { font-size: 2.4rem; }
-      .cars-grid { gap: 2px; }
-      .newsletter-inner { padding: 40px 24px; }
-      .hero-bottom { bottom: 24px; }
-      .slide-counter { display: none; }
-      .progress-bar { width: 120px; }
-    }
-  
-</style>
+  <link href ="styles.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -1379,7 +28,6 @@
           </div>
         </div>
       </li>
-
       <li class="has-dropdown">
         <a href="#">Compare</a>
         <div class="nav-dropdown">
@@ -1394,19 +42,25 @@
       <li><a href="#">Contact</a></li>
     </ul>
 
-    <!-- Profile icon button -->
-    <a class="nav-profile-btn" href="login.html" title="My Profile">
+    <!--
+      NAV PROFILE STATES:
+        • .nav-profile-btn  → shown when logged OUT  → links to login.html
+        • .nav-avatar       → shown when logged IN   → links to profile.html
+      JS below toggles between these based on Supabase session.
+    -->
+    <a class="nav-profile-btn" href="login.html" id="navProfileBtn" title="Sign In">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </a>
 
-    <!-- Logged-in avatar (hidden until auth) -->
+    <!-- Logged-in avatar widget (hidden until session confirmed) -->
     <div class="nav-avatar" id="navAvatar">
-      <div class="nav-avatar-circle" id="navInitial">J</div>
+      <div class="nav-avatar-circle" id="navInitial">?</div>
       <span class="nav-avatar-name" id="navName">Driver</span>
       <div class="nav-avatar-dropdown">
-        <a href="#">My Profile</a>
-        <a href="#">Saved Cars</a>
-        <a href="#">Test Drives</a>
+        <!-- Links to profile.html — the central profile hub -->
+        <a href="profile.html">My Profile</a>
+        <a href="profile.html#saved">Saved Cars</a>
+        <a href="profile.html">Test Drives</a>
         <a href="#" class="logout" id="logoutBtn">Sign Out</a>
       </div>
     </div>
@@ -1421,178 +75,103 @@
     <div class="mobile-menu-label">Navigation</div>
 
     <div class="m-item" id="mItem-vehicles">
-      <div class="m-row">
-        <span>Vehicles</span>
-        <span class="m-chevron"></span>
-      </div>
+      <div class="m-row"><span>Vehicles</span><span class="m-chevron"></span></div>
       <div class="m-sub">
         <a href="#"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Prestige Collection</a>
         <a href="#"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Featured Models</a>
         <a href="#"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Saved Wishlist</a>
       </div>
     </div>
-
     <div class="m-item" id="mItem-compare">
-      <div class="m-row">
-        <span>Compare</span>
-        <span class="m-chevron"></span>
-      </div>
+      <div class="m-row"><span>Compare</span><span class="m-chevron"></span></div>
       <div class="m-sub">
         <a href="#"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Side-by-Side</a>
         <a href="#"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Performance</a>
         <a href="#"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Cost of Ownership</a>
       </div>
     </div>
-
     <div class="m-item" id="mItem-brands">
-      <div class="m-row">
-        <span>Brands</span>
-        <span class="m-chevron"></span>
-      </div>
+      <div class="m-row"><span>Brands</span><span class="m-chevron"></span></div>
       <div class="m-sub">
-        <a href="#">Ferrari</a>
-        <a href="#">Lamborghini</a>
-        <a href="#">Aston Martin</a>
-        <a href="#">Porsche</a>
-        <a href="#">Bentley</a>
+        <a href="#">Ferrari</a><a href="#">Lamborghini</a><a href="#">Aston Martin</a>
+        <a href="#">Porsche</a><a href="#">Bentley</a>
       </div>
     </div>
-
     <div class="m-item" id="mItem-contact">
-      <div class="m-row">
-        <span>Contact</span>
-        <span class="m-chevron"></span>
-      </div>
+      <div class="m-row"><span>Contact</span><span class="m-chevron"></span></div>
       <div class="m-sub">
-        <a href="#">Book a Test Drive</a>
-        <a href="#">Call Us</a>
-        <a href="#">Email</a>
+        <a href="#">Book a Test Drive</a><a href="#">Call Us</a><a href="#">Email</a>
       </div>
     </div>
 
     <div class="mobile-menu-divider"></div>
-    <a href="login.html" class="mobile-menu-cta" id="mobileAuthBtn">My Profile</a>
+    <!-- Mobile auth button: changes href/text based on session -->
+    <a href="login.html" class="mobile-menu-cta" id="mobileAuthBtn">Sign In</a>
   </div>
 
   <!-- ── HERO CAROUSEL ── -->
   <div class="hero-carousel" id="heroCarousel">
     <div class="hero-carousel-track" id="carouselTrack">
 
-      <!-- SLIDE 01/03 - POWER & PRESTIGE -->
       <section class="hero">
         <div class="hero-bg"></div>
-
-        <!-- Particles -->
         <div class="particles" id="particles-1"></div>
-
-        <!-- Left content -->
         <div class="hero-content">
           <div class="hero-eyebrow"><span>Est. 2008 — Premium Auto</span></div>
           <p class="hero-subtitle">Drive with</p>
-          <h1 class="hero-title">
-            <span>Power</span>
-            <span class="accent">Prestige</span>
-          </h1>
+          <h1 class="hero-title"><span>Power</span><span class="accent">Prestige</span></h1>
         </div>
-
-        <!-- Right content -->
         <div class="hero-right">
-          <p class="hero-desc">
-            From legendary craftsmanship to modern innovation —<br>
-            AutoVault brings the world's finest cars<br>to your driveway.
-          </p>
-          <a href="#" class="btn-explore">
-            Explore Models
+          <p class="hero-desc">From legendary craftsmanship to modern innovation —<br>AutoVault brings the world's finest cars<br>to your driveway.</p>
+          <a href="#" class="btn-explore">Explore Models
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         </div>
-
-        <!-- Bottom bar -->
         <div class="hero-bottom">
           <div class="scroll-line">Scroll to discover</div>
-          <div style="display:flex;align-items:center;gap:24px;">
-            <div class="progress-bar"><div class="progress-fill"></div></div>
-          </div>
+          <div style="display:flex;align-items:center;gap:24px;"><div class="progress-bar"><div class="progress-fill"></div></div></div>
           <span class="slide-counter"><strong>01</strong> / 03</span>
         </div>
       </section>
 
-      <!-- SLIDE 02/03 - COMPARE CARS -->
       <section class="hero">
         <div class="hero-bg"></div>
-
-        <!-- Particles -->
         <div class="particles" id="particles-2"></div>
-
-        <!-- Left content -->
         <div class="hero-content">
           <div class="hero-eyebrow"><span>Smart Comparison — Choose Your Perfect Match</span></div>
           <p class="hero-subtitle">Compare with</p>
-          <h1 class="hero-title">
-            <span>Precision</span>
-            <span class="accent">Intelligence</span>
-          </h1>
+          <h1 class="hero-title"><span>Precision</span><span class="accent">Intelligence</span></h1>
         </div>
-
-        <!-- Right content -->
         <div class="hero-right">
-          <p class="hero-desc">
-            Side-by-side analysis of performance,<br>
-            pricing, and specifications —<br>
-            make informed decisions effortlessly.
-          </p>
-          <a href="#" class="btn-primary">
-            Compare Now
+          <p class="hero-desc">Side-by-side analysis of performance,<br>pricing, and specifications —<br>make informed decisions effortlessly.</p>
+          <a href="#" class="btn-primary">Compare Now
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         </div>
-
-        <!-- Bottom bar -->
         <div class="hero-bottom">
           <div class="scroll-line">Feature showcase</div>
-          <div style="display:flex;align-items:center;gap:24px;">
-            <div class="progress-bar"><div class="progress-fill"></div></div>
-          </div>
+          <div style="display:flex;align-items:center;gap:24px;"><div class="progress-bar"><div class="progress-fill"></div></div></div>
           <span class="slide-counter"><strong>02</strong> / 03</span>
         </div>
       </section>
 
-      <!-- SLIDE 03/03 - DETECT DAMAGE -->
       <section class="hero">
         <div class="hero-bg"></div>
-
-        <!-- Particles -->
         <div class="particles" id="particles-3"></div>
-
-        <!-- Left content -->
         <div class="hero-content">
           <div class="hero-eyebrow"><span>AI-Powered Technology — Complete Transparency</span></div>
           <p class="hero-subtitle">Inspect with</p>
-          <h1 class="hero-title">
-            <span>Advanced</span>
-            <span class="accent">Accuracy</span>
-          </h1>
+          <h1 class="hero-title"><span>Advanced</span><span class="accent">Accuracy</span></h1>
         </div>
-
-        <!-- Right content -->
         <div class="hero-right">
-          <p class="hero-desc">
-            Cutting-edge damage detection identifies<br>
-            even the smallest imperfections —<br>
-            complete vehicle health assessment.
-          </p>
-          <a href="#" class="btn-primary">
-            Detect Damage
+          <p class="hero-desc">Cutting-edge damage detection identifies<br>even the smallest imperfections —<br>complete vehicle health assessment.</p>
+          <a href="#" class="btn-primary">Detect Damage
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
         </div>
-
-        <!-- Bottom bar -->
         <div class="hero-bottom">
           <div class="scroll-line">Advanced scanning</div>
-          <div style="display:flex;align-items:center;gap:24px;">
-            <div class="progress-bar"><div class="progress-fill"></div></div>
-          </div>
+          <div style="display:flex;align-items:center;gap:24px;"><div class="progress-bar"><div class="progress-fill"></div></div></div>
           <span class="slide-counter"><strong>03</strong> / 03</span>
         </div>
       </section>
@@ -1602,39 +181,21 @@
 
   <!-- ── STATS ── -->
   <div class="stats">
-    <div class="stat-item">
-      <div class="stat-num" data-count="320">0</div>
-      <div class="stat-label">Cars Available</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" data-count="48">0</div>
-      <div class="stat-label">Premium Brands</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" data-count="15">0</div>
-      <div class="stat-label">Years Experience</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num" data-count="99">0</div>
-      <div class="stat-label">% Client Satisfaction</div>
-    </div>
+    <div class="stat-item"><div class="stat-num" data-count="320">0</div><div class="stat-label">Cars Available</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="48">0</div><div class="stat-label">Premium Brands</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="15">0</div><div class="stat-label">Years Experience</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="99">0</div><div class="stat-label">% Client Satisfaction</div></div>
   </div>
 
   <!-- ── MARQUEE ── -->
   <div class="marquee-wrap">
     <div class="marquee-track" id="marquee">
-      <div class="marquee-item">Luxury Experience</div>
-      <div class="marquee-item">Test Drive Today</div>
-      <div class="marquee-item">World's Finest Cars</div>
-      <div class="marquee-item">Premium Selection</div>
-      <div class="marquee-item">Bespoke Service</div>
-      <div class="marquee-item">Iconic Performance</div>
-      <div class="marquee-item">Luxury Experience</div>
-      <div class="marquee-item">Test Drive Today</div>
-      <div class="marquee-item">World's Finest Cars</div>
-      <div class="marquee-item">Premium Selection</div>
-      <div class="marquee-item">Bespoke Service</div>
-      <div class="marquee-item">Iconic Performance</div>
+      <div class="marquee-item">Luxury Experience</div><div class="marquee-item">Test Drive Today</div>
+      <div class="marquee-item">World's Finest Cars</div><div class="marquee-item">Premium Selection</div>
+      <div class="marquee-item">Bespoke Service</div><div class="marquee-item">Iconic Performance</div>
+      <div class="marquee-item">Luxury Experience</div><div class="marquee-item">Test Drive Today</div>
+      <div class="marquee-item">World's Finest Cars</div><div class="marquee-item">Premium Selection</div>
+      <div class="marquee-item">Bespoke Service</div><div class="marquee-item">Iconic Performance</div>
     </div>
   </div>
 
@@ -1645,92 +206,42 @@
         <span class="section-tag">Our Collection</span>
         <h2 class="section-title">Handpicked<br><strong>Icons</strong></h2>
       </div>
-      <a href="#" class="view-all">
-        View All Models
+      <a href="#" class="view-all">View All Models
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
-
     <div class="cars-grid">
-      <!-- Card 1 – hero card -->
       <div class="car-card">
         <div class="car-fallback" style="background:linear-gradient(135deg,#1a1208 0%,#2a1f0a 50%,#0d1a1a 100%);">
-          <svg width="120" height="80" viewBox="0 0 120 80" fill="none" opacity=".25">
-            <ellipse cx="60" cy="55" rx="55" ry="12" fill="#C8903A"/>
-            <path d="M15 55 Q25 30 50 28 L70 28 Q95 30 105 55Z" fill="#C8903A"/>
-            <circle cx="30" cy="58" r="10" fill="#0a0c0e" stroke="#C8903A" stroke-width="2"/>
-            <circle cx="90" cy="58" r="10" fill="#0a0c0e" stroke="#C8903A" stroke-width="2"/>
-          </svg>
+          <svg width="120" height="80" viewBox="0 0 120 80" fill="none" opacity=".25"><ellipse cx="60" cy="55" rx="55" ry="12" fill="#C8903A"/><path d="M15 55 Q25 30 50 28 L70 28 Q95 30 105 55Z" fill="#C8903A"/><circle cx="30" cy="58" r="10" fill="#0a0c0e" stroke="#C8903A" stroke-width="2"/><circle cx="90" cy="58" r="10" fill="#0a0c0e" stroke="#C8903A" stroke-width="2"/></svg>
         </div>
         <div class="car-badge">New Arrival</div>
-        <div class="car-info">
-          <div class="car-name">Challenger Hellcat</div>
-          <div class="car-price">From $89,900</div>
-        </div>
+        <div class="car-info"><div class="car-name">Challenger Hellcat</div><div class="car-price">From $89,900</div></div>
       </div>
-
-      <!-- Card 2 -->
       <div class="car-card">
         <div class="car-fallback" style="background:linear-gradient(135deg,#0d1520 0%,#1a2535 100%);">
-          <svg width="100" height="65" viewBox="0 0 100 65" fill="none" opacity=".25">
-            <path d="M5 45 Q15 22 40 20 L60 20 Q85 22 95 45Z" fill="#C8903A"/>
-            <circle cx="22" cy="48" r="9" fill="#0d1520" stroke="#C8903A" stroke-width="2"/>
-            <circle cx="78" cy="48" r="9" fill="#0d1520" stroke="#C8903A" stroke-width="2"/>
-          </svg>
+          <svg width="100" height="65" viewBox="0 0 100 65" fill="none" opacity=".25"><path d="M5 45 Q15 22 40 20 L60 20 Q85 22 95 45Z" fill="#C8903A"/><circle cx="22" cy="48" r="9" fill="#0d1520" stroke="#C8903A" stroke-width="2"/><circle cx="78" cy="48" r="9" fill="#0d1520" stroke="#C8903A" stroke-width="2"/></svg>
         </div>
-        <div class="car-info">
-          <div class="car-name">Aston Martin DB11</div>
-          <div class="car-price">From $205,000</div>
-        </div>
+        <div class="car-info"><div class="car-name">Aston Martin DB11</div><div class="car-price">From $205,000</div></div>
       </div>
-
-      <!-- Card 3 -->
       <div class="car-card">
         <div class="car-fallback" style="background:linear-gradient(135deg,#150d0d 0%,#2a1515 100%);">
-          <svg width="100" height="65" viewBox="0 0 100 65" fill="none" opacity=".25">
-            <path d="M8 45 Q20 18 45 17 L55 17 Q80 18 92 45Z" fill="#C8903A"/>
-            <circle cx="25" cy="48" r="9" fill="#150d0d" stroke="#C8903A" stroke-width="2"/>
-            <circle cx="75" cy="48" r="9" fill="#150d0d" stroke="#C8903A" stroke-width="2"/>
-          </svg>
+          <svg width="100" height="65" viewBox="0 0 100 65" fill="none" opacity=".25"><path d="M8 45 Q20 18 45 17 L55 17 Q80 18 92 45Z" fill="#C8903A"/><circle cx="25" cy="48" r="9" fill="#150d0d" stroke="#C8903A" stroke-width="2"/><circle cx="75" cy="48" r="9" fill="#150d0d" stroke="#C8903A" stroke-width="2"/></svg>
         </div>
-        <div class="car-info">
-          <div class="car-name">Ferrari Roma</div>
-          <div class="car-price">From $222,620</div>
-        </div>
+        <div class="car-info"><div class="car-name">Ferrari Roma</div><div class="car-price">From $222,620</div></div>
       </div>
-
-      <!-- Card 4 -->
       <div class="car-card">
         <div class="car-fallback" style="background:linear-gradient(135deg,#0d150d 0%,#152515 100%);">
-          <svg width="100" height="65" viewBox="0 0 100 65" fill="none" opacity=".25">
-            <path d="M10 45 Q22 20 45 18 L55 18 Q78 20 90 45Z" fill="#C8903A"/>
-            <circle cx="27" cy="48" r="9" fill="#0d150d" stroke="#C8903A" stroke-width="2"/>
-            <circle cx="73" cy="48" r="9" fill="#0d150d" stroke="#C8903A" stroke-width="2"/>
-          </svg>
+          <svg width="100" height="65" viewBox="0 0 100 65" fill="none" opacity=".25"><path d="M10 45 Q22 20 45 18 L55 18 Q78 20 90 45Z" fill="#C8903A"/><circle cx="27" cy="48" r="9" fill="#0d150d" stroke="#C8903A" stroke-width="2"/><circle cx="73" cy="48" r="9" fill="#0d150d" stroke="#C8903A" stroke-width="2"/></svg>
         </div>
-        <div class="car-info">
-          <div class="car-name">Lamborghini Huracán</div>
-          <div class="car-price">From $261,274</div>
-        </div>
+        <div class="car-info"><div class="car-name">Lamborghini Huracán</div><div class="car-price">From $261,274</div></div>
       </div>
-
-      <!-- Card 5 – wide -->
       <div class="car-card wide">
         <div class="car-fallback" style="background:linear-gradient(135deg,#0d0f1a 0%,#151828 50%,#1a1230 100%);">
-          <svg width="160" height="80" viewBox="0 0 160 80" fill="none" opacity=".25">
-            <ellipse cx="80" cy="62" rx="74" ry="12" fill="#C8903A"/>
-            <path d="M12 62 Q28 28 58 24 L102 24 Q132 28 148 62Z" fill="#C8903A"/>
-            <path d="M48 24 Q64 10 80 9 Q96 10 112 24Z" fill="rgba(200,144,58,0.6)"/>
-            <circle cx="34" cy="66" r="13" fill="#0d0f1a" stroke="#C8903A" stroke-width="2"/>
-            <circle cx="126" cy="66" r="13" fill="#0d0f1a" stroke="#C8903A" stroke-width="2"/>
-            <line x1="12" y1="62" x2="148" y2="62" stroke="rgba(200,144,58,0.3)" stroke-width="1"/>
-          </svg>
+          <svg width="160" height="80" viewBox="0 0 160 80" fill="none" opacity=".25"><ellipse cx="80" cy="62" rx="74" ry="12" fill="#C8903A"/><path d="M12 62 Q28 28 58 24 L102 24 Q132 28 148 62Z" fill="#C8903A"/><path d="M48 24 Q64 10 80 9 Q96 10 112 24Z" fill="rgba(200,144,58,0.6)"/><circle cx="34" cy="66" r="13" fill="#0d0f1a" stroke="#C8903A" stroke-width="2"/><circle cx="126" cy="66" r="13" fill="#0d0f1a" stroke="#C8903A" stroke-width="2"/></svg>
         </div>
         <div class="car-badge" style="background:transparent;border:1px solid rgba(200,144,58,.6);color:var(--gold);">Limited Edition</div>
-        <div class="car-info">
-          <div class="car-name">Porsche 911 Turbo S</div>
-          <div class="car-price">From $216,450</div>
-        </div>
+        <div class="car-info"><div class="car-name">Porsche 911 Turbo S</div><div class="car-price">From $216,450</div></div>
       </div>
     </div>
   </section>
@@ -1738,41 +249,30 @@
   <!-- ── HOW IT WORKS ── -->
   <section class="how-it-works">
     <div class="section-header">
-      <div>
-        <span class="section-tag">The Process</span>
-        <h2 class="section-title">How <strong>AutoVault</strong><br>Works</h2>
-      </div>
+      <div><span class="section-tag">The Process</span><h2 class="section-title">How <strong>AutoVault</strong><br>Works</h2></div>
     </div>
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-num">01</div>
-        <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        </div>
+        <div class="step-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
         <div class="step-title">Browse & Discover</div>
         <p class="step-desc">Filter through 320+ handpicked vehicles by brand, performance specs, price range, and availability — all in one intuitive interface.</p>
       </div>
       <div class="step-card">
         <div class="step-num">02</div>
-        <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M9 17H5a2 2 0 0 0-2 2v3h18v-3a2 2 0 0 0-2-2h-4M9 17v-5m6 5v-5M12 3v4m0 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>
-        </div>
+        <div class="step-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M9 17H5a2 2 0 0 0-2 2v3h18v-3a2 2 0 0 0-2-2h-4M9 17v-5m6 5v-5M12 3v4m0 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg></div>
         <div class="step-title">AI Damage Scan</div>
         <p class="step-desc">Upload photos of any vehicle and our AI engine detects scratches, dents, and structural damage within seconds — before you commit.</p>
       </div>
       <div class="step-card">
         <div class="step-num">03</div>
-        <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
-        </div>
+        <div class="step-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></div>
         <div class="step-title">Compare Side-by-Side</div>
         <p class="step-desc">Stack up to 3 cars against each other with real-time specs, performance data, cost of ownership, and resale value projections.</p>
       </div>
       <div class="step-card">
         <div class="step-num">04</div>
-        <div class="step-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </div>
+        <div class="step-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
         <div class="step-title">Drive & Own</div>
         <p class="step-desc">Schedule a test drive, complete financing in minutes, and drive away in your dream car — with full transparency and zero surprises.</p>
       </div>
@@ -1783,13 +283,8 @@
   <section class="compare-cta">
     <div class="compare-visual">
       <div class="compare-cards">
-        <!-- Card A -->
         <div class="compare-car-card">
-          <svg class="compare-car-mini-svg" width="80" height="52" viewBox="0 0 100 65" fill="none" opacity=".5">
-            <path d="M5 45 Q15 22 40 20 L60 20 Q85 22 95 45Z" fill="#C8903A"/>
-            <circle cx="22" cy="48" r="9" fill="#111" stroke="#C8903A" stroke-width="1.5"/>
-            <circle cx="78" cy="48" r="9" fill="#111" stroke="#C8903A" stroke-width="1.5"/>
-          </svg>
+          <svg class="compare-car-mini-svg" width="80" height="52" viewBox="0 0 100 65" fill="none" opacity=".5"><path d="M5 45 Q15 22 40 20 L60 20 Q85 22 95 45Z" fill="#C8903A"/><circle cx="22" cy="48" r="9" fill="#111" stroke="#C8903A" stroke-width="1.5"/><circle cx="78" cy="48" r="9" fill="#111" stroke="#C8903A" stroke-width="1.5"/></svg>
           <div class="compare-car-label">Aston Martin DB11</div>
           <div class="compare-car-specs">
             <div class="compare-spec"><span>0–60 mph</span><strong>3.7s</strong></div>
@@ -1797,16 +292,10 @@
             <div class="compare-spec"><span>Price</span><strong>$205K</strong></div>
           </div>
         </div>
-        <!-- VS -->
         <div class="vs-badge">VS</div>
-        <!-- Card B -->
         <div class="compare-car-card">
           <div class="compare-badge-winner">Top Pick</div>
-          <svg class="compare-car-mini-svg" width="80" height="52" viewBox="0 0 100 65" fill="none" opacity=".5">
-            <path d="M8 45 Q20 18 45 17 L55 17 Q80 18 92 45Z" fill="#C8903A"/>
-            <circle cx="25" cy="48" r="9" fill="#111" stroke="#C8903A" stroke-width="1.5"/>
-            <circle cx="75" cy="48" r="9" fill="#111" stroke="#C8903A" stroke-width="1.5"/>
-          </svg>
+          <svg class="compare-car-mini-svg" width="80" height="52" viewBox="0 0 100 65" fill="none" opacity=".5"><path d="M8 45 Q20 18 45 17 L55 17 Q80 18 92 45Z" fill="#C8903A"/><circle cx="25" cy="48" r="9" fill="#111" stroke="#C8903A" stroke-width="1.5"/><circle cx="75" cy="48" r="9" fill="#111" stroke="#C8903A" stroke-width="1.5"/></svg>
           <div class="compare-car-label">Ferrari Roma</div>
           <div class="compare-car-specs">
             <div class="compare-spec"><span>0–60 mph</span><strong>3.4s</strong></div>
@@ -1816,31 +305,17 @@
         </div>
       </div>
     </div>
-
     <div class="compare-content">
       <span class="section-tag">Smart Comparison</span>
       <h2 class="section-title">Compare with<br><strong>Confidence</strong></h2>
       <p style="font-size:.95rem;line-height:1.8;color:var(--muted);font-weight:300;">Stop guessing. Our side-by-side comparison engine gives you the complete picture — from 0–60 times to 5-year ownership costs.</p>
       <div class="compare-perks">
-        <div class="compare-perk">
-          <div class="perk-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Real-time market pricing & resale projections
-        </div>
-        <div class="compare-perk">
-          <div class="perk-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Full spec sheets across 200+ data points
-        </div>
-        <div class="compare-perk">
-          <div class="perk-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
-          AI-recommended match based on your preferences
-        </div>
-        <div class="compare-perk">
-          <div class="perk-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
-          Save & share comparisons with your advisor
-        </div>
+        <div class="compare-perk"><div class="perk-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>Real-time market pricing & resale projections</div>
+        <div class="compare-perk"><div class="perk-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>Full spec sheets across 200+ data points</div>
+        <div class="compare-perk"><div class="perk-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>AI-recommended match based on your preferences</div>
+        <div class="compare-perk"><div class="perk-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>Save & share comparisons with your advisor</div>
       </div>
-      <a href="#" class="btn-explore" style="opacity:1;animation:none;">
-        Start Comparing
+      <a href="#" class="btn-explore" style="opacity:1;animation:none;">Start Comparing
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
@@ -1850,14 +325,10 @@
   <section class="brands">
     <div class="brands-title">Brands We Carry</div>
     <div class="brands-row">
-      <span class="brand-logo">Ferrari</span>
-      <span class="brand-logo">Lamborghini</span>
-      <span class="brand-logo">Aston Martin</span>
-      <span class="brand-logo">Bentley</span>
-      <span class="brand-logo">Rolls-Royce</span>
-      <span class="brand-logo">McLaren</span>
-      <span class="brand-logo">Porsche</span>
-      <span class="brand-logo">Maserati</span>
+      <span class="brand-logo">Ferrari</span><span class="brand-logo">Lamborghini</span>
+      <span class="brand-logo">Aston Martin</span><span class="brand-logo">Bentley</span>
+      <span class="brand-logo">Rolls-Royce</span><span class="brand-logo">McLaren</span>
+      <span class="brand-logo">Porsche</span><span class="brand-logo">Maserati</span>
     </div>
   </section>
 
@@ -1877,296 +348,181 @@
   <footer>
     <div class="logo"><span>Auto</span><span>Vault</span></div>
     <ul class="footer-links">
-      <li><a href="#">Privacy</a></li>
-      <li><a href="#">Terms</a></li>
-      <li><a href="#">Careers</a></li>
-      <li><a href="#">Press</a></li>
+      <li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li>
+      <li><a href="#">Careers</a></li><li><a href="#">Press</a></li>
     </ul>
     <span class="footer-copy">© 2026 AutoVault. All rights reserved.</span>
   </footer>
 
   <!-- ── SUPABASE ── -->
-  <!-- Credentials: config.js is gitignored, never committed -->
-  <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // Credentials loaded from config.js (gitignored)
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-  </script>
+  <script src="config.js" onerror="console.warn('config.js missing — auth features disabled.');"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
   <script>
     /* ─ Custom cursor ─ */
     const cursor = document.getElementById('cursor');
     const ring   = document.getElementById('cursorRing');
-    let mx = 0, my = 0, rx = 0, ry = 0;
-
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      cursor.style.left = mx + 'px';
-      cursor.style.top  = my + 'px';
-    });
-
-    function animRing() {
-      rx += (mx - rx) * .12;
-      ry += (my - ry) * .12;
-      ring.style.left = rx + 'px';
-      ring.style.top  = ry + 'px';
-      requestAnimationFrame(animRing);
-    }
+    let mx=0, my=0, rx=0, ry=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+    function animRing(){ rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); }
     animRing();
-
-    document.querySelectorAll('a, button, .car-card').forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        cursor.style.width = '20px';
-        cursor.style.height = '20px';
-        ring.style.width = '54px';
-        ring.style.height = '54px';
-      });
-      el.addEventListener('mouseleave', () => {
-        cursor.style.width = '10px';
-        cursor.style.height = '10px';
-        ring.style.width = '36px';
-        ring.style.height = '36px';
-      });
+    document.querySelectorAll('a,button,.car-card').forEach(el => {
+      el.addEventListener('mouseenter',()=>{ cursor.style.width='20px'; cursor.style.height='20px'; ring.style.width='54px'; ring.style.height='54px'; });
+      el.addEventListener('mouseleave',()=>{ cursor.style.width='10px'; cursor.style.height='10px'; ring.style.width='36px'; ring.style.height='36px'; });
     });
 
     /* ─ Hamburger menu ─ */
     const menuIcon   = document.querySelector('.menu-icon');
     const mobileMenu = document.getElementById('mobileMenu');
-    const mobileAuthBtn = document.getElementById('mobileAuthBtn');
-
-    menuIcon.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = mobileMenu.classList.toggle('open');
-      menuIcon.classList.toggle('open', isOpen);
-    });
-
-    // Accordion sub-menus
+    menuIcon.addEventListener('click', e => { e.stopPropagation(); const o=mobileMenu.classList.toggle('open'); menuIcon.classList.toggle('open',o); });
     document.querySelectorAll('.m-item').forEach(item => {
-      const row = item.querySelector('.m-row');
-      row.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = item.classList.toggle('open');
-        // Close siblings
-        if (isOpen) {
-          document.querySelectorAll('.m-item').forEach(other => {
-            if (other !== item) other.classList.remove('open');
-          });
-        }
+      item.querySelector('.m-row').addEventListener('click', e => {
+        e.stopPropagation(); const o=item.classList.toggle('open');
+        if(o) document.querySelectorAll('.m-item').forEach(x=>{ if(x!==item) x.classList.remove('open'); });
       });
     });
-
-    // Close when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!mobileMenu.contains(e.target) && !menuIcon.contains(e.target)) {
-        mobileMenu.classList.remove('open');
-        menuIcon.classList.remove('open');
-        document.querySelectorAll('.m-item').forEach(i => i.classList.remove('open'));
+    document.addEventListener('click', e => {
+      if(!mobileMenu.contains(e.target)&&!menuIcon.contains(e.target)){
+        mobileMenu.classList.remove('open'); menuIcon.classList.remove('open');
+        document.querySelectorAll('.m-item').forEach(i=>i.classList.remove('open'));
       }
     });
-
-    if (mobileAuthBtn) {
-      mobileAuthBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        document.getElementById('authOverlay').classList.add('open');
-        menuIcon.classList.remove('open');
-        mobileMenu.classList.remove('open');
-        document.querySelectorAll('.m-item').forEach(i => i.classList.remove('open'));
-      });
-    }
 
     /* ─ Hero Carousel ─ */
-    const track = document.getElementById('carouselTrack');
-    const heroCarouselEl = document.getElementById('heroCarousel');
-    let currentSlide = 0;
-    const totalSlides = 3;
-    let autoTimer;
-
-    function goToSlide(n) {
-      currentSlide = (n + totalSlides) % totalSlides;
-      track.style.transform = `translateX(-${currentSlide * 100}%)`;
-    }
-
-    function resetAutoTimer() {
-      clearInterval(autoTimer);
-      autoTimer = setInterval(() => goToSlide(currentSlide + 1), 10000);
-    }
-
-    resetAutoTimer();
-
-    /* ─ Cursor-zone slide switching ─ */
-    const ZONE = 0.15; // 15% of width from each edge triggers zone
-    let cursorZone = 'center'; // 'left' | 'center' | 'right'
-
-    heroCarouselEl.addEventListener('mousemove', e => {
-      const rect = heroCarouselEl.getBoundingClientRect();
-      const xRatio = (e.clientX - rect.left) / rect.width;
-
-      if (xRatio < ZONE) {
-        if (cursorZone !== 'left') {
-          cursorZone = 'left';
-          heroCarouselEl.style.cursor = 'w-resize';
-          // Show left hint
-          leftHint.style.opacity = '1';
-          rightHint.style.opacity = '0';
-        }
-      } else if (xRatio > (1 - ZONE)) {
-        if (cursorZone !== 'right') {
-          cursorZone = 'right';
-          heroCarouselEl.style.cursor = 'e-resize';
-          rightHint.style.opacity = '1';
-          leftHint.style.opacity = '0';
-        }
-      } else {
-        if (cursorZone !== 'center') {
-          cursorZone = 'center';
-          heroCarouselEl.style.cursor = 'default';
-          leftHint.style.opacity = '0';
-          rightHint.style.opacity = '0';
-        }
-      }
-
-      // Also do parallax when in center
-      if (cursorZone === 'center') {
-        const cx = rect.width / 2, cy = rect.height / 2;
-        const dx = (e.clientX - rect.left - cx) / cx * 8;
-        const dy = (e.clientY - rect.top - cy) / cy * 5;
-        document.querySelectorAll('.hero').forEach((section, idx) => {
-          const bg = section.querySelector('.hero-bg');
-          if (idx === currentSlide) bg.style.transform = `scale(1) translate(${dx}px,${dy}px)`;
-          else bg.style.transform = 'scale(1)';
-        });
-      }
+    const track=document.getElementById('carouselTrack'), heroEl=document.getElementById('heroCarousel');
+    let cur=0; const total=3; let autoTimer;
+    function goToSlide(n){ cur=(n+total)%total; track.style.transform=`translateX(-${cur*100}%)`; }
+    function resetTimer(){ clearInterval(autoTimer); autoTimer=setInterval(()=>goToSlide(cur+1),10000); }
+    resetTimer();
+    const ZONE=0.15;
+    let cz='center';
+    const leftHint=document.createElement('div');
+    leftHint.style.cssText=`position:absolute;left:0;top:0;bottom:0;width:15%;background:linear-gradient(to right,rgba(200,144,58,.12),transparent);pointer-events:none;z-index:5;opacity:0;transition:opacity .3s;display:flex;align-items:center;justify-content:flex-start;padding-left:20px;`;
+    leftHint.innerHTML=`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(200,144,58,.7)" stroke-width="1.5"><path d="M19 12H5M12 19L5 12l7-7"/></svg>`;
+    const rightHint=document.createElement('div');
+    rightHint.style.cssText=`position:absolute;right:0;top:0;bottom:0;width:15%;background:linear-gradient(to left,rgba(200,144,58,.12),transparent);pointer-events:none;z-index:5;opacity:0;transition:opacity .3s;display:flex;align-items:center;justify-content:flex-end;padding-right:20px;`;
+    rightHint.innerHTML=`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(200,144,58,.7)" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+    heroEl.style.position='relative'; heroEl.appendChild(leftHint); heroEl.appendChild(rightHint);
+    heroEl.addEventListener('mousemove', e => {
+      const r=heroEl.getBoundingClientRect(), x=(e.clientX-r.left)/r.width;
+      if(x<ZONE){ if(cz!=='left'){cz='left';heroEl.style.cursor='w-resize';leftHint.style.opacity='1';rightHint.style.opacity='0';} }
+      else if(x>(1-ZONE)){ if(cz!=='right'){cz='right';heroEl.style.cursor='e-resize';rightHint.style.opacity='1';leftHint.style.opacity='0';} }
+      else{ if(cz!=='center'){cz='center';heroEl.style.cursor='default';leftHint.style.opacity='0';rightHint.style.opacity='0';} }
     });
-
-    heroCarouselEl.addEventListener('click', e => {
-      const rect = heroCarouselEl.getBoundingClientRect();
-      const xRatio = (e.clientX - rect.left) / rect.width;
-      if (xRatio < ZONE) {
-        goToSlide(currentSlide - 1);
-        resetAutoTimer();
-      } else if (xRatio > (1 - ZONE)) {
-        goToSlide(currentSlide + 1);
-        resetAutoTimer();
-      }
+    heroEl.addEventListener('click', e => {
+      const r=heroEl.getBoundingClientRect(), x=(e.clientX-r.left)/r.width;
+      if(x<ZONE){goToSlide(cur-1);resetTimer();}
+      else if(x>(1-ZONE)){goToSlide(cur+1);resetTimer();}
     });
+    heroEl.addEventListener('mouseleave',()=>{ cz='center'; heroEl.style.cursor='default'; leftHint.style.opacity='0'; rightHint.style.opacity='0'; });
 
-    heroCarouselEl.addEventListener('mouseleave', () => {
-      cursorZone = 'center';
-      heroCarouselEl.style.cursor = 'default';
-      leftHint.style.opacity = '0';
-      rightHint.style.opacity = '0';
-      document.querySelectorAll('.hero-bg').forEach(bg => bg.style.transform = 'scale(1)');
-    });
-
-    /* Create edge hint indicators */
-    const leftHint = document.createElement('div');
-    leftHint.style.cssText = `position:absolute;left:0;top:0;bottom:0;width:15%;
-      background:linear-gradient(to right,rgba(200,144,58,.12),transparent);
-      pointer-events:none;z-index:5;opacity:0;transition:opacity .3s;
-      display:flex;align-items:center;justify-content:flex-start;padding-left:20px;`;
-    leftHint.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(200,144,58,.7)" stroke-width="1.5"><path d="M19 12H5M12 19L5 12l7-7"/></svg>`;
-
-    const rightHint = document.createElement('div');
-    rightHint.style.cssText = `position:absolute;right:0;top:0;bottom:0;width:15%;
-      background:linear-gradient(to left,rgba(200,144,58,.12),transparent);
-      pointer-events:none;z-index:5;opacity:0;transition:opacity .3s;
-      display:flex;align-items:center;justify-content:flex-end;padding-right:20px;`;
-    rightHint.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(200,144,58,.7)" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
-
-    heroCarouselEl.style.position = 'relative';
-    heroCarouselEl.appendChild(leftHint);
-    heroCarouselEl.appendChild(rightHint);
-
-    /* ─ Floating particles for each slide ─ */
-    function createParticles(containerId) {
-      const particleContainer = document.getElementById(containerId);
-      for (let i = 0; i < 18; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const size = 80 + Math.random() * 200;
-        p.style.cssText = `
-          width: ${size}px;
-          height: ${size}px;
-          left: ${Math.random() * 100}%;
-          bottom: ${-size}px;
-          animation-duration: ${8 + Math.random() * 14}s;
-          animation-delay: ${Math.random() * 8}s;
-          opacity: ${.3 + Math.random() * .4};
-        `;
-        particleContainer.appendChild(p);
+    /* Particles */
+    function createParticles(id){
+      const c=document.getElementById(id);
+      for(let i=0;i<18;i++){
+        const p=document.createElement('div'); p.className='particle';
+        const s=80+Math.random()*200;
+        p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;bottom:${-s}px;animation-duration:${8+Math.random()*14}s;animation-delay:${Math.random()*8}s;opacity:${.3+Math.random()*.4};`;
+        c.appendChild(p);
       }
     }
+    createParticles('particles-1'); createParticles('particles-2'); createParticles('particles-3');
 
-    createParticles('particles-1');
-    createParticles('particles-2');
-    createParticles('particles-3');
-
-    /* ─ Count-up on scroll ─ */
-    const statNums = document.querySelectorAll('.stat-num');
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const el  = entry.target;
-        const end = +el.dataset.count;
-        let cur = 0;
-        const step = end / 60;
-        const timer = setInterval(() => {
-          cur = Math.min(cur + step, end);
-          el.textContent = Math.round(cur) + (el.dataset.count === '99' ? '%' : '+');
-          if (cur >= end) clearInterval(timer);
-        }, 22);
+    /* Count-up */
+    const statNums=document.querySelectorAll('.stat-num');
+    const observer=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(!entry.isIntersecting)return;
+        const el=entry.target, end=+el.dataset.count; let c=0; const step=end/60;
+        const t=setInterval(()=>{ c=Math.min(c+step,end); el.textContent=Math.round(c)+(el.dataset.count==='99'?'%':'+'); if(c>=end)clearInterval(t); },22);
         observer.unobserve(el);
       });
-    }, { threshold: .5 });
-    statNums.forEach(el => observer.observe(el));
+    },{threshold:.5});
+    statNums.forEach(el=>observer.observe(el));
 
+    /* ─────────────────────────────────────────────────────────────────────
+       SUPABASE NAV SESSION
+       Reads from public.profiles (same table the DB trigger populates).
+       Shows avatar widget when logged in, sign-in link when logged out.
+       Profile icon → profile.html
+    ──────────────────────────────────────────────────────────────────────*/
+    (function() {
+      var supabase = null;
 
-    /* ─────────────────────────────────────────
-       SUPABASE SESSION — index.html
-    ───────────────────────────────────────── */
-    const navAvatar  = document.getElementById('navAvatar');
-    const navInitial = document.getElementById('navInitial');
-    const navName    = document.getElementById('navName');
-    const logoutBtn  = document.getElementById('logoutBtn');
-
-    function updateNavUser(user) {
-      const meta = user.user_metadata || {};
-      const first = meta.first_name || user.email.split('@')[0];
-      const last  = meta.last_name  || '';
-      const initials = (first[0] + (last[0] || '')).toUpperCase();
-      navInitial.textContent = initials;
-      navName.textContent    = first;
-      navAvatar.classList.add('show');
-      const profileBtn = document.querySelector('.nav-profile-btn');
-      if (profileBtn) profileBtn.style.display = 'none';
-    }
-
-    function clearNavUser() {
-      navAvatar.classList.remove('show');
-      const profileBtn = document.querySelector('.nav-profile-btn');
-      if (profileBtn) profileBtn.style.display = '';
-    }
-
-    (async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON !== 'undefined') {
+          supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
+            auth: { autoRefreshToken: true, persistSession: true, detectSessionInUrl: false }
+          });
+        }
+      } catch(e) { console.warn('Supabase init failed:', e); }
+
+      if (!supabase) return; // no config — nav stays as guest
+
+      var navAvatar    = document.getElementById('navAvatar');
+      var navInitial   = document.getElementById('navInitial');
+      var navName      = document.getElementById('navName');
+      var navProfileBtn= document.getElementById('navProfileBtn');
+      var logoutBtn    = document.getElementById('logoutBtn');
+      var mobileAuthBtn= document.getElementById('mobileAuthBtn');
+
+      /* Read name from public.profiles first, fall back to auth metadata */
+      async function fetchProfileName(userId) {
+        try {
+          var r = await supabase
+            .from('profiles')
+            .select('first_name, last_name, full_name')
+            .eq('id', userId)
+            .single();
+          return r.data || null;
+        } catch(e) { return null; }
+      }
+
+      async function updateNavUser(user) {
+        // Try profile row first
+        var p = await fetchProfileName(user.id);
+        var meta = user.user_metadata || {};
+        var first = (p && p.first_name) ? p.first_name : (meta.first_name || user.email.split('@')[0]);
+        var last  = (p && p.last_name)  ? p.last_name  : (meta.last_name  || '');
+        var initials = ((first[0]||'') + (last[0]||'')).toUpperCase() || first[0].toUpperCase();
+
+        navInitial.textContent = initials;
+        navName.textContent    = first;
+        navAvatar.classList.add('show');
+
+        // Hide the generic sign-in icon, show avatar widget instead
+        if (navProfileBtn) navProfileBtn.style.display = 'none';
+
+        // Mobile: change CTA to "My Profile"
+        if (mobileAuthBtn) { mobileAuthBtn.textContent = 'My Profile'; mobileAuthBtn.href = 'profile.html'; }
+      }
+
+      function clearNavUser() {
+        navAvatar.classList.remove('show');
+        if (navProfileBtn) navProfileBtn.style.display = '';
+        if (mobileAuthBtn) { mobileAuthBtn.textContent = 'Sign In'; mobileAuthBtn.href = 'login.html'; }
+      }
+
+      // Check session on page load
+      supabase.auth.getSession().then(function(r) {
+        if (r.data && r.data.session && r.data.session.user) updateNavUser(r.data.session.user);
+      }).catch(function(){});
+
+      // React to login/logout from any tab
+      supabase.auth.onAuthStateChange(function(evt, session) {
         if (session && session.user) updateNavUser(session.user);
-      } catch(e) { console.warn('Session check failed', e); }
-    })();
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      if (session && session.user) updateNavUser(session.user);
-      else clearNavUser();
-    });
-
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', async e => {
-        e.preventDefault();
-        await supabase.auth.signOut();
-        clearNavUser();
+        else clearNavUser();
       });
-    }
+
+      // Logout from nav dropdown
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async function(e) {
+          e.preventDefault();
+          await supabase.auth.signOut().catch(function(){});
+          clearNavUser();
+        });
+      }
+    })();
   </script>
 </body>
 </html>
