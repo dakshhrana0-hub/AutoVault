@@ -56,8 +56,8 @@ import pandas as pd
 from supabase import create_client, Client
 
 # ── CONFIG ──────────────────────────────────────────────────────────────────
-SUPABASE_URL = 'https://xxxx.supabase.co'        # e.g. https://xxxx.supabase.co
-SUPABASE_KEY = 'apikey'   # Settings → API → service_role key
+SUPABASE_URL = 'https://jsqyazeanuhwtzbrjxrd.supabase.co'        # e.g. https://xxxx.supabase.co
+SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzcXlhemVhbnVod3R6YnJqeHJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxMzA5MzksImV4cCI6MjA4ODcwNjkzOX0.paCPODl24EAdb9Z1Up32vfOyFZDHeTpMEoz2uD61xpg'   # Settings → API → service_role key
 
 # Path to your CSV files (relative to this script)
 LUXE_CSV       = os.path.join( "data", "merged_datasets", "merged_luxe_dataset.csv")

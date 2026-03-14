@@ -4,3 +4,9 @@ requests
 beautifulsoup4
 ipykernel
 supabase
+scikit-learn
+xgboost
+optuna
+matplotlib
+seaborn
+joblib
