@@ -15,20 +15,16 @@
             --text: #f0ece4;
             --muted: #888;
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: var(--bg);
             color: var(--text);
             font-family: 'Barlow', sans-serif;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            cursor: none; /* Hide default cursor */
+            cursor: none;
         }
-        
+
         /* ── CUSTOM CURSOR ── */
         .cursor {
             position: fixed; top:0; left:0; width:10px; height:10px;
@@ -43,302 +39,251 @@
             pointer-events:none; z-index:9998; transform:translate(-50%,-50%);
             transition: width .2s, height .2s;
         }
-        
-        /* Navigation */
+
+        /* ── NAV ── */
         nav {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            position: absolute; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
             padding: 40px 6vw;
         }
-        nav a {
-            color: var(--text);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
+        nav a { color: var(--text); text-decoration: none; transition: color 0.3s ease; }
         .nav-back {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--muted);
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.85rem; text-transform: uppercase;
+            letter-spacing: 0.15em; color: var(--muted);
         }
-        .nav-back:hover {
-            color: var(--gold);
-        }
-        .nav-logo {
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            letter-spacing: 0.1em;
-        }
-        .nav-logo span:last-child {
-            color: var(--gold);
-        }
+        .nav-back:hover { color: var(--gold); }
+        .nav-logo { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 0.1em; }
+        .nav-logo span:last-child { color: var(--gold); }
 
-        /* Hero Section */
+        /* ── HERO ── */
         .hero {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
+            height: 100vh; display: flex; align-items: center;
+            justify-content: center; position: relative; overflow: hidden;
         }
         #hero-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 1;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; object-fit: cover; z-index: 1;
         }
         .hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
+            content: ''; position: absolute; inset: 0;
             background: linear-gradient(to bottom, rgba(3,3,4,0.1) 0%, rgba(3,3,4,0.3) 60%, var(--bg) 100%);
             z-index: 2;
         }
-        /* Dynamic Overlay for darkness */
         #dark-overlay {
-            position: absolute;
-            inset: 0;
-            background: #030304;
-            opacity: 0.8; /* starts very dark */
-            z-index: 2;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
+            position: absolute; inset: 0; background: #030304;
+            opacity: 0.8; z-index: 2; transition: opacity 0.5s ease; pointer-events: none;
         }
-        
-        .hero-content {
-            position: relative;
-            z-index: 3;
-            text-align: center;
-            margin-top: 10vh;
-        }
-        .hero p {
-            text-transform: uppercase;
-            letter-spacing: 0.4em;
-            font-size: 0.9rem;
-            color: var(--gold);
-            margin-bottom: 20px;
-            opacity: 0;
-            animation: fadeIn 1s 0.5s forwards;
-        }
+        .hero-content { position: relative; z-index: 3; text-align: center; margin-top: 10vh; }
         .hero h1 {
             font-family: 'Cinzel', serif;
             font-size: clamp(3rem, 7vw, 7rem);
-            font-weight: 400;
-            letter-spacing: 0.05em;
-            line-height: 1.1;
-            opacity: 0;
-            animation: fadeInUp 1s 0.8s forwards;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
+            font-weight: 400; letter-spacing: 0.05em; line-height: 1.1;
+            opacity: 0; animation: fadeInUp 1s 0.8s forwards;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
         }
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* Minimal Collection Grid */
+        /* ── COLLECTION ── */
         .collection {
             padding: 120px 6vw;
             max-width: 1600px;
             margin: 0 auto;
-            position: relative;
         }
         .section-tag {
-            display: inline-block;
-            color: var(--gold);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
-            margin-bottom: 20px;
-            text-align: center;
-            width: 100%;
+            display: block; color: var(--gold); font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 0.3em;
+            margin-bottom: 20px; text-align: center;
         }
         .section-title {
-            font-family: 'Cinzel', serif;
-            font-size: 3.5rem;
-            margin-bottom: 80px;
-            color: var(--text);
-            text-align: center;
-            font-weight: 400;
+            font-family: 'Cinzel', serif; font-size: 3.5rem;
+            margin-bottom: 20px; color: var(--text);
+            text-align: center; font-weight: 400;
         }
+
+        /* ── COUNT BADGE ── */
+        .count-badge {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.82rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 70px;
+        }
+        .count-badge span {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* ── LOADING STATE ── */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 80px 0;
+            color: var(--muted);
+        }
+        .spinner {
+            width: 36px; height: 36px;
+            border: 1px solid rgba(200,144,58,0.2);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+        }
+
+        /* ── ERROR STATE ── */
+        .error-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 80px 0;
+            color: var(--muted);
+            text-align: center;
+        }
+        .error-state p { font-size: 0.9rem; max-width: 400px; line-height: 1.6; }
+        .retry-btn {
+            margin-top: 10px;
+            padding: 12px 32px;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            cursor: none;
+            transition: background 0.3s, color 0.3s;
+        }
+        .retry-btn:hover { background: var(--gold); color: var(--bg); }
+
+        /* ── GRID ── */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 40px;
         }
-        /* ── CARD HOVER SMOKE EFFECT ── */
+
+        /* ── CARD ── */
         .card-wrapper {
-            position: relative;
-            /* Give it perspective or isolation so the smoke strictly stays behind the card context */
-            isolation: isolate;
-            cursor: none; 
+            position: relative; isolation: isolate; cursor: none;
         }
         .card {
             background: linear-gradient(145deg, #0a0b0f, #111218);
-            border-radius: 4px;
-            overflow: hidden;
+            border-radius: 4px; overflow: hidden;
             transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.6s ease;
             border: 1px solid rgba(255,255,255,0.03);
-            position: relative;
-            z-index: 2; 
-            height: 100%;
+            position: relative; z-index: 2; height: 100%;
         }
-        
-        /* ── SCROLL ANIMATIONS ── */
-        .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .reveal-on-scroll.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        /* Smoke Particles Container */
-        .smoke-container {
-            position: absolute;
-            inset: -40px; /* extends slightly outside to give smoke room to billow */
-            z-index: 1;
-            pointer-events: none;
-            overflow: hidden;
-            border-radius: 10px;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .card-wrapper:hover .smoke-container {
-            opacity: 1; /* reveal smoke layer on hover */
-        }
-        /* Individual smoke puff animation */
-        .smoke-puff {
-            position: absolute;
-            bottom: 30%; /* Start erupting from roughly where an exhaust might be */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 80px;
-            background: radial-gradient(circle, rgba(120,120,120,0.15) 0%, transparent 60%);
-            border-radius: 50%;
-            filter: blur(10px);
-            opacity: 0;
-            /* It is animated dynamically in JS, but fallback CSS can also work */
-        }
-        @keyframes smokeBillow {
-            0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
-            50% { opacity: 0.8; }
-            100% { transform: translate(calc(-50% + var(--driftX)), -100px) scale(2.5); opacity: 0; }
-        }
-
         .card-wrapper:hover .card {
             transform: translateY(-8px);
             box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 30px rgba(200,144,58,0.1);
             border-color: rgba(200,144,58,0.3);
         }
-        .card-img-wrap {
+
+        /* Smoke */
+        .smoke-container {
+            position: absolute; inset: -40px; z-index: 1;
+            pointer-events: none; overflow: hidden; border-radius: 10px;
+            opacity: 0; transition: opacity 0.4s ease;
+        }
+        .card-wrapper:hover .smoke-container { opacity: 1; }
+        .smoke-puff {
+            position: absolute; bottom: 30%; left: 50%;
+            transform: translateX(-50%); width: 80px; height: 80px;
+            background: radial-gradient(circle, rgba(120,120,120,0.15) 0%, transparent 60%);
+            border-radius: 50%; filter: blur(10px); opacity: 0;
+        }
+        @keyframes smokeBillow {
+            0%   { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
+            50%  { opacity: 0.8; }
+            100% { transform: translate(calc(-50% + var(--driftX)), -100px) scale(2.5); opacity: 0; }
+        }
+
+        /* Scroll reveal */
+        .reveal-on-scroll {
+            opacity: 0; transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .reveal-on-scroll.visible { opacity: 1; transform: translateY(0); }
+
+        .card-img-wrap { position: relative; width: 100%; height: 240px; overflow: hidden; }
+        .card-img {
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0.85; transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .card:hover .card-img { opacity: 1; transform: scale(1.05); }
+        .card-info { padding: 30px; }
+        .brand {
+            color: var(--gold); font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 0.25em; margin-bottom: 10px;
+        }
+        .title { font-family: 'Cinzel', serif; font-size: 1.4rem; margin-bottom: 25px; line-height: 1.3; }
+        .specs {
+            display: flex; gap: 30px; margin-bottom: 25px;
+            padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .spec-item { display: flex; flex-direction: column; gap: 4px; }
+        .spec-val { font-size: 1.1rem; font-weight: 500; }
+        .spec-lbl { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em; }
+        .footer-row { display: flex; justify-content: space-between; align-items: center; }
+        .price { font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--gold); }
+        .link {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em;
+            color: var(--text); text-decoration: none; transition: color 0.3s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .link:hover { color: var(--gold); }
+
+        /* Load more */
+        .load-more-wrap {
+            display: none;
+            justify-content: center;
+            margin-top: 70px;
+        }
+        .load-more-btn {
+            padding: 16px 56px;
+            background: transparent;
+            border: 1px solid rgba(200,144,58,0.5);
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: none;
+            transition: background 0.3s, border-color 0.3s, color 0.3s;
             position: relative;
-            width: 100%;
-            height: 240px;
             overflow: hidden;
         }
-        .card-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.85;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+        .load-more-btn:hover {
+            background: rgba(200,144,58,0.08);
+            border-color: var(--gold);
         }
-        .card:hover .card-img {
-            opacity: 1;
-            transform: scale(1.05);
+        .load-more-btn:disabled {
+            opacity: 0.4;
+            pointer-events: none;
         }
-        .card-info {
-            padding: 30px;
-        }
-        .brand {
-            color: var(--gold);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.25em;
-            margin-bottom: 10px;
-        }
-        .title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.4rem;
-            margin-bottom: 25px;
-            line-height: 1.3;
-        }
-        .specs {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 25px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .spec-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .spec-val {
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-        .spec-lbl {
-            font-size: 0.65rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-        }
-        .footer-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .price {
-            font-family: 'Cinzel', serif;
-            font-size: 1.25rem;
-            color: var(--gold);
-        }
-        .link {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--text);
-            text-decoration: none;
-            transition: color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .link:hover {
-            color: var(--gold);
-        }
-        
+
         @media(max-width: 768px) {
             nav { padding: 30px 20px; }
             .collection { padding: 60px 20px 80px; }
             .grid { grid-template-columns: 1fr; }
+            .section-title { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Custom cursor -->
     <div class="cursor" id="cursor"></div>
     <div class="cursor-ring" id="cursorRing"></div>
 
@@ -350,262 +295,373 @@
         <a href="index.html" class="nav-logo"><span>Auto</span><span>Vault</span></a>
     </nav>
 
-    <header class="hero" id="hero-section">
+    <header class="hero">
         <canvas id="hero-canvas"></canvas>
         <div id="dark-overlay"></div>
         <div class="hero-content">
-            <h1 style="text-shadow: 0 4px 20px rgba(0,0,0,0.8);">Prestige Collection</h1>
+            <h1>Prestige Collection</h1>
         </div>
     </header>
 
     <section class="collection">
         <span class="section-tag">Explore</span>
         <h2 class="section-title">The Vault</h2>
+
+        <!-- Count badge — updated after fetch -->
+        <p class="count-badge" id="count-badge" style="display:none">
+            Showing <span id="shown-count">0</span> of <span id="total-count">0</span> vehicles
+        </p>
+
+        <!-- Loading -->
+        <div class="loading-state" id="loading-state">
+            <div class="spinner"></div>
+            <p class="loading-text">Curating the collection…</p>
+        </div>
+
+        <!-- Error -->
+        <div class="error-state" id="error-state">
+            <p>Unable to load the collection. Please check your connection and try again.</p>
+            <button class="retry-btn" id="retry-btn">Retry</button>
+        </div>
+
+        <!-- Grid -->
         <div class="grid" id="car-grid"></div>
+
+        <!-- Load more -->
+        <div class="load-more-wrap" id="load-more-wrap">
+            <button class="load-more-btn" id="load-more-btn">Load More</button>
+        </div>
     </section>
 
+    <!-- Supabase credentials — SUPABASE_URL and SUPABASE_ANON defined here -->
+    <script src="config.js"></script>
     <script>
-        const ALL_CARS = [{"title":"Bentley Bentayga","brand":"Bentley","price":65000000.0,"price_display":"₹6,50,00,000","year":"2023","kms":"2500","fuel":"Petrol","type":"Automatic","location":"Punjabi Bagh West","color":"","image":"https://apollo.olx.in:443/v1/files/ug9n0e61swpm3-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bentley-bentayga-in-punjabi-bagh-west-delhi-iid-1823307899?rank=0","ownership":"1"},{"title":"McLaren  GT","brand":"McLaren","price":42500000.0,"price_display":"₹4,25,00,000","year":"2018","kms":"80","fuel":"Petrol","type":"Automatic","location":"New Delhi Road","color":"","image":"https://apollo.olx.in:443/v1/files/91vybutbghrq1-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mclaren-gt-in-new-delhi-road-kotputli-iid-1834665627?rank=17","ownership":"1"},{"title":"Ferrari 488 GTB","brand":"Ferrari","price":40000000.0,"price_display":"₹4,00,00,000","year":"2018","kms":"10000","fuel":"","type":"","location":"Rajouri Garden","color":"","image":"https://apollo.olx.in:443/v1/files/3p4u8vxcidpa-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-ferrari-488-gtb-in-rajouri-garden-delhi-iid-1836149771?rank=14","ownership":""},{"title":"GHOST SERIES II XZ42","brand":"Rolls royce","price":39100000.0,"price_display":"₹3,91,00,000","year":"2017","kms":"58000","fuel":"Petrol","type":"","location":"","color":"Madeira RED","image":"https://youdrivemecrazy.in/wp-content/uploads/2025/11/IMG-20251103-WA0066-280x204.jpg","link":"https://youdrivemecrazy.in/listings/rolls-royce-ghost-series-ii-xz42/","ownership":"1"},{"title":"Ferrari 458 Spider","brand":"Ferrari","price":37500000.0,"price_display":"₹3,75,00,000","year":"2015","kms":"16000","fuel":"","type":"","location":"Rajouri Garden","color":"","image":"https://apollo.olx.in:443/v1/files/u7au66zg0xbf2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-ferrari-458-spider-in-rajouri-garden-delhi-iid-1836171179?rank=13","ownership":""},{"title":"Mercedes-Benz Maybach S-Class","brand":"Mercedes-Benz","price":34000000.0,"price_display":"₹3,40,00,000","year":"2025","kms":"800","fuel":"Petrol","type":"Automatic","location":"Punjabi Bagh West","color":"","image":"https://apollo.olx.in:443/v1/files/03n8anee1jf7-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-maybach-s-class-in-punjabi-bagh-west-delhi-iid-1830692441?rank=6","ownership":"1"},{"title":"Porsche 911","brand":"Porsche","price":32800000.0,"price_display":"₹3,28,00,000","year":"2023","kms":"8000","fuel":"Petrol","type":"Automatic","location":"Dwarka","color":"","image":"https://apollo.olx.in:443/v1/files/g546v7y38uz91-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-porsche-911-in-dwarka-delhi-iid-1813491257?rank=12","ownership":"1"},{"title":"Mercedes-Benz G Class","brand":"Mercedes-Benz","price":27500000.0,"price_display":"₹2,75,00,000","year":"2024","kms":"11000","fuel":"Diesel","type":"Automatic","location":"Punjabi Bagh West","color":"","image":"https://apollo.olx.in:443/v1/files/pztwdy2cxb6d3-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-g-class-in-punjabi-bagh-west-delhi-iid-1835682286?rank=34","ownership":"1"},{"title":"Land Rover Range Rover","brand":"Land Rover","price":26500000.0,"price_display":"₹2,65,00,000","year":"2025","kms":"17000","fuel":"Petrol","type":"Automatic","location":"Ashok Vihar","color":"","image":"https://apollo.olx.in:443/v1/files/7ih0zhmuxmhu2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-land-rover-range-rover-in-ashok-vihar-delhi-iid-1833649050?rank=28","ownership":"1"},{"title":"Toyota Land Cruiser","brand":"Toyota","price":26100000.0,"price_display":"₹2,61,00,000","year":"2025","kms":"50","fuel":"Petrol","type":"Automatic","location":"DLF City","color":"","image":"https://apollo.olx.in:443/v1/files/iacv6ge8jezt-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-toyota-land-cruiser-in-dlf-city-gurgaon-iid-1832816878?rank=19","ownership":""},{"title":"Nissan PATROL","brand":"Nissan","price":25500000.0,"price_display":"₹2,55,00,000","year":"2025","kms":"200","fuel":"Petrol","type":"Automatic","location":"Ashok Vihar","color":"","image":"https://apollo.olx.in:443/v1/files/lapk7kal4p6o-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-nissan-patrol-in-ashok-vihar-delhi-iid-1833082450?rank=9","ownership":""},{"title":"Mercedes-Benz G-Class","brand":"Mercedes-Benz","price":24775000.0,"price_display":"₹2,47,75,000","year":"2019","kms":"3000","fuel":"Petrol","type":"","location":"Malviya Nagar","color":"","image":"https://apollo.olx.in:443/v1/files/c069w74a1xtg-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-g-class-in-malviya-nagar-delhi-iid-1836167040?rank=20","ownership":"2"},{"title":"Porsche CARRERA","brand":"Porsche","price":24500000.0,"price_display":"₹2,45,00,000","year":"2023","kms":"5000","fuel":"Petrol","type":"Automatic","location":"Raja Garden","color":"","image":"https://apollo.olx.in:443/v1/files/byw3n7e3z52n-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-porsche-carrera-in-raja-garden-delhi-iid-1802857559?rank=9","ownership":"1"},{"title":"Ferrari California","brand":"Ferrari","price":16500000.0,"price_display":"₹1,65,00,000","year":"2013","kms":"14000","fuel":"Petrol","type":"Automatic","location":"Rajouri Garden","color":"","image":"https://apollo.olx.in:443/v1/files/iddm8jd16i3a3-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-ferrari-california-in-rajouri-garden-delhi-iid-1836606062?rank=10","ownership":"1"},{"title":"Bentley Flying Spur","brand":"Bentley","price":15900000.0,"price_display":"₹1,59,00,000","year":"2017","kms":"22000","fuel":"Petrol","type":"Automatic","location":"Ansal Plaza","color":"","image":"https://apollo.olx.in:443/v1/files/sew5863ghyca-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bentley-flying-spur-in-ansal-plaza-gurgaon-iid-1829786532?rank=16","ownership":"1"},{"title":"BMW XM","brand":"BMW","price":15500000.0,"price_display":"₹1,55,00,000","year":"2023","kms":"15000","fuel":"Petrol","type":"Automatic","location":"Ashok Vihar","color":"","image":"https://apollo.olx.in:443/v1/files/o2q7fb5xtvxx1-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bmw-xm-in-ashok-vihar-delhi-iid-1835315299?rank=18","ownership":"1"},{"title":"Mercedes-Benz AMG GT 63 S 4MATIC Plus","brand":"Mercedes-Benz","price":15500000.0,"price_display":"₹1,55,00,000","year":"2025","kms":"17000","fuel":"Petrol","type":"Automatic","location":"Vasant Kunj","color":"","image":"https://apollo.olx.in:443/v1/files/m2lvrzkchkxa2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-amg-gt-63-s-4matic-plus-in-vasant-kunj-delhi-iid-1826534574?rank=5","ownership":""},{"title":"Mercedes-Benz AMG","brand":"Mercedes-Benz","price":15500000.0,"price_display":"₹1,55,00,000","year":"2019","kms":"17000","fuel":"Petrol","type":"Automatic","location":"Golf Course Extn Road","color":"","image":"https://apollo.olx.in:443/v1/files/ixr5s5n8i8vv1-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-amg-in-golf-course-extn-road-gurgaon-iid-1826805282?rank=13","ownership":""},{"title":"Mercedes-Benz S-Class","brand":"Mercedes-Benz","price":15000000.0,"price_display":"₹1,50,00,000","year":"2022","kms":"13000","fuel":"Petrol","type":"Manual","location":"Saket","color":"","image":"https://apollo.olx.in:443/v1/files/g7xx0t8ltdpf2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-s-class-in-saket-delhi-iid-1834682899?rank=27","ownership":"1"},{"title":"Land Rover Defender","brand":"Land Rover","price":14500000.0,"price_display":"₹1,45,00,000","year":"2025","kms":"7700","fuel":"Petrol","type":"Automatic","location":"Chattarpur","color":"","image":"https://apollo.olx.in:443/v1/files/ehlsqvla1mua1-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-land-rover-defender-in-chattarpur-delhi-iid-1831113581?rank=37","ownership":"1"},{"title":"Jaguar F Type","brand":"Jaguar","price":14300000.0,"price_display":"₹1,43,00,000","year":"2024","kms":"8500","fuel":"Petrol","type":"Automatic","location":"Greater Kailash 3","color":"","image":"https://apollo.olx.in:443/v1/files/np82cv99s4j93-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-jaguar-f-type-in-greater-kailash-3-delhi-iid-1836903164?rank=12","ownership":"1"},{"title":"Porsche Panamera","brand":"Porsche","price":13900000.0,"price_display":"₹1,39,00,000","year":"2017","kms":"17000","fuel":"Petrol","type":"Automatic","location":"Defence Colony","color":"","image":"https://apollo.olx.in:443/v1/files/19j1bfmiebdv-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-porsche-panamera-in-defence-colony-delhi-iid-1834826310?rank=9","ownership":"1"},{"title":"Porsche Cayenne","brand":"Porsche","price":13500000.0,"price_display":"₹1,35,00,000","year":"2025","kms":"3300","fuel":"Petrol","type":"Automatic","location":"Naraina","color":"","image":"https://apollo.olx.in:443/v1/files/adx0i9o5i6t92-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-porsche-cayenne-in-naraina-delhi-iid-1831423485?rank=14","ownership":"1"},{"title":"Porsche Cayenne Coupe","brand":"Porsche","price":13500000.0,"price_display":"₹1,35,00,000","year":"2023","kms":"11400","fuel":"Petrol","type":"","location":"Sector 51","color":"","image":"https://apollo.olx.in:443/v1/files/1zsy0nm3snzw-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-porsche-cayenne-coupe-in-sector-51-gurgaon-iid-1818866930?rank=30","ownership":"1"},{"title":"Toyota VELLFIRE","brand":"Toyota","price":12975000.0,"price_display":"₹1,29,75,000","year":"2023","kms":"11800","fuel":"Petrol","type":"","location":"Rajouri Garden","color":"","image":"https://apollo.olx.in:443/v1/files/t5jjmoqec6qn1-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-toyota-vellfire-in-rajouri-garden-delhi-iid-1835205431?rank=1","ownership":""},{"title":"Mercedes-Benz AMG GLE Coupe","brand":"Mercedes-Benz","price":12900000.0,"price_display":"₹1,29,00,000","year":"2025","kms":"9700","fuel":"Petrol","type":"Automatic","location":"Rajouri Garden","color":"","image":"https://apollo.olx.in:443/v1/files/mta7txri1a2y1-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-amg-gle-coupe-in-rajouri-garden-delhi-iid-1836649741?rank=1","ownership":"1"},{"title":"BMW X7","brand":"BMW","price":12900000.0,"price_display":"₹1,29,00,000","year":"2024","kms":"7200","fuel":"Petrol","type":"Automatic","location":"Vasant Vihar","color":"","image":"https://apollo.olx.in:443/v1/files/6mtyltnexv3d2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bmw-x7-in-vasant-vihar-delhi-iid-1803078130?rank=13","ownership":"1"},{"title":"BMW 7 Series","brand":"BMW","price":12775000.0,"price_display":"₹1,27,75,000","year":"2023","kms":"16000","fuel":"Petrol","type":"","location":"Lajpat Nagar 1","color":"","image":"https://apollo.olx.in:443/v1/files/xo0brdbph4lc2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bmw-7-series-in-lajpat-nagar-1-delhi-iid-1835989053?rank=30","ownership":"1"},{"title":"Mercedes-Benz GLS","brand":"Mercedes-Benz","price":12500000.0,"price_display":"₹1,25,00,000","year":"2024","kms":"10300","fuel":"Petrol","type":"","location":"Vasant Kunj","color":"","image":"https://apollo.olx.in:443/v1/files/9duas009sqw52-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-gls-in-vasant-kunj-delhi-iid-1835457823?rank=37","ownership":"1"},{"title":"Mercedes-Benz AMG EQS","brand":"Mercedes-Benz","price":12500000.0,"price_display":"₹1,25,00,000","year":"2022","kms":"9000","fuel":"Electric","type":"Automatic","location":"Greater Kailash","color":"","image":"https://apollo.olx.in:443/v1/files/hq3crx0pzrvp-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-amg-eqs-in-greater-kailash-delhi-iid-1836256531?rank=14","ownership":"1"},{"title":"Mercedes-Benz AMG E53 Cabriolet","brand":"Mercedes-Benz","price":11800000.0,"price_display":"₹1,18,00,000","year":"2023","kms":"13000","fuel":"Petrol","type":"Automatic","location":"Ghosipur","color":"","image":"https://apollo.olx.in:443/v1/files/vjkuo7zjep6g-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-amg-e53-cabriolet-in-ghosipur-faridabad-iid-1832311251?rank=24","ownership":""},{"title":"Ford Mustang","brand":"Ford","price":11750000.0,"price_display":"₹1,17,50,000","year":"2025","kms":"15000","fuel":"Petrol","type":"Automatic","location":"Kirti Nagar","color":"","image":"https://apollo.olx.in:443/v1/files/l06srrir3rp72-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-ford-mustang-in-kirti-nagar-delhi-iid-1830361712?rank=12","ownership":""},{"title":"Porsche Panamera Bs6","brand":"Porsche","price":11500000.0,"price_display":"₹1,15,00,000","year":"2020","kms":"11000","fuel":"","type":"","location":"","color":"Jet Black Metallic","image":"https://youdrivemecrazy.in/wp-content/uploads/2025/10/IMG-20251028-WA0108-280x159.jpg","link":"https://youdrivemecrazy.in/listings/porsche-panamera-bs6/","ownership":"1"},{"title":"Mercedes-Benz GLE","brand":"Mercedes-Benz","price":11000000.0,"price_display":"₹1,10,00,000","year":"2024","kms":"14500","fuel":"Petrol","type":"Automatic","location":"Rohini Sector 3","color":"","image":"https://apollo.olx.in:443/v1/files/1g4qvxjexe2w3-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-gle-in-rohini-sector-3-delhi-iid-1835661285?rank=36","ownership":"1"},{"title":"Porsche 718","brand":"Porsche","price":10900000.0,"price_display":"₹1,09,00,000","year":"2021","kms":"7500","fuel":"Petrol","type":"Automatic","location":"Ashok Vihar","color":"","image":"https://apollo.olx.in:443/v1/files/xtttku9c29an2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-porsche-718-in-ashok-vihar-delhi-iid-1836284304?rank=17","ownership":"1"},{"title":"BMW M2","brand":"BMW","price":10500000.0,"price_display":"₹1,05,00,000","year":"2024","kms":"8000","fuel":"Petrol","type":"Automatic","location":"Ambience Island","color":"","image":"https://apollo.olx.in:443/v1/files/rdts59jem5ls3-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bmw-m2-in-ambience-island-gurgaon-iid-1825243896?rank=31","ownership":"1"},{"title":"Mercedes-Benz GLE COUPE","brand":"Mercedes-Benz","price":10500000.0,"price_display":"₹1,05,00,000","year":"2022","kms":"42000","fuel":"Petrol","type":"Automatic","location":"Ambience Island","color":"","image":"https://apollo.olx.in:443/v1/files/vstqto5t79401-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-gle-coupe-in-ambience-island-gurgaon-iid-1833680398?rank=33","ownership":"1"},{"title":"Mercedes-Benz CLE cabriolet","brand":"Mercedes-Benz","price":10500000.0,"price_display":"₹1,05,00,000","year":"2024","kms":"22300","fuel":"Petrol","type":"","location":"Vasant Vihar","color":"","image":"https://apollo.olx.in:443/v1/files/o6fvwhes6agr2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-cle-cabriolet-in-vasant-vihar-delhi-iid-1827606447?rank=8","ownership":"1"},{"title":"Bmw M2 Shadow line","brand":"BMW","price":10500000.0,"price_display":"₹1,05,00,000","year":"2024","kms":"8000","fuel":"","type":"","location":"","color":"Black Sapphire","image":"https://youdrivemecrazy.in/wp-content/uploads/2025/11/IMG-20251103-WA0030-280x161.jpg","link":"https://youdrivemecrazy.in/listings/bmw-m2-shadow-line/","ownership":"1"},{"title":"Porsche Taycan","brand":"Porsche","price":9900000.0,"price_display":"₹99,00,000","year":"2024","kms":"19000","fuel":"Electric","type":"Automatic","location":"New Friends Colony","color":"","image":"https://apollo.olx.in:443/v1/files/501o2b924x9j2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-porsche-taycan-in-new-friends-colony-delhi-iid-1835669117?rank=19","ownership":"1"},{"title":"PORSCHE PANAMERA 4","brand":"Porsche","price":9900000.0,"price_display":"₹99,00,000","year":"2020","kms":"11000","fuel":"Petrol","type":"","location":"","color":"Jet Black Metallic","image":"https://youdrivemecrazy.in/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-21-at-1.01.42-PM-280x153.jpeg","link":"https://youdrivemecrazy.in/listings/porsche-panamera-4-10-years-edition/","ownership":"1"},{"title":"X5 40i Msport LCI","brand":"BMW","price":9900000.0,"price_display":"₹99,00,000","year":"2024","kms":"16000","fuel":"","type":"","location":"","color":"Mineral White","image":"https://youdrivemecrazy.in/wp-content/uploads/2025/08/IMG-20250329-WA0057-280x185.jpg","link":"https://youdrivemecrazy.in/listings/x5-40i-msport-lci/","ownership":"1"},{"title":"BMW X5","brand":"BMW","price":9700000.0,"price_display":"₹97,00,000","year":"2025","kms":"3300","fuel":"Petrol","type":"","location":"New Gurgaon","color":"","image":"https://apollo.olx.in:443/v1/files/42qrdc8n7wo03-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bmw-x5-in-new-gurgaon-gurgaon-iid-1834033890?rank=9","ownership":"1"},{"title":"Porsche Boxster","brand":"Porsche","price":9500000.0,"price_display":"₹95,00,000","year":"2019","kms":"11000","fuel":"Petrol","type":"Automatic","location":"AIIMS","color":"","image":"https://apollo.olx.in:443/v1/files/qrw7yv15anx03-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-porsche-boxster-in-aiims-delhi-iid-1835841788?rank=31","ownership":"1"},{"title":"Mercedes-Benz AMG CLE 53 4Matic Plus","brand":"Mercedes-Benz","price":9500000.0,"price_display":"₹95,00,000","year":"2021","kms":"19500","fuel":"Petrol","type":"Automatic","location":"Preet Vihar","color":"","image":"https://apollo.olx.in:443/v1/files/2yxsyybc6k9v1-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-amg-cle-53-4matic-plus-in-preet-vihar-delhi-iid-1828453056?rank=10","ownership":"3"},{"title":"BMW Z4","brand":"BMW","price":9475000.0,"price_display":"₹94,75,000","year":"2025","kms":"3000","fuel":"Petrol","type":"Automatic","location":"Noida Extension","color":"","image":"https://apollo.olx.in:443/v1/files/12ongk41r39d2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bmw-z4-in-noida-extension-noida-iid-1825557564?rank=13","ownership":"1"},{"title":"BMW IX","brand":"BMW","price":9200000.0,"price_display":"₹92,00,000","year":"2024","kms":"4002","fuel":"Electric","type":"Automatic","location":"Saket","color":"","image":"https://apollo.olx.in:443/v1/files/6s7f0oa52hgc2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bmw-ix-in-saket-delhi-iid-1834036444?rank=2","ownership":"1"},{"title":"BMW X5 M","brand":"BMW","price":9200000.0,"price_display":"₹92,00,000","year":"2024","kms":"8700","fuel":"Petrol","type":"Automatic","location":"Vasant Vihar","color":"","image":"https://apollo.olx.in:443/v1/files/bsc2oczjfd2b-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bmw-x5-m-in-vasant-vihar-delhi-iid-1836320422?rank=11","ownership":"1"},{"title":"Z4 M40i Convertible","brand":"BMW","price":9200000.0,"price_display":"₹92,00,000","year":"2024","kms":"4000","fuel":"","type":"","location":"","color":"Black Sapphire Etallic","image":"https://youdrivemecrazy.in/wp-content/uploads/2025/10/IMG-20251028-WA0061-280x170.jpg","link":"https://youdrivemecrazy.in/listings/z4-m40i-convertible/","ownership":"1"},{"title":"Mercedes-Benz GLE Class","brand":"Mercedes-Benz","price":9100000.0,"price_display":"₹91,00,000","year":"2025","kms":"1100","fuel":"Diesel","type":"Automatic","location":"Savitri Nagar","color":"","image":"https://apollo.olx.in:443/v1/files/5e92lns6blu3-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-gle-class-in-savitri-nagar-delhi-iid-1836193032?rank=10","ownership":"1"},{"title":"Mercedes-Benz EQE SUV","brand":"Mercedes-Benz","price":9000000.0,"price_display":"₹90,00,000","year":"2024","kms":"7554","fuel":"Electric","type":"Automatic","location":"Saket","color":"","image":"https://apollo.olx.in:443/v1/files/mfxsfc2uc17j1-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-eqe-suv-in-saket-delhi-iid-1834043216?rank=31","ownership":"1"},{"title":"Land Rover Discovery","brand":"Land Rover","price":8898000.0,"price_display":"₹88,98,000","year":"2023","kms":"19000","fuel":"Petrol","type":"Automatic","location":"Golf Course Road","color":"","image":"https://apollo.olx.in:443/v1/files/900hd8zi4jhl2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-land-rover-discovery-in-golf-course-road-gurgaon-iid-1827850708?rank=10","ownership":"1"},{"title":"BMW X3 M40i","brand":"BMW","price":8500000.0,"price_display":"₹85,00,000","year":"2021","kms":"27000","fuel":"Petrol","type":"Automatic","location":"Ambience Island","color":"","image":"https://apollo.olx.in:443/v1/files/0y5q774s1u5k3-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bmw-x3-m40i-in-ambience-island-gurgaon-iid-1835782439?rank=39","ownership":"2"},{"title":"Mercedes-Benz AMG E63","brand":"Mercedes-Benz","price":8500000.0,"price_display":"₹85,00,000","year":"2018","kms":"45000","fuel":"Petrol","type":"Automatic","location":"Ambience Island","color":"","image":"https://apollo.olx.in:443/v1/files/s5i0eej733l21-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-amg-e63-in-ambience-island-gurgaon-iid-1836257224?rank=0","ownership":"2"},{"title":"Mercedes-Benz E-Class","brand":"Mercedes-Benz","price":8500000.0,"price_display":"₹85,00,000","year":"2026","kms":"16000","fuel":"Petrol","type":"Automatic","location":"Sector 137","color":"","image":"https://apollo.olx.in:443/v1/files/7rhr0n85us952-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-mercedes-benz-e-class-in-sector-137-noida-iid-1836405055?rank=15","ownership":"1"},{"title":"Porsche Macan","brand":"Porsche","price":8350000.0,"price_display":"₹83,50,000","year":"2023","kms":"11000","fuel":"Petrol","type":"Automatic","location":"Punjabi Bagh West","color":"","image":"https://apollo.olx.in:443/v1/files/dnrdduf6pxgv1-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-porsche-macan-in-punjabi-bagh-west-delhi-iid-1806991181?rank=8","ownership":"1"},{"title":"Bentley GT","brand":"Bentley","price":8300000.0,"price_display":"₹83,00,000","year":"2015","kms":"34000","fuel":"Petrol","type":"Automatic","location":"Ghosipur","color":"","image":"https://apollo.olx.in:443/v1/files/2bogm8mr4g6b2-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-bentley-gt-in-ghosipur-faridabad-iid-1832313354?rank=22","ownership":"1"},{"title":"Porsche 718 CAYMAN","brand":"Porsche","price":8000000.0,"price_display":"₹80,00,000","year":"2018","kms":"25000","fuel":"","type":"","location":"Rajouri Garden","color":"","image":"https://apollo.olx.in:443/v1/files/416wkzzrygls-IN/image;s=150x0;q=50;f=webp;","link":"https://www.olx.in/item/cars-c84-used-porsche-718-cayman-in-rajouri-garden-delhi-iid-1807731402?rank=30","ownership":"2"},{"title":"A45 S","brand":"Mercedes","price":7900000.0,"price_display":"₹79,00,000","year":"2022","kms":"26000","fuel":"","type":"","location":"","color":"Designo Patagonia Red Metallic","image":"https://youdrivemecrazy.in/wp-content/uploads/2025/06/IMG-20250627-WA0163-280x166.jpg","link":"https://youdrivemecrazy.in/listings/mercedes-amg-a45-s/","ownership":"1"},{"title":"FORD MUSTANG GT 5.0 V8","brand":"Ford","price":7500000.0,"price_display":"₹75,00,000","year":"2017","kms":"27000","fuel":"","type":"","location":"","color":"Magnetic Grey Metallic","image":"https://youdrivemecrazy.in/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-29-at-1.27.14-PM-3-280x134.jpeg","link":"https://youdrivemecrazy.in/listings/ford-mustang-gt-5-0-v8/","ownership":"1"}];
-        
-        // Sort cars by price descending 
-        ALL_CARS.sort((a,b) => b.price - a.price);
-        
-        const grid = document.getElementById('car-grid');
-        
-        ALL_CARS.forEach((car, index) => {
-            const cardWrap = document.createElement('div');
-            // Adding reveal-on-scroll so observer can catch it
-            cardWrap.className = 'card-wrapper reveal-on-scroll'; 
-            
-            // Build the core card
-            cardWrap.innerHTML = `
-                <div class="smoke-container" id="smoke-${index}"></div>
-                <div class="card">
-                    <div class="card-img-wrap">
-                        <img src="${car.image}" alt="${car.title}" class="card-img" onerror="this.src='https://images.unsplash.com/photo-1544839304-c9a92207b0ec?q=80&w=800&auto=format&fit=crop';"/>
-                    </div>
-                    <div class="card-info">
-                        <div class="brand">${car.brand}</div>
-                        <div class="title">${car.title}</div>
-                        
-                        <div class="specs">
-                            <div class="spec-item">
-                                <span class="spec-val">${car.year||'--'}</span>
-                                <span class="spec-lbl">Year</span>
+        // SUPABASE_URL and SUPABASE_ANON are now available from config.js
+        const SUPABASE_ANON_KEY = SUPABASE_ANON;
+
+        const PAGE_SIZE = 50;   // rows per request — stay well under Supabase's 1000 row default limit
+        let   currentPage = 0;
+        let   totalCount  = 0;
+        let   allFetched  = false;
+        let   isFetching  = false;
+
+        // ─────────────────────────────────────────────────────────────────
+        // FETCH — paginated, filtered to tier = 'luxury', sorted by price desc
+        // Uses Supabase REST API directly (no SDK needed in browser)
+        // ─────────────────────────────────────────────────────────────────
+        async function fetchLuxuryCars(page = 0) {
+            if (isFetching) return;
+            isFetching = true;
+
+            const from = page * PAGE_SIZE;
+            const to   = from + PAGE_SIZE - 1;
+
+            const url = `${SUPABASE_URL}/rest/v1/cars`
+                + `?tier=eq.luxury`
+                + `&order=price.desc`
+                + `&select=title,brand,price,price_display,year,kms_covered,fuel_type,transmission,location,image,link,ownership`
+                + `&offset=${from}&limit=${PAGE_SIZE}`;
+
+            try {
+                const res = await fetch(url, {
+                    headers: {
+                        'apikey':        SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        // Ask Supabase to return total count in the header
+                        'Prefer':        'count=exact',
+                    }
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.message || `HTTP ${res.status}`);
+                }
+
+                // Total count comes back in Content-Range header: "0-49/812"
+                const contentRange = res.headers.get('Content-Range');
+                if (contentRange) {
+                    const match = contentRange.match(/\/(\d+)$/);
+                    if (match) totalCount = parseInt(match[1], 10);
+                }
+
+                const cars = await res.json();
+
+                if (cars.length < PAGE_SIZE) {
+                    allFetched = true; // no more pages
+                }
+
+                return cars;
+
+            } catch (err) {
+                console.error('Supabase fetch error:', err);
+                throw err;
+            } finally {
+                isFetching = false;
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────
+        // RENDER CARDS
+        // ─────────────────────────────────────────────────────────────────
+        const grid        = document.getElementById('car-grid');
+        const loadingEl   = document.getElementById('loading-state');
+        const errorEl     = document.getElementById('error-state');
+        const countBadge  = document.getElementById('count-badge');
+        const shownCount  = document.getElementById('shown-count');
+        const totalCountEl= document.getElementById('total-count');
+        const loadMoreWrap= document.getElementById('load-more-wrap');
+        const loadMoreBtn = document.getElementById('load-more-btn');
+
+        function formatPrice(price, display) {
+            if (display) return display;
+            if (!price) return '--';
+            return '₹' + Number(price).toLocaleString('en-IN');
+        }
+
+        function formatKms(kms) {
+            if (!kms && kms !== 0) return '--';
+            return (+kms).toLocaleString('en-IN') + ' km';
+        }
+
+        function renderCards(cars) {
+            cars.forEach((car, i) => {
+                const globalIndex = grid.children.length; // unique index across all pages
+
+                const cardWrap = document.createElement('div');
+                cardWrap.className = 'card-wrapper reveal-on-scroll';
+
+                cardWrap.innerHTML = `
+                    <div class="smoke-container" id="smoke-${globalIndex}"></div>
+                    <div class="card">
+                        <div class="card-img-wrap">
+                            <img
+                                src="${car.image || ''}"
+                                alt="${car.title || 'Car'}"
+                                class="card-img"
+                                onerror="this.src='https://images.unsplash.com/photo-1544839304-c9a92207b0ec?q=80&w=800&auto=format&fit=crop';"
+                            />
+                        </div>
+                        <div class="card-info">
+                            <div class="brand">${car.brand || ''}</div>
+                            <div class="title">${car.title || 'Unknown'}</div>
+                            <div class="specs">
+                                <div class="spec-item">
+                                    <span class="spec-val">${car.year || '--'}</span>
+                                    <span class="spec-lbl">Year</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-val">${formatKms(car.kms_covered)}</span>
+                                    <span class="spec-lbl">Mileage</span>
+                                </div>
+                                ${car.fuel_type ? `
+                                <div class="spec-item">
+                                    <span class="spec-val">${car.fuel_type}</span>
+                                    <span class="spec-lbl">Fuel</span>
+                                </div>` : ''}
                             </div>
-                            <div class="spec-item">
-                                <span class="spec-val">${car.kms ? (+car.kms).toLocaleString('en-IN')+'km' : '--'}</span>
-                                <span class="spec-lbl">Mileage</span>
+                            <div class="footer-row">
+                                <div class="price">${formatPrice(car.price, car.price_display)}</div>
+                                <a href="${car.link || '#'}" target="_blank" rel="noopener" class="link interactive">
+                                    View Details
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </a>
                             </div>
                         </div>
-                        
-                        <div class="footer-row">
-                            <div class="price">${car.price_display}</div>
-                            <a href="${car.link}" target="_blank" class="link interactive">
-                                View Details 
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                            </a>
-                        </div>
                     </div>
-                </div>
-            `;
-            
-            grid.appendChild(cardWrap);
+                `;
 
-            // Dynamically inject smoke puffs to animation logic
-            const smokeCont = cardWrap.querySelector('.smoke-container');
-            let smokeInterval;
-            
-            cardWrap.addEventListener('mouseenter', () => {
-                // Generate a continuous puff stream
-                smokeInterval = setInterval(() => {
-                    const puff = document.createElement('div');
-                    puff.className = 'smoke-puff';
-                    puff.style.setProperty('--driftX', `${(Math.random() - 0.5) * 60}px`);
-                    puff.style.animation = `smokeBillow ${1.5 + Math.random() * 1}s ease-out forwards`;
-                    
-                    smokeCont.appendChild(puff);
-                    
-                    // Cleanup puff
-                    setTimeout(() => {
-                        if(puff.parentNode) puff.parentNode.removeChild(puff);
-                    }, 2500);
-                }, 150); // new puff every 150ms
+                grid.appendChild(cardWrap);
+
+                // Smoke effect
+                const smokeCont = cardWrap.querySelector('.smoke-container');
+                let smokeInterval;
+                cardWrap.addEventListener('mouseenter', () => {
+                    smokeInterval = setInterval(() => {
+                        const puff = document.createElement('div');
+                        puff.className = 'smoke-puff';
+                        puff.style.setProperty('--driftX', `${(Math.random() - 0.5) * 60}px`);
+                        puff.style.animation = `smokeBillow ${1.5 + Math.random()}s ease-out forwards`;
+                        smokeCont.appendChild(puff);
+                        setTimeout(() => puff.parentNode && puff.parentNode.removeChild(puff), 2500);
+                    }, 150);
+                });
+                cardWrap.addEventListener('mouseleave', () => clearInterval(smokeInterval));
+
+                // Scroll reveal observer
+                revealObserver.observe(cardWrap);
             });
 
-            cardWrap.addEventListener('mouseleave', () => {
-                clearInterval(smokeInterval);
-                // Slowly let existing ones drift away
-            });
-        });
+            // Update count badge
+            const rendered = grid.children.length;
+            shownCount.textContent  = rendered;
+            totalCountEl.textContent = totalCount || rendered;
+            countBadge.style.display = 'block';
+        }
 
-        // ── SCROLL REVEAL OBSERVER ──
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-
-        const revealObserver = new IntersectionObserver((entries, observer) => {
+        // ─────────────────────────────────────────────────────────────────
+        // SCROLL REVEAL
+        // ─────────────────────────────────────────────────────────────────
+        const revealObserver = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    observer.unobserve(entry.target); // Reveal only once
+                    obs.unobserve(entry.target);
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.1 });
 
-        // Observe all cards after they are added to grid
-        document.querySelectorAll('.reveal-on-scroll').forEach(el => {
-            revealObserver.observe(el);
+        // ─────────────────────────────────────────────────────────────────
+        // INITIAL LOAD
+        // ─────────────────────────────────────────────────────────────────
+        async function loadPage(page) {
+            try {
+                if (page === 0) {
+                    loadingEl.style.display = 'flex';
+                    errorEl.style.display   = 'none';
+                } else {
+                    loadMoreBtn.disabled    = true;
+                    loadMoreBtn.textContent = 'Loading…';
+                }
+
+                const cars = await fetchLuxuryCars(page);
+
+                loadingEl.style.display = 'none';
+                renderCards(cars);
+
+                // Show / hide load more button
+                if (!allFetched && totalCount > grid.children.length) {
+                    loadMoreWrap.style.display = 'flex';
+                    loadMoreBtn.disabled       = false;
+                    loadMoreBtn.textContent    = 'Load More';
+                } else {
+                    loadMoreWrap.style.display = 'none';
+                }
+
+            } catch (err) {
+                loadingEl.style.display    = 'none';
+                errorEl.style.display      = 'flex';
+                loadMoreBtn.disabled       = false;
+                loadMoreBtn.textContent    = 'Load More';
+            }
+        }
+
+        loadPage(0);
+
+        loadMoreBtn.addEventListener('click', () => {
+            currentPage++;
+            loadPage(currentPage);
         });
 
-        // ── HERO IMAGE SEQUENCE ──
-        const canvas = document.getElementById("hero-canvas");
-        const ctx = canvas.getContext("2d");
+        document.getElementById('retry-btn').addEventListener('click', () => {
+            currentPage = 0;
+            allFetched  = false;
+            grid.innerHTML = '';
+            loadPage(0);
+        });
+
+        // ─────────────────────────────────────────────────────────────────
+        // HERO CANVAS ANIMATION
+        // ─────────────────────────────────────────────────────────────────
+        const canvas      = document.getElementById("hero-canvas");
+        const ctx         = canvas.getContext("2d");
         const darkOverlay = document.getElementById("dark-overlay");
 
         const TOTAL_FRAMES = 240;
-        let currentFrame = 1;
-        let isPlaying = false;
-        
-        const images = [];
-        let imagesLoaded = 0;
+        let currentFrame   = 1;
+        let isPlaying      = false;
+        const images       = [];
 
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
+            canvas.width  = window.innerWidth;
             canvas.height = window.innerHeight;
-            if (images[currentFrame]) {
-                drawFrame(currentFrame);
-            }
+            if (images[currentFrame]) drawFrame(currentFrame);
         }
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas();
 
-        const getImagePath = (index) => {
-            const paddedNumber = index.toString().padStart(3, '0');
-            return `../data/prestige_hero/ezgif-frame-${paddedNumber}.jpg`;
-        };
+        const getImagePath = (index) =>
+            `../data/prestige_hero/ezgif-frame-${index.toString().padStart(3, '0')}.jpg`;
 
-        // Preload first image immediately
-        const firstImg = new Image();
-        firstImg.src = getImagePath(1);
+        const firstImg  = new Image();
+        firstImg.src    = getImagePath(1);
         firstImg.onload = () => {
-             images[1] = firstImg;
-             drawFrame(1);
-             // Kick off the auto sequence
-             setTimeout(() => {
-                 startAutoSequence();
-             }, 500); // slight delay on load before starting
-        }
-
-        // Preload rest lazily
+            images[1] = firstImg;
+            drawFrame(1);
+            setTimeout(startAutoSequence, 500);
+        };
         for (let i = 2; i <= TOTAL_FRAMES; i++) {
-            const img = new Image();
-            img.src = getImagePath(i);
-            img.onload = () => {
-                imagesLoaded++;
-            };
-            images[i] = img;
+            const img  = new Image();
+            img.src    = getImagePath(i);
+            img.onload = () => {};
+            images[i]  = img;
         }
 
         function drawFrame(index) {
             const img = images[index];
-            if (!img) return;
-            
-            // Draw covering image center (object-fit: cover equivalent)
-            const cw = canvas.width;
-            const ch = canvas.height;
-            const iw = img.width;
-            const ih = img.height;
-            
+            if (!img || !img.complete) return;
+            const cw = canvas.width, ch = canvas.height;
+            const iw = img.width,    ih = img.height;
             const scale = Math.max(cw / iw, ch / ih);
-            const sw = iw * scale;
-            const sh = ih * scale;
-            const sx = (cw - sw) / 2;
-            const sy = (ch - sh) / 2;
-            
+            const sw = iw * scale, sh = ih * scale;
             ctx.clearRect(0, 0, cw, ch);
-            ctx.drawImage(img, sx, sy, sw, sh);
-            
-            // Dynamic darkness evaluation based on cinematic direction
-            // Starts dark (0.8 opacity) and gradually lightens to 0 opacity by frame 21
+            ctx.drawImage(img, (cw - sw) / 2, (ch - sh) / 2, sw, sh);
             if (index <= 21) {
-                 const progress = (index - 1) / 20; // 0 to 1
-                 const opacity = 0.8 - (progress * 0.8);
-                 darkOverlay.style.opacity = opacity.toFixed(2);
+                const progress  = (index - 1) / 20;
+                darkOverlay.style.opacity = (0.8 - progress * 0.8).toFixed(2);
             } else {
-                 darkOverlay.style.opacity = '0';
+                darkOverlay.style.opacity = '0';
             }
         }
 
         let lastDrawTime = 0;
-        const FPS = 24; // Medium speed, between fast and very slow cinematic
-        const FRAME_DURATION = 1000 / FPS;
+        const FPS = 24, FRAME_DURATION = 1000 / FPS;
 
-        function animateSequence(timestamp) {
+        function animateSequence(ts) {
             if (!isPlaying) return;
-            
-            // Throttle drawing down to target FPS for cinematic motion
-            if (timestamp - lastDrawTime >= FRAME_DURATION) {
-                lastDrawTime = timestamp;
-                
-                if (currentFrame >= TOTAL_FRAMES) {
-                    currentFrame = 1; // loop back to the beginning
-                } else {
-                    currentFrame++;
-                }
-
+            if (ts - lastDrawTime >= FRAME_DURATION) {
+                lastDrawTime = ts;
+                currentFrame = currentFrame >= TOTAL_FRAMES ? 1 : currentFrame + 1;
                 drawFrame(currentFrame);
             }
-            
-            if (isPlaying) {
-                requestAnimationFrame(animateSequence);
-            }
+            requestAnimationFrame(animateSequence);
         }
 
-        // Start animation loop automatically once the first image is loaded
         function startAutoSequence() {
             isPlaying = true;
-            requestAnimationFrame((timestamp) => {
-                 lastDrawTime = timestamp;
-                 animateSequence(timestamp);
-            });
+            requestAnimationFrame(ts => { lastDrawTime = ts; animateSequence(ts); });
         }
 
-        // ── CURSOR SCRIPT ──
+        // ─────────────────────────────────────────────────────────────────
+        // CURSOR
+        // ─────────────────────────────────────────────────────────────────
         const cursorIcon = document.getElementById('cursor');
         const ringIcon   = document.getElementById('cursorRing');
-        let mx=window.innerWidth/2, my=window.innerHeight/2, rx=mx, ry=my;
-        
-        document.addEventListener('mousemove', e => { 
-             mx=e.clientX; my=e.clientY; 
-             cursorIcon.style.left=mx+'px'; cursorIcon.style.top=my+'px'; 
-        });
-        function animRing(){ 
-             rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; 
-             ringIcon.style.left=rx+'px'; ringIcon.style.top=ry+'px'; 
-             requestAnimationFrame(animRing); 
-        }
-        animRing();
-        
-        // Enhance cursor on interactable hover 
-        // We use event delegation since some elements are dynamic
-        document.addEventListener('mouseover', e => {
-             const target = e.target.closest('a, button, .card-wrapper, .interactive');
-             if(target) {
-                 cursorIcon.style.width='20px'; cursorIcon.style.height='20px'; 
-                 ringIcon.style.width='54px'; ringIcon.style.height='54px'; 
-             }
-        });
-        document.addEventListener('mouseout', e => {
-             const target = e.target.closest('a, button, .card-wrapper, .interactive');
-             if(target) {
-                 cursorIcon.style.width='10px'; cursorIcon.style.height='10px'; 
-                 ringIcon.style.width='36px'; ringIcon.style.height='36px'; 
-             }
+        let mx = window.innerWidth / 2, my = window.innerHeight / 2, rx = mx, ry = my;
+
+        document.addEventListener('mousemove', e => {
+            mx = e.clientX; my = e.clientY;
+            cursorIcon.style.left = mx + 'px';
+            cursorIcon.style.top  = my + 'px';
         });
 
+        (function animRing() {
+            rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+            ringIcon.style.left = rx + 'px'; ringIcon.style.top = ry + 'px';
+            requestAnimationFrame(animRing);
+        })();
+
+        document.addEventListener('mouseover', e => {
+            if (e.target.closest('a, button, .card-wrapper, .interactive')) {
+                cursorIcon.style.width  = '20px'; cursorIcon.style.height = '20px';
+                ringIcon.style.width    = '54px'; ringIcon.style.height   = '54px';
+            }
+        });
+        document.addEventListener('mouseout', e => {
+            if (e.target.closest('a, button, .card-wrapper, .interactive')) {
+                cursorIcon.style.width  = '10px'; cursorIcon.style.height = '10px';
+                ringIcon.style.width    = '36px'; ringIcon.style.height   = '36px';
+            }
+        });
     </script>
 </body>
 </html>
