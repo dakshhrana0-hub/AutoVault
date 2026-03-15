@@ -1,23 +1,40 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
+  /* Compare Page / Tesla Theme Variables */
+  --neon-blue: #00f0ff;
+  --neon-blue-dim: rgba(0, 240, 255, 0.15);
   --gold: #C8903A;
   --gold-light: #E8B060;
-  --dark: #0a0c0e;
-  --dark2: #111416;
+  
+  --dark: #050507; /* New Charcoal/Black */
+  --dark2: #0f1115;
+  --dark-glass: rgba(15, 17, 21, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  
   --smoke: rgba(255,255,255,0.07);
-  --text: #f0ede8;
+  --text: #f5f5f7;
   --muted: rgba(240,237,232,0.55);
+  
+  --font-ui: 'Inter', -apple-system, sans-serif;
+  --font-lux: 'Cinzel', serif;
 }
 
-html { scroll-behavior: smooth; }
+html { 
+  scroll-behavior: smooth; 
+  cursor: none !important; 
+}
 
 body {
   background: var(--dark);
   color: var(--text);
-  font-family: 'Barlow', sans-serif;
+  font-family: var(--font-ui);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  cursor: none;
 }
+/* Ensure standard interactive elements don't show the default cursor */
+a, button, select, input, label, [onclick] { cursor: none !important; }
 
 /* ── CURSOR ── */
 .cursor {
@@ -45,13 +62,15 @@ body.auth-open .cursor-ring { opacity: 0; }
 /* ── NAV ── */
 nav {
   position: fixed; top: 0; left: 0; right: 0;
-  z-index: 100;
+  z-index: 500;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 28px 60px;
-  background: linear-gradient(to bottom, rgba(10,12,14,.95) 0%, transparent 100%);
-  animation: fadeDown .8s ease both;
+  padding: 0 60px; height: 72px;
+  background: rgba(5, 5, 7, 0.85);
+  border-bottom: 1px solid rgba(200, 144, 58, 0.1);
+  backdrop-filter: blur(24px);
+  overflow: visible;
+  transition: transform 0.3s ease;
 }
-@keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
 
 .logo {
   font-family: 'Cormorant Garamond', serif;

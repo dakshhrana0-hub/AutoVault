@@ -1,710 +1,943 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AutoVault – Car Compare</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --bg:#060606;--bg2:#0d0d0d;--bg3:#141414;--bg4:#1c1c1c;
-      --border:rgba(255,255,255,0.07);
-      --gold:#c9a84c;--gold2:#f0d080;--golddim:#7a6128;
-      --red:#e03c2b;--green:#3ce074;--text:#f0ece4;--muted:#6a6560;--accent:#00ffe0;
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{scroll-behavior:smooth;}
-    body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;overflow-x:hidden;cursor:none;}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Car Comparison – Find Your Perfect Deal</title>
+    
+    <!-- Premium Typography: Inter for clean UI, Cinzel for luxury accents -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link href="styles.css" rel="stylesheet" />
+    
+    <style>
+        /* ── GLOBAL / THEME OVERRIDES FOR COMPARE PAGE ── */
+        :root {
+            --neon-blue: #00f0ff;
+            --neon-blue-dim: rgba(0, 240, 255, 0.15);
+            --gold: #C8903A;
+            --dark-glass: rgba(15, 17, 21, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --font-ui: 'Inter', -apple-system, sans-serif;
+            --font-lux: 'Cinzel', serif;
+        }
 
-    #cur{width:7px;height:7px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
-    #curR{width:34px;height:34px;border:1px solid rgba(201,168,76,.45);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s,border-color .2s;}
-    body:has(button:hover) #curR,body:has(a:hover) #curR,body:has(.dd-item:hover) #curR{width:52px;height:52px;border-color:var(--gold);}
+        body {
+            background: #050507; /* Charcoal/Black */
+            color: #f5f5f7;
+            font-family: var(--font-ui);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            cursor: none;
+        }
 
-    nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 56px;height:66px;background:rgba(6,6,6,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-    .logo{font-family:'Bebas Neue';font-size:1.7rem;letter-spacing:.12em;}
-    .logo span:first-child{color:var(--gold);}
-    .logo span:last-child{color:var(--text);}
-    .nav-links{display:flex;gap:36px;list-style:none;}
-    .nav-links a{color:var(--muted);text-decoration:none;font-size:.75rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;transition:color .2s;}
-    .nav-links a:hover,.nav-links a.active{color:var(--gold);}
-    .nav-tag{background:var(--gold);color:var(--bg);font-family:'Bebas Neue';font-size:.75rem;letter-spacing:.1em;padding:3px 10px;}
+        /* Nav Spacer */
+        .nav-placeholder { height: 90px; }
 
-    .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding-top:66px;}
-    .hero-noise{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");opacity:.6;}
-    .hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 45%,rgba(201,168,76,.07) 0%,transparent 65%),radial-gradient(ellipse 40% 30% at 10% 80%,rgba(201,168,76,.03) 0%,transparent 50%);}
-    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);background-size:72px 72px;animation:gPulse 10s ease-in-out infinite;}
-    @keyframes gPulse{0%,100%{opacity:.4;}50%{opacity:.9;}}
-    .hero-eyebrow{font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;animation:riseIn 1s .1s both;display:flex;align-items:center;gap:12px;}
-    .hero-eyebrow::before,.hero-eyebrow::after{content:'';display:block;width:28px;height:1px;background:var(--gold);}
-    @keyframes riseIn{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:none;}}
-    .hero-title{font-family:'Bebas Neue';font-size:clamp(5rem,14vw,12rem);line-height:.88;text-align:center;position:relative;animation:riseIn 1.1s .2s cubic-bezier(.16,1,.3,1) both;}
-    .hero-title .t1{display:block;color:var(--text);}
-    .hero-title .t2{display:block;background:linear-gradient(120deg,var(--golddim),var(--gold),var(--gold2),var(--gold),var(--golddim));background-size:300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shim 5s linear infinite;}
-    @keyframes shim{0%{background-position:0% 50%;}100%{background-position:300% 50%;}}
-    .hero-title .t3{display:block;color:rgba(255,255,255,.06);-webkit-text-stroke:1px rgba(255,255,255,.06);}
-    .hero-sub{margin-top:24px;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);animation:riseIn 1s .4s both;text-align:center;max-width:460px;line-height:1.9;}
-    .hero-stats{display:flex;gap:56px;margin-top:56px;animation:riseIn 1s .6s both;}
-    .hstat{text-align:center;}
-    .hstat-num{font-family:'Bebas Neue';font-size:2.5rem;letter-spacing:.06em;color:var(--gold);}
-    .hstat-label{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:4px;}
-    .scroll-cue{position:absolute;bottom:48px;display:flex;flex-direction:column;align-items:center;gap:10px;animation:riseIn 1s 1s both;}
-    .scroll-line{width:1px;height:56px;overflow:hidden;position:relative;}
-    .scroll-line::after{content:'';position:absolute;top:0;left:0;right:0;background:linear-gradient(to bottom,transparent,var(--gold));animation:dropLine 2.2s ease-in-out infinite;height:100%;}
-    @keyframes dropLine{0%,100%{transform:translateY(-100%);}50%{transform:translateY(100%);}}
-    .scroll-label{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);}
+        /* ── HERO SECTION ── */
+        .comp-hero {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 20px;
+            overflow: hidden;
+        }
+        .comp-hero-bg {
+            position: absolute; inset: 0; z-index: -2;
+            background: 
+                linear-gradient(to bottom, rgba(5,5,7,0.3) 0%, rgba(5,5,7,0.95) 100%),
+                url('https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
+            /* Audi/BMW style luxury dark background */
+        }
+        .comp-hero-title {
+            font-family: var(--font-lux);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .comp-hero-sub {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.7);
+            font-weight: 300;
+            max-width: 600px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        .comp-hero-sub strong { color: var(--neon-blue); font-weight: 500; }
 
-    .particles{position:fixed;inset:0;pointer-events:none;z-index:1;}
-    .pt{position:absolute;border-radius:50%;opacity:0;animation:floatUp linear infinite;}
-    @keyframes floatUp{0%{opacity:0;transform:translateY(100vh) scale(0);}8%{opacity:.7;}92%{opacity:.2;}100%{opacity:0;transform:translateY(-80px) scale(1);}}
+        /* Search & Filter Bar */
+        .search-bar {
+            display: flex;
+            background: rgba(15,17,21,0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            padding: 8px 8px 8px 24px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02) inset;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex: 1;
+            min-width: 120px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            padding-right: 16px;
+        }
+        .filter-group:last-of-type { border-right: none; }
+        .filter-label {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .filter-select {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: var(--font-ui);
+            font-size: 0.95rem;
+            font-weight: 500;
+            width: 100%;
+            outline: none;
+            cursor: none;
+            appearance: none;
+        }
+        .filter-select option { background: #111; color: #fff; }
+        .search-btn {
+            background: var(--neon-blue);
+            color: #000;
+            border: none;
+            height: 48px;
+            width: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+        .search-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--neon-blue-dim);
+        }
 
-    .sec{padding:120px 64px;position:relative;}
-    .sec-inner{max-width:1400px;margin:0 auto;}
-    .sec-eyebrow{font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-    .sec-eyebrow::before{content:'';width:36px;height:1px;background:var(--gold);}
-    .sec-title{font-family:'Bebas Neue';font-size:clamp(3rem,7vw,6rem);letter-spacing:.05em;line-height:.95;margin-bottom:16px;}
-    .sec-desc{color:var(--muted);font-size:.9rem;line-height:1.9;max-width:580px;margin-bottom:64px;}
-    .divider{height:1px;background:linear-gradient(90deg,transparent 0%,var(--gold) 30%,rgba(201,168,76,.3) 70%,transparent 100%);margin:0 64px;}
+        /* ── SECTION LAYOUTS ── */
+        .comp-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+        .sec-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .sec-title {
+            font-family: var(--font-lux);
+            font-size: 2.2rem;
+            font-weight: 400;
+            margin-bottom: 12px;
+        }
+        .sec-title span { color: var(--gold); }
+        .sec-title.neon span { color: var(--neon-blue); }
 
-    /* SELECTOR */
-    #selector{background:var(--bg2);border-top:1px solid var(--border);}
-    .selector-wrap{display:grid;grid-template-columns:1fr 100px 1fr;gap:0;align-items:start;}
-    .slot{padding:48px;position:relative;}
-    .slot-num{font-family:'Cormorant Garamond';font-size:7rem;line-height:1;color:rgba(201,168,76,.06);position:absolute;top:32px;right:40px;font-style:italic;pointer-events:none;transition:color .4s;}
-    .slot.filled .slot-num{color:rgba(201,168,76,.14);}
-    .slot-head{font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
-    .slot-head::before{content:'';width:20px;height:1px;background:var(--gold);}
-    .search-box{position:relative;}
-    .search-box input{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:16px 20px 16px 50px;font-family:'Barlow';font-size:.92rem;outline:none;transition:border-color .25s,box-shadow .25s;letter-spacing:.02em;}
-    .search-box input:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(201,168,76,.08);}
-    .search-box input::placeholder{color:var(--muted);}
-    .s-icon{position:absolute;left:17px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
-    .dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg4);border:1px solid var(--gold);max-height:340px;overflow-y:auto;z-index:300;display:none;}
-    .dropdown.open{display:block;animation:ddOpen .2s ease;}
-    @keyframes ddOpen{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:none;}}
-    .dropdown::-webkit-scrollbar{width:4px;}
-    .dropdown::-webkit-scrollbar-thumb{background:var(--gold);}
-    .dd-item{display:flex;align-items:center;gap:16px;padding:14px 18px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;}
-    .dd-item:hover{background:rgba(201,168,76,.07);}
-    .dd-item img{width:72px;height:48px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;}
-    .dd-name{font-weight:600;font-size:.87rem;color:var(--text);line-height:1.3;}
-    .dd-meta{font-size:.72rem;color:var(--muted);margin-top:3px;display:flex;gap:6px;flex-wrap:wrap;}
-    .dd-meta span{background:var(--bg3);padding:1px 6px;border:1px solid var(--border);}
-    .dd-price{margin-left:auto;font-family:'Barlow Condensed';font-size:1.05rem;font-weight:700;color:var(--gold);white-space:nowrap;flex-shrink:0;}
-    .dd-src{font-size:.62rem;letter-spacing:.1em;padding:2px 6px;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.3);flex-shrink:0;}
-    .dd-empty{padding:24px;text-align:center;color:var(--muted);font-size:.85rem;}
+        /* ── 3-CAR CARDS GRID ── */
+        .cars-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        @media (max-width: 1024px) { .cars-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .cars-grid { grid-template-columns: 1fr; } }
+        
+        .c-card {
+            background: var(--dark-glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .c-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(200,144,58,0.08);
+            border-color: rgba(255,255,255,0.15);
+        }
+        .platform-badge {
+            position: absolute;
+            top: 16px; left: 16px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 8px;
+            z-index: 10;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .platform-badge img { height: 12px; }
+        
+        .c-img-wrap {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+        .c-img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+        .c-card:hover .c-img { transform: scale(1.05); }
 
-    .sel-card{display:none;margin-top:28px;border:1px solid var(--border);position:relative;overflow:hidden;animation:slideCard .5s cubic-bezier(.16,1,.3,1);}
-    @keyframes slideCard{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
-    .slot.filled .sel-card{display:block;}
-    .sel-img-wrap{position:relative;overflow:hidden;height:220px;}
-    .sel-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease,filter .4s;filter:brightness(.8);}
-    .sel-card:hover .sel-img-wrap img{transform:scale(1.04);filter:brightness(.95);}
-    .sel-img-overlay{position:absolute;inset:0;background:linear-gradient(to top,var(--bg3) 0%,transparent 60%);}
-    .sel-badge{position:absolute;top:14px;left:14px;background:rgba(6,6,6,.7);backdrop-filter:blur(8px);border:1px solid var(--border);padding:4px 10px;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);}
-    .sel-dismiss{position:absolute;top:14px;right:14px;width:30px;height:30px;background:rgba(224,60,43,.15);border:1px solid rgba(224,60,43,.35);color:var(--red);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;transition:background .2s;}
-    .sel-dismiss:hover{background:rgba(224,60,43,.3);}
-    .sel-body{padding:24px 28px 20px;background:var(--bg3);}
-    .sel-name{font-family:'Barlow Condensed';font-size:1.5rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--text);line-height:1.1;}
-    .sel-price{font-family:'Bebas Neue';font-size:2rem;letter-spacing:.06em;color:var(--gold);margin-top:6px;}
-    .sel-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
-    .chip{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border:1px solid var(--border);color:var(--muted);background:var(--bg4);}
-    .chip.hi{border-color:rgba(201,168,76,.3);color:var(--gold);background:rgba(201,168,76,.06);}
-    .sel-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:1px;}
-    .sq-item{background:var(--bg4);padding:14px 16px;text-align:center;}
-    .sq-val{font-family:'Barlow Condensed';font-size:1.3rem;font-weight:700;color:var(--text);}
-    .sq-label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+        .c-info { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+        .c-name { font-size: 1.4rem; font-weight: 600; margin-bottom: 4px; }
+        .c-sub { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 20px; }
+        .c-price { 
+            font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 24px;
+            display: flex; align-items: baseline; gap: 8px;
+        }
+        .c-price span { font-size: 0.9rem; color: rgba(255,255,255,0.4); font-weight: 400; text-decoration: line-through; }
+        
+        .c-specs {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+            margin-top: auto;
+        }
+        .c-spec { display: flex; flex-direction: column; gap: 4px; }
+        .c-spec-lbl { font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+        .c-spec-val { font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .c-spec-val svg { stroke: var(--gold); }
 
-    .vs-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:120px;gap:0;}
-    .vs-line-top,.vs-line-bot{width:1px;height:80px;background:linear-gradient(to bottom,transparent,var(--gold));}
-    .vs-line-bot{background:linear-gradient(to top,transparent,var(--gold));}
-    .vs-ring{width:72px;height:72px;border-radius:50%;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;background:var(--bg);position:relative;animation:vsGlow 3.5s ease-in-out infinite;}
-    @keyframes vsGlow{0%,100%{box-shadow:0 0 0 0 rgba(201,168,76,.35);}50%{box-shadow:0 0 0 16px rgba(201,168,76,0);}}
-    .vs-ring::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(201,168,76,.2);animation:vsGlow 3.5s .5s ease-in-out infinite;}
-    .vs-text{font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:.15em;color:var(--text);}
+        /* ── AI INSIGHTS PANEL ── */
+        .ai-panel {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.05) 0%, rgba(15,17,21,0.8) 100%);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .ai-panel::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+        }
+        .ai-insight {
+            display: flex; flex-direction: column; gap: 12px;
+            padding: 24px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+        .ai-insight-head { display: flex; align-items: center; justify-content: space-between; }
+        .ai-badge {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-blue);
+            padding: 4px 10px; border-radius: 100px;
+            font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .ai-badge.gold { background: rgba(200, 144, 58, 0.1); color: var(--gold); }
+        .ai-badge.green { background: rgba(46, 213, 115, 0.1); color: #2ed573; }
+        
+        .ai-val { font-size: 2rem; font-weight: 700; font-family: var(--font-lux); }
+        .ai-desc { font-size: 0.85rem; color: rgba(255,255,255,0.5); line-height: 1.5; }
 
-    .cta-bar{display:flex;justify-content:center;align-items:center;gap:24px;padding:48px;background:var(--bg);}
-    .cta-btn{font-family:'Bebas Neue';font-size:1.15rem;letter-spacing:.2em;padding:20px 72px;background:linear-gradient(135deg,#a07830,var(--gold));color:var(--bg);border:none;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .3s;}
-    .cta-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);transition:left .45s;}
-    .cta-btn:hover::before{left:100%;}
-    .cta-btn:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(201,168,76,.4);}
-    .cta-btn:disabled{background:var(--bg3);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none;}
-    .cta-hint{font-size:.75rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
+        /* ── 2-CAR SIDE-BY-SIDE DUEL ── */
+        .duel-section {
+            background: linear-gradient(180deg, rgba(15,17,21,0) 0%, rgba(0, 240, 255, 0.03) 50%, rgba(15,17,21,0) 100%);
+            padding: 80px 40px;
+            margin: 40px 0;
+            border-top: 1px solid rgba(255,255,255,0.02);
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+        .duel-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 200px 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+        @media (max-width: 900px) {
+            .duel-container { grid-template-columns: 1fr; gap: 40px; }
+            .duel-vs { display: none; }
+        }
+        .duel-card {
+            background: var(--dark-glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.4s, box-shadow 0.4s;
+        }
+        .duel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .duel-card.winner {
+            border-color: rgba(0, 240, 255, 0.4);
+            box-shadow: 0 10px 40px var(--neon-blue-dim);
+        }
+        .duel-card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        .duel-vs {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-lux);
+            font-size: 3rem;
+            color: rgba(255,255,255,0.1);
+            font-weight: 600;
+        }
+        .duel-vs span {
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-top: 10px;
+            font-family: var(--font-ui);
+        }
+        
+        .duel-stats { margin-top: 30px; }
+        .duel-stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.95rem;
+        }
+        .duel-stat-row:last-child { border-bottom: none; }
+        .duel-stat-lbl { color: rgba(255,255,255,0.4); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .duel-stat-val { font-weight: 600; }
+        .duel-stat-val.win { color: var(--neon-blue); }
 
-    #results{display:none;}
-    #results.on{display:block;}
+        /* ── COMPARISON TABLE ── */
+        .comp-table-wrap {
+            background: var(--dark-glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+        .comp-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 800px;
+        }
+        .comp-table th, .comp-table td {
+            padding: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .comp-table th {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            width: 25%;
+        }
+        .comp-table td {
+            font-size: 1rem;
+            font-weight: 500;
+            width: 25%;
+        }
+        .comp-table tr:last-child th, .comp-table tr:last-child td { border-bottom: none; }
+        .td-highlight { color: var(--neon-blue); font-weight: 600; }
 
-    .sticky-nav{position:sticky;top:66px;z-index:150;background:rgba(6,6,6,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:none;}
-    #results.on .sticky-nav{display:block;}
-    .sn-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;padding:0 64px;}
-    .sn-item{padding:14px 24px;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;white-space:nowrap;}
-    .sn-item:hover{color:var(--text);}
-    .sn-item.sn-active{color:var(--gold);border-bottom-color:var(--gold);}
-    .sn-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;}
-    .sn-winner{margin-left:auto;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-size:.65rem;letter-spacing:.1em;padding:4px 14px;}
+        /* ── IMAGE DAMAGE DETECTION ── */
+        .damage-sec {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        .damage-visual {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+        .damage-visual img { width: 100%; display: block; }
+        .bounding-box {
+            position: absolute;
+            border: 2px dashed #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+            border-radius: 4px;
+            animation: pulseBox 2s infinite;
+        }
+        .box-label {
+            position: absolute;
+            top: -24px; left: -2px;
+            background: #ff4757;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 2px;
+            white-space: nowrap;
+        }
+        @keyframes pulseBox {
+            0% { box-shadow: 0 0 0 0 rgba(255,71,87,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255,71,87,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,71,87,0); }
+        }
+        .damage-upload {
+            background: rgba(15,17,21,0.6);
+            border: 2px dashed rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: none;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .damage-upload:hover {
+            background: rgba(255,255,255,0.02);
+            border-color: var(--neon-blue);
+        }
+        .damage-upload svg { stroke: rgba(255,255,255,0.3); margin-bottom: 20px; transition: stroke 0.3s; }
+        .damage-upload:hover svg { stroke: var(--neon-blue); }
 
-    /* SBS */
-    #sbs{background:var(--bg);}
-    .sbs-banner{display:grid;grid-template-columns:260px 1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
-    .sbs-banner > div{background:var(--bg2);}
-    .sbs-corner{display:flex;align-items:flex-end;padding:28px;}
-    .sbs-corner-label{font-family:'Cormorant Garamond';font-style:italic;font-size:1rem;color:var(--muted);}
-    .sbs-car-col{padding:28px 36px;text-align:center;position:relative;overflow:hidden;}
-    .sbs-car-col::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
-    .sbs-car-col.c1::before{background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-    .sbs-car-col.c2::before{background:linear-gradient(90deg,transparent,var(--accent),transparent);}
-    .sbs-thumb{width:100%;height:160px;object-fit:cover;margin-bottom:16px;border:1px solid var(--border);}
-    .sbs-car-name{font-family:'Barlow Condensed';font-size:1.15rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}
-    .sbs-car-sub{font-size:.72rem;color:var(--muted);margin-top:4px;letter-spacing:.08em;}
-    .sbs-car-price{font-family:'Bebas Neue';font-size:1.9rem;letter-spacing:.05em;margin-top:8px;}
-    .sbs-car-col.c1 .sbs-car-name,.sbs-car-col.c1 .sbs-car-price{color:var(--gold);}
-    .sbs-car-col.c2 .sbs-car-name,.sbs-car-col.c2 .sbs-car-price{color:var(--accent);}
+        /* ── SAVE & EXPORT ── */
+        .export-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 60px;
+            padding-top: 60px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            background: var(--dark-glass);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 16px 32px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            display: flex; align-items: center; gap: 10px;
+            cursor: none;
+            transition: all 0.3s ease;
+        }
+        .action-btn:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateY(-2px);
+        }
+        .action-btn.primary {
+            background: var(--neon-blue);
+            color: #000;
+            border: none;
+        }
+        .action-btn.primary:hover {
+            background: #00d8e6;
+            box-shadow: 0 10px 20px var(--neon-blue-dim);
+        }
 
-    .sbs-cat{display:grid;grid-template-columns:260px 1fr 1fr;gap:1px;background:var(--border);margin-bottom:1px;}
-    .sbs-cat-label{grid-column:1/-1;background:var(--bg3);padding:10px 28px;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px;}
-    .sbs-cat-label::before{content:'';width:16px;height:1px;background:var(--gold);}
-    .sbs-row-label,.sbs-row-val{background:var(--bg2);padding:18px 28px;display:flex;align-items:center;}
-    .sbs-group:hover .sbs-row-label,.sbs-group:hover .sbs-row-val{background:rgba(201,168,76,.025);}
-    .sbs-row-label{gap:12px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
-    .sbs-row-label small{display:block;font-size:.6rem;letter-spacing:.06em;color:rgba(122,117,112,.5);text-transform:none;margin-top:2px;font-weight:300;}
-    .sbs-row-val{font-family:'Barlow Condensed';font-size:1.1rem;font-weight:600;color:var(--text);position:relative;}
-    .sbs-row-val.win{color:var(--gold);}
-    .sbs-row-val.win2{color:var(--accent);}
-    .win-star{position:absolute;right:14px;font-size:.7rem;color:var(--gold);}
-    .win-star2{position:absolute;right:14px;font-size:.7rem;color:var(--accent);}
-    .vtag{display:inline-block;font-size:.62rem;padding:2px 7px;border:1px solid var(--border);margin-left:8px;vertical-align:middle;color:var(--muted);}
-    .vtag.g{border-color:rgba(60,224,116,.3);color:var(--green);}
-    .vtag.r{border-color:rgba(224,60,43,.3);color:var(--red);}
-
-    .sbs-score-bar{display:grid;grid-template-columns:260px 1fr 1fr;gap:1px;background:var(--border);margin-top:1px;}
-    .sbs-score-corner{background:var(--bg3);padding:24px 28px;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;}
-    .sbs-score-cell{background:var(--bg3);padding:24px 36px;}
-    .score-track{height:6px;background:var(--border);margin-bottom:10px;}
-    .score-fill{height:100%;transition:width 1.4s cubic-bezier(.16,1,.3,1);width:0%;}
-    .score-fill.c1{background:linear-gradient(90deg,var(--golddim),var(--gold));}
-    .score-fill.c2{background:linear-gradient(90deg,#007a6a,var(--accent));}
-    .score-nums{display:flex;justify-content:space-between;align-items:baseline;}
-    .score-big{font-family:'Bebas Neue';font-size:2.2rem;letter-spacing:.05em;}
-    .score-big.c1{color:var(--gold);}
-    .score-big.c2{color:var(--accent);}
-    .score-label{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
-
-    /* PERF */
-    #perf{background:var(--bg2);border-top:1px solid var(--border);}
-    .perf-hero{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1px;background:var(--border);margin-bottom:64px;}
-    .ph-cell{background:var(--bg3);padding:40px 36px;position:relative;overflow:hidden;transition:background .2s;}
-    .ph-cell:hover{background:var(--bg4);}
-    .ph-cell::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);transform:translateX(-100%);transition:transform .5s;}
-    .ph-cell:hover::after{transform:translateX(0);}
-    .ph-icon{font-size:1.5rem;margin-bottom:16px;}
-    .ph-metric{font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
-    .ph-vals{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;}
-    .ph-v1{font-family:'Bebas Neue';font-size:2.6rem;letter-spacing:.04em;color:var(--gold);line-height:1;}
-    .ph-v2{font-family:'Bebas Neue';font-size:2.6rem;letter-spacing:.04em;color:var(--accent);line-height:1;}
-    .ph-unit{font-size:.7rem;color:var(--muted);letter-spacing:.1em;align-self:flex-end;padding-bottom:6px;}
-    .ph-sep{color:var(--muted);font-size:.8rem;align-self:center;}
-    .ph-sub{font-size:.7rem;color:var(--muted);margin-top:10px;line-height:1.6;}
-    .ph-win{font-size:.62rem;letter-spacing:.1em;color:var(--gold);margin-top:8px;display:flex;align-items:center;gap:6px;}
-    .ph-win2{color:var(--accent);}
-    .ph-win::before{content:'▲';font-size:.5rem;}
-
-    .accel-section{background:var(--bg3);border:1px solid var(--border);padding:40px;margin-bottom:48px;}
-    .accel-title{font-family:'Barlow Condensed';font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:28px;}
-    .accel-track{position:relative;height:90px;background:var(--bg4);border:1px solid var(--border);overflow:hidden;margin-bottom:4px;}
-    .accel-road{position:absolute;bottom:0;left:0;right:0;height:14px;background:repeating-linear-gradient(90deg,var(--border) 0,var(--border) 20px,transparent 20px,transparent 40px);}
-    .accel-car{position:absolute;bottom:14px;height:34px;display:flex;align-items:center;font-size:1.5rem;transition:left 1.6s cubic-bezier(.2,.8,.4,1);}
-    .accel-car span{font-size:.6rem;letter-spacing:.1em;margin-left:6px;white-space:nowrap;}
-    .accel-car2{bottom:48px;}
-    .accel-flag{position:absolute;right:14px;bottom:6px;font-size:1.3rem;}
-    .accel-labels{display:flex;justify-content:space-between;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:1px;}
-    .accel-times{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
-    .atc{background:var(--bg4);padding:20px 28px;}
-    .atc-car{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-    .atc-time{font-family:'Bebas Neue';font-size:3.5rem;letter-spacing:.05em;line-height:1;}
-    .atc-time.c1{color:var(--gold);}
-    .atc-time.c2{color:var(--accent);}
-    .atc-delta{font-size:.75rem;color:var(--muted);margin-top:6px;}
-    .atc-delta strong{color:var(--green);}
-
-    .bar-section{margin-bottom:52px;}
-    .bar-sec-title{font-family:'Barlow Condensed';font-size:.9rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border);}
-    .perf-bar-row{margin-bottom:24px;}
-    .pbr-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-    .pbr-name{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
-    .pbr-vals{display:flex;gap:20px;}
-    .pbr-v{font-family:'Barlow Condensed';font-size:1rem;font-weight:700;}
-    .pbr-v.c1{color:var(--gold);}
-    .pbr-v.c2{color:var(--accent);}
-    .dual-track{display:flex;flex-direction:column;gap:5px;}
-    .btrack{height:7px;background:var(--border);position:relative;overflow:hidden;}
-    .bfill{position:absolute;top:0;left:0;height:100%;transition:width 1.3s cubic-bezier(.16,1,.3,1);width:0%;}
-    .bfill.c1{background:linear-gradient(90deg,var(--golddim),var(--gold));}
-    .bfill.c2{background:linear-gradient(90deg,#007a6a,var(--accent));}
-
-    .curve-wrap{background:var(--bg3);border:1px solid var(--border);padding:36px;}
-    .curve-title{font-family:'Barlow Condensed';font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px;}
-
-    /* COST */
-    #cost{background:var(--bg);}
-    .cost-headline{display:grid;grid-template-columns:1fr 1px 1fr;margin-bottom:64px;}
-    .cost-hl-div{background:var(--border);}
-    .cost-hl{padding:48px 56px;}
-    .cost-hl-car{font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
-    .cost-hl-car::before{content:'';width:16px;height:1px;}
-    .h1 .cost-hl-car{color:var(--gold);}
-    .h1 .cost-hl-car::before{background:var(--gold);}
-    .h2 .cost-hl-car{color:var(--accent);}
-    .h2 .cost-hl-car::before{background:var(--accent);}
-    .cost-hl-total{font-family:'Bebas Neue';font-size:clamp(2.5rem,6vw,5rem);letter-spacing:.04em;line-height:1;margin-bottom:6px;}
-    .h1 .cost-hl-total{color:var(--gold);}
-    .h2 .cost-hl-total{color:var(--accent);}
-    .cost-hl-label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);}
-    .cost-hl-breakdown{display:flex;gap:24px;margin-top:24px;flex-wrap:wrap;}
-    .cost-hl-item{font-size:.75rem;color:var(--muted);}
-    .cost-hl-item strong{display:block;font-family:'Barlow Condensed';font-size:1.1rem;color:var(--text);margin-bottom:2px;}
-    .cost-save{margin-top:16px;font-size:.75rem;color:var(--green);display:flex;align-items:center;gap:8px;}
-    .cost-save::before{content:'▼';}
-
-    .cost-cols{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);margin-bottom:2px;}
-    .cost-col{background:var(--bg2);}
-    .cost-col-head{padding:24px 32px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-    .cost-col-head::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
-    .cc1 .cost-col-head::before{background:linear-gradient(90deg,var(--gold),transparent);}
-    .cc2 .cost-col-head::before{background:linear-gradient(90deg,var(--accent),transparent);}
-    .cost-col-car{font-family:'Barlow Condensed';font-size:1.1rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;}
-    .cc1 .cost-col-car{color:var(--gold);}
-    .cc2 .cost-col-car{color:var(--accent);}
-    .cost-col-p{font-size:.75rem;color:var(--muted);margin-top:4px;}
-    .ci-row{display:flex;justify-content:space-between;align-items:center;padding:18px 32px;border-bottom:1px solid var(--border);transition:background .15s;}
-    .ci-row:hover{background:rgba(201,168,76,.025);}
-    .ci-row:last-child{border-bottom:none;}
-    .ci-left{display:flex;align-items:center;gap:14px;}
-    .ci-ico{width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
-    .ci-name{font-size:.8rem;color:var(--text);}
-    .ci-desc{font-size:.68rem;color:var(--muted);margin-top:2px;}
-    .ci-amt{font-family:'Barlow Condensed';font-size:1.1rem;font-weight:700;color:var(--text);}
-
-    .cost-totals{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);}
-    .ct-cell{background:var(--bg3);padding:32px;}
-    .ct-label{font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-    .ct-amt{font-family:'Bebas Neue';font-size:2.6rem;letter-spacing:.05em;}
-    .tc1 .ct-amt{color:var(--gold);}
-    .tc2 .ct-amt{color:var(--accent);}
-    .ct-save{font-size:.75rem;color:var(--green);margin-top:8px;display:flex;align-items:center;gap:6px;}
-    .ct-save::before{content:'▼';}
-
-    .cost-yearly{margin-top:56px;}
-    .cy-title{font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:.1em;margin-bottom:24px;}
-    .cy-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);}
-    .cyg-head{background:var(--bg3);padding:16px;text-align:center;font-family:'Bebas Neue';font-size:1.2rem;letter-spacing:.1em;color:var(--muted);}
-    .cyg-cell{background:var(--bg2);padding:16px;text-align:center;border-top:1px solid var(--border);}
-    .cyg-v1{font-family:'Barlow Condensed';font-size:1rem;font-weight:700;color:var(--gold);}
-    .cyg-v2{font-family:'Barlow Condensed';font-size:1rem;font-weight:700;color:var(--accent);margin-top:4px;}
-    .cyg-sep{width:100%;height:1px;background:var(--border);margin:5px 0;}
-
-    .rc-wrap{margin-top:56px;}
-    .rc-title{font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:.1em;margin-bottom:24px;}
-    .rc-row{display:flex;align-items:center;gap:20px;margin-bottom:18px;}
-    .rc-name{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);width:160px;flex-shrink:0;}
-    .rc-bars{flex:1;display:flex;flex-direction:column;gap:5px;}
-    .rc-amts{width:110px;text-align:right;display:flex;flex-direction:column;gap:5px;}
-    .rc-amt{font-family:'Barlow Condensed';font-size:.95rem;font-weight:700;}
-    .rc-amt.c1{color:var(--gold);}
-    .rc-amt.c2{color:var(--accent);}
-
-    .fiu{opacity:0;transform:translateY(36px);transition:opacity .7s,transform .8s cubic-bezier(.16,1,.3,1);}
-    .fiu.vis{opacity:1;transform:none;}
-    .fiu.d1{transition-delay:.1s;}
-    .fiu.d2{transition-delay:.2s;}
-    .fiu.d3{transition-delay:.3s;}
-    .fiu.d4{transition-delay:.4s;}
-
-    @keyframes rowIn{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}
-
-    @media(max-width:900px){
-      .selector-wrap,.sbs-banner,.sbs-cat,.cost-headline,.cost-cols,.cost-totals,.perf-hero{grid-template-columns:1fr;}
-      .cy-grid{grid-template-columns:repeat(3,1fr);}
-      .sec{padding:80px 24px;}
-      nav{padding:0 24px;}
-      .sn-inner{padding:0 24px;overflow-x:auto;}
-      .sbs-score-bar{grid-template-columns:1fr;}
-    }
-  </style>
+        /* ── FOOTER OVERRIDE ── */
+        .footer-platforms {
+            display: flex; gap: 30px; align-items: center; justify-content: center;
+            margin-bottom: 40px; opacity: 0.4; flex-wrap: wrap;
+        }
+        .footer-platforms span { font-weight: 700; font-size: 1.2rem; filter: grayscale(1); transition: filter 0.3s, opacity 0.3s;}
+        .footer-platforms span:hover { filter: grayscale(0); opacity: 1;}
+    </style>
 </head>
 <body>
 
-<div id="cur"></div>
-<div id="curR"></div>
-<div class="particles" id="ptc"></div>
+    <!-- Custom Cursor (AutoVault Standard) -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
 
-<nav>
-  <div class="logo"><span>Auto</span><span>Vault</span></div>
-  <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="all_listing.html">All Cars</a></li>
-    <li><a href="compare.html" class="active">Compare</a></li>
-  </ul>
-  <div class="nav-tag">Compare Tool</div>
-</nav>
+    <!-- ── NAV ── -->
+    <nav>
+        <a class="logo" href="index.html"><em>Auto</em>Vault</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li class="has-dropdown">
+                <a href="all_listing.html">Vehicles</a>
+                <div class="nav-dropdown">
+                    <div class="nav-dropdown-inner">
+                        <a href="prestige_collection.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Prestige Collection</a>
+                        <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Featured Models</a>
+                        <a href="all_listing.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Browse All</a>
+                        <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Saved Wishlist</a>
+                    </div>
+                </div>
+            </li>
+            <li class="has-dropdown">
+                <a href="compare.html" class="active">Compare</a>
+                <div class="nav-dropdown">
+                    <div class="nav-dropdown-inner">
+                        <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M16 3h5v5M4 20 21 3"/><path d="M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Side-by-Side</a>
+                        <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Performance</a>
+                        <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Cost of Ownership</a>
+                    </div>
+                </div>
+            </li>
+            <li><a href="#">Brands</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+        <a class="nav-icon" href="login.html">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+    </nav>
+    <div class="nav-placeholder"></div>
 
-<section class="hero">
-  <div class="hero-noise"></div>
-  <div class="hero-glow"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-eyebrow">AutoVault Intelligence</div>
-  <h1 class="hero-title">
-    <span class="t1">BATTLE</span>
-    <span class="t2">TESTED</span>
-    <span class="t3">COMPARED</span>
-  </h1>
-  <p class="hero-sub">Deep-dive comparison across specs, raw performance, and total 5-year cost of ownership.</p>
-  <div class="hero-stats">
-    <div class="hstat"><div class="hstat-num" id="hstatCnt">—</div><div class="hstat-label">Cars in database</div></div>
-    <div class="hstat"><div class="hstat-num">3</div><div class="hstat-label">Compare modules</div></div>
-    <div class="hstat"><div class="hstat-num">26+</div><div class="hstat-label">Data points</div></div>
-  </div>
-  <div class="scroll-cue"><div class="scroll-line"></div><span class="scroll-label">Select below</span></div>
-</section>
-
-<section class="sec" id="selector" style="padding-top:80px;padding-bottom:80px;">
-  <div class="sec-inner">
-    <div style="text-align:center;margin-bottom:56px;">
-      <div class="sec-eyebrow" style="justify-content:center;">Step One</div>
-      <div class="sec-title" style="margin-bottom:12px;">Choose Your Contenders</div>
-      <p style="color:var(--muted);font-size:.88rem;letter-spacing:.05em;">Search across OLX Luxe Delhi &amp; FusionCars inventory</p>
-    </div>
-    <div class="selector-wrap">
-      <div class="slot" id="slot1">
-        <div class="slot-num">01</div>
-        <div class="slot-head">Challenger One</div>
-        <div class="search-box">
-          <svg class="s-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="text" id="s1" placeholder="Search make, model, brand…" autocomplete="off"/>
-          <div class="dropdown" id="d1"></div>
+    <!-- ── HERO SECTION ── -->
+    <section class="comp-hero">
+        <div class="comp-hero-bg"></div>
+        <h1 class="comp-hero-title">Compare Cars. Find the Best Deal.</h1>
+        <p class="comp-hero-sub">Harness the power of AutoVault <strong>AI</strong> to simultaneously analyze listings across OLX, Cars24, CarDekho, and FusionCars.</p>
+        
+        <!-- Luxury Search/Filter Bar -->
+        <div class="search-bar">
+            <div class="filter-group">
+                <span class="filter-label">Brand & Model</span>
+                <select class="filter-select">
+                    <option>Audi A6 / BMW 5 Series</option>
+                    <option>Mercedes E-Class</option>
+                    <option>Jaguar XF</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Budget Range</span>
+                <select class="filter-select">
+                    <option>$20k - $40k</option>
+                    <option>$40k - $60k</option>
+                    <option>$60k+</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Fuel & Trans</span>
+                <select class="filter-select">
+                    <option>Petrol &bull; Auto</option>
+                    <option>Diesel &bull; Auto</option>
+                    <option>EV</option>
+                </select>
+            </div>
+            <div class="filter-group" style="padding-right:0;">
+                <span class="filter-label">Location</span>
+                <select class="filter-select">
+                    <option>New York, NY</option>
+                    <option>Los Angeles, CA</option>
+                    <option>Nationwide</option>
+                </select>
+            </div>
+            <button class="search-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </button>
         </div>
-        <div class="sel-card" id="sc1">
-          <div class="sel-img-wrap"><img id="si1" src="" alt=""/><div class="sel-img-overlay"></div><div class="sel-badge">Selected</div><button class="sel-dismiss" onclick="clearSlot(1)">✕</button></div>
-          <div class="sel-body"><div class="sel-name" id="sn1"></div><div class="sel-price" id="sp1"></div><div class="sel-chips" id="sch1"></div></div>
-          <div class="sel-quick" id="sq1"></div>
+    </section>
+
+    <!-- ── 3-CAR COMPARISON CARDS ── -->
+    <section class="comp-section">
+        <div class="sec-header">
+            <h2 class="sec-title">Top <span>Matches</span> Found</h2>
+            <p style="color:var(--muted)">Analyzing 142 listings across integrated platforms</p>
         </div>
-      </div>
-      <div class="vs-col"><div class="vs-line-top"></div><div class="vs-ring"><div class="vs-text">VS</div></div><div class="vs-line-bot"></div></div>
-      <div class="slot" id="slot2">
-        <div class="slot-num">02</div>
-        <div class="slot-head">Challenger Two</div>
-        <div class="search-box">
-          <svg class="s-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="text" id="s2" placeholder="Search make, model, brand…" autocomplete="off"/>
-          <div class="dropdown" id="d2"></div>
+        
+        <div class="cars-grid">
+            <!-- Card 1 -->
+            <div class="c-card">
+                <div class="platform-badge">OLX Autos</div>
+                <div class="c-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop" alt="BMW 5 Series" class="c-img">
+                </div>
+                <div class="c-info">
+                    <h3 class="c-name">2021 BMW 5 Series</h3>
+                    <p class="c-sub">530i M Sport</p>
+                    <div class="c-price">$38,500 <span>$41k MSRP</span></div>
+                    
+                    <div class="c-specs">
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Mileage</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 24,500 mi</span>
+                        </div>
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Fuel Type</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"/><path d="M11 6h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4"/></svg> Petrol</span>
+                        </div>
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Location</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> New York</span>
+                        </div>
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Ownership</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 1st Owner</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="c-card" style="border-color: rgba(0, 240, 255, 0.3); box-shadow: 0 10px 30px var(--neon-blue-dim);">
+                <div class="platform-badge" style="background:var(--neon-blue); color:#000;">Cars24</div>
+                <div class="c-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1610880846497-7257b23f6138?q=80&w=800&auto=format&fit=crop" alt="Mercedes E-Class" class="c-img">
+                </div>
+                <div class="c-info">
+                    <h3 class="c-name">2022 Mercedes E350</h3>
+                    <p class="c-sub">AMG Line</p>
+                    <div class="c-price">$42,900 <span style="color:var(--neon-blue); text-decoration:none; background:rgba(0,240,255,0.1); padding:2px 6px; border-radius:4px;">Great Price</span></div>
+                    
+                    <div class="c-specs">
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Mileage</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 18,200 mi</span>
+                        </div>
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Fuel Type</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"/><path d="M11 6h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4"/></svg> Petrol</span>
+                        </div>
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Location</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> New Jersey</span>
+                        </div>
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Ownership</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 1st Owner</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="c-card">
+                <div class="platform-badge">CarDekho</div>
+                <div class="c-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?q=80&w=800&auto=format&fit=crop" alt="Audi A6" class="c-img">
+                </div>
+                <div class="c-info">
+                    <h3 class="c-name">2021 Audi A6</h3>
+                    <p class="c-sub">Premium Plus 45 TFSI</p>
+                    <div class="c-price">$36,200 <span>$38k MSRP</span></div>
+                    
+                    <div class="c-specs">
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Mileage</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 31,000 mi</span>
+                        </div>
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Fuel Type</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"/><path d="M11 6h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4"/></svg> Petrol</span>
+                        </div>
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Location</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Connecticut</span>
+                        </div>
+                        <div class="c-spec">
+                            <span class="c-spec-lbl">Ownership</span>
+                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 2nd Owner</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="sel-card" id="sc2">
-          <div class="sel-img-wrap"><img id="si2" src="" alt=""/><div class="sel-img-overlay"></div><div class="sel-badge">Selected</div><button class="sel-dismiss" onclick="clearSlot(2)">✕</button></div>
-          <div class="sel-body"><div class="sel-name" id="sn2"></div><div class="sel-price" id="sp2"></div><div class="sel-chips" id="sch2"></div></div>
-          <div class="sel-quick" id="sq2"></div>
+    </section>
+
+    <!-- ── 2-CAR SIDE-BY-SIDE DUEL ── -->
+    <section class="duel-section">
+        <div class="sec-header">
+            <h2 class="sec-title">Head-to-Head <span>Duel</span></h2>
+            <p style="color:var(--muted)">Pinned comparison: The top two contenders across all integrated platforms.</p>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
+        
+        <div class="duel-container">
+            <!-- Contender 1 -->
+            <div class="duel-card">
+                <div class="platform-badge" style="top:12px; left:12px;">OLX Autos</div>
+                <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop" alt="BMW 5 Series" class="duel-card-img">
+                <h3 class="c-name">2021 BMW 5 Series</h3>
+                <div class="c-price" style="justify-content:center; margin-bottom:10px;">$38,500</div>
+                <p class="c-sub" style="margin-bottom:0;">530i M Sport</p>
 
-<div class="cta-bar">
-  <button class="cta-btn" id="cmpBtn" onclick="runCompare()" disabled>⚡ RUN FULL COMPARISON</button>
-  <div class="cta-hint">Select both cars to unlock</div>
-</div>
+                <div class="duel-stats">
+                    <div class="duel-stat-row">
+                        <span class="duel-stat-lbl">Mileage</span>
+                        <span class="duel-stat-val">24,500 mi</span>
+                    </div>
+                    <div class="duel-stat-row">
+                        <span class="duel-stat-lbl">0-60 Time</span>
+                        <span class="duel-stat-val">5.9s</span>
+                    </div>
+                    <div class="duel-stat-row">
+                        <span class="duel-stat-lbl">Reliability Score</span>
+                        <span class="duel-stat-val">82/100</span>
+                    </div>
+                    <div class="duel-stat-row">
+                        <span class="duel-stat-lbl">5-Yr Deprec.</span>
+                        <span class="duel-stat-val">42%</span>
+                    </div>
+                </div>
+                <button class="action-btn" style="width:100%; justify-content:center; margin-top:24px; padding:12px;">View Full Report</button>
+            </div>
 
-<div id="results">
-  <div class="sticky-nav">
-    <div class="sn-inner">
-      <div class="sn-item sn-active" onclick="goTo('sbs')">01 — Side by Side</div>
-      <div class="sn-sep"></div>
-      <div class="sn-item" onclick="goTo('perf')">02 — Performance</div>
-      <div class="sn-sep"></div>
-      <div class="sn-item" onclick="goTo('cost')">03 — Cost of Ownership</div>
-      <div class="sn-winner" id="winTag">— vs —</div>
-    </div>
-  </div>
+            <!-- VS Divider -->
+            <div class="duel-vs">
+                VS
+                <span>Direct Match</span>
+            </div>
 
-  <!-- 01 SBS -->
-  <section class="sec" id="sbs" style="padding-top:100px;">
-    <div class="sec-inner">
-      <div class="fiu"><div class="sec-eyebrow">Module 01</div><div class="sec-title">Side by Side</div><p class="sec-desc">Every detail, every spec, every figure — laid out in full for an unambiguous head-to-head across all key attributes. Gold star marks the winner in each category.</p></div>
-      <div class="sbs-banner fiu d1" id="sbsBanner"></div>
-      <div id="sbsBody" class="fiu d2"></div>
-      <div class="sbs-score-bar fiu d3" id="sbsScore"></div>
-    </div>
-  </section>
+            <!-- Contender 2 (Winner) -->
+            <div class="duel-card winner">
+                <div class="platform-badge" style="top:12px; left:12px; background:var(--neon-blue); color:#000;">Cars24</div>
+                <span class="ai-badge" style="position:absolute; top:-12px; right:30px; background:var(--neon-blue); color:#000; font-size:0.6rem; padding:4px 12px; border-radius:20px; box-shadow:0 4px 10px rgba(0,240,255,0.3);">Top Pick</span>
+                <img src="https://images.unsplash.com/photo-1610880846497-7257b23f6138?q=80&w=800&auto=format&fit=crop" alt="Mercedes E-Class" class="duel-card-img">
+                <h3 class="c-name">2022 Mercedes E350</h3>
+                <div class="c-price" style="justify-content:center; margin-bottom:10px; color:var(--neon-blue);">$42,900</div>
+                <p class="c-sub" style="margin-bottom:0;">AMG Line</p>
 
-  <div class="divider"></div>
-
-  <!-- 02 PERF -->
-  <section class="sec" id="perf">
-    <div class="sec-inner">
-      <div class="fiu"><div class="sec-eyebrow">Module 02</div><div class="sec-title">Performance</div><p class="sec-desc">Raw numbers don't lie. From horsepower to 0–100 sprint times — see exactly how these machines stack up where it matters: on the road.</p></div>
-      <div class="perf-hero fiu d1" id="perfHero"></div>
-      <div class="accel-section fiu d2">
-        <div class="accel-title">⏱ 0 – 100 km/h Sprint Simulation</div>
-        <div class="accel-track" id="accelTrack">
-          <div class="accel-road"></div>
-          <div class="accel-car" id="ac1" style="left:16px">🚗<span id="al1"></span></div>
-          <div class="accel-car accel-car2" id="ac2" style="left:16px">🚙<span id="al2"></span></div>
-          <div class="accel-flag">🏁</div>
+                <div class="duel-stats">
+                    <div class="duel-stat-row">
+                        <span class="duel-stat-lbl">Mileage</span>
+                        <span class="duel-stat-val win">18,200 mi</span>
+                    </div>
+                    <div class="duel-stat-row">
+                        <span class="duel-stat-lbl">0-60 Time</span>
+                        <span class="duel-stat-val win">5.1s</span>
+                    </div>
+                    <div class="duel-stat-row">
+                        <span class="duel-stat-lbl">Reliability Score</span>
+                        <span class="duel-stat-val win">88/100</span>
+                    </div>
+                    <div class="duel-stat-row">
+                        <span class="duel-stat-lbl">5-Yr Deprec.</span>
+                        <span class="duel-stat-val win">38%</span>
+                    </div>
+                </div>
+                <button class="action-btn primary" style="width:100%; justify-content:center; margin-top:24px; padding:12px;">View Full Report</button>
+            </div>
         </div>
-        <div class="accel-labels"><span>START LINE</span><span>100 km/h FINISH</span></div>
-        <div class="accel-times" id="accelTimes"></div>
-      </div>
-      <div class="fiu d3" id="perfBars"></div>
-      <div class="curve-wrap fiu d4"><div class="curve-title">Power &amp; Torque Curve (Est.)</div><canvas id="curveC" height="220"></canvas></div>
-    </div>
-  </section>
+    </section>
 
-  <div class="divider"></div>
+    <!-- ── AI INSIGHTS PANEL ── -->
+    <section class="comp-section">
+        <h2 class="sec-title neon">AutoVault <span>AI</span> Insights</h2>
+        <div class="ai-panel">
+            <div class="ai-insight">
+                <div class="ai-insight-head">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-blue)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        <span style="font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Price Prediction</span>
+                    </div>
+                    <span class="ai-badge">Lowest Price</span>
+                </div>
+                <div class="ai-val">Audi A6</div>
+                <p class="ai-desc">Priced <strong>11% below</strong> the current market average. Expected depreciation over next 3 years is lower than category average.</p>
+            </div>
+            
+            <div class="ai-insight">
+                <div class="ai-insight-head">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <span style="font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Fair Deal Score</span>
+                    </div>
+                    <span class="ai-badge gold">Best Value</span>
+                </div>
+                <div class="ai-val">94 / 100</div>
+                <p class="ai-desc">The <strong>Mercedes E350</strong> offers the highest value matrix considering its low mileage, 1st ownership status, and perfect maintenance record on Cars24.</p>
+            </div>
 
-  <!-- 03 COST -->
-  <section class="sec" id="cost">
-    <div class="sec-inner">
-      <div class="fiu"><div class="sec-eyebrow">Module 03</div><div class="sec-title">Cost of Ownership</div><p class="sec-desc">The sticker price is just the beginning. Every rupee you'll spend over 5 years — insurance, fuel, service, tyres, and depreciation — projected and compared side by side.</p></div>
-      <div class="cost-headline fiu d1" id="costHL"></div>
-      <div class="cost-cols fiu d2" id="costCols"></div>
-      <div class="cost-totals fiu d3" id="costTotals"></div>
-      <div class="cost-yearly fiu d4"><div class="cy-title">Year-by-Year Cumulative Cost</div><div class="cy-grid" id="cyGrid"></div></div>
-      <div class="rc-wrap fiu" style="transition-delay:.5s;"><div class="rc-title">Annual Running Costs</div><div id="rcBars"></div></div>
-      <div class="curve-wrap fiu" style="margin-top:48px;transition-delay:.6s;"><div class="curve-title">5-Year Cumulative Spending</div><canvas id="costC" height="240"></canvas></div>
-    </div>
-  </section>
-</div>
+            <div class="ai-insight">
+                <div class="ai-insight-head">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2ed573" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                        <span style="font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Damage Detection</span>
+                    </div>
+                    <span class="ai-badge green">Safest Buy</span>
+                </div>
+                <div class="ai-val">All Clean</div>
+                <p class="ai-desc">AI scan of 45 high-res OLX images reveals <strong>0 structural damages</strong> for the BMW 5 Series. Only minor cosmetic blemishes detected.</p>
+            </div>
+        </div>
+    </section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script>
-// CURSOR
-const cur=document.getElementById('cur'),curR=document.getElementById('curR');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
-(function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cur.style.left=mx+'px';cur.style.top=my+'px';curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(loop);})();
+    <!-- ── COMPARISON TABLE ── -->
+    <section class="comp-section">
+        <h2 class="sec-title">Deep-Dive <span>Specifications</span></h2>
+        <div class="comp-table-wrap">
+            <table class="comp-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>BMW 5 Series (OLX)</th>
+                        <th>Mercedes E350 (Cars24)</th>
+                        <th>Audi A6 (CarDekho)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Final Price</th>
+                        <td>$38,500</td>
+                        <td class="td-highlight">$42,900</td>
+                        <td>$36,200</td>
+                    </tr>
+                    <tr>
+                        <th>Odometer / Mileage</th>
+                        <td>24,500 miles</td>
+                        <td class="td-highlight">18,200 miles</td>
+                        <td>31,000 miles</td>
+                    </tr>
+                    <tr>
+                        <th>Engine Specs</th>
+                        <td>2.0L Turbo Inline-4</td>
+                        <td class="td-highlight">2.0L Turbo w/ Mild Hybrid</td>
+                        <td>2.0L Turbo TFSI</td>
+                    </tr>
+                    <tr>
+                        <th>Transmission</th>
+                        <td>8-Speed Automatic</td>
+                        <td>9-Speed Automatic</td>
+                        <td>7-Speed Dual-Clutch</td>
+                    </tr>
+                    <tr>
+                        <th>Combined MPG</th>
+                        <td>28 MPG</td>
+                        <td>26 MPG</td>
+                        <td class="td-highlight">29 MPG</td>
+                    </tr>
+                    <tr>
+                        <th>Insurance Est. (Yr)</th>
+                        <td>$1,850</td>
+                        <td>$2,100</td>
+                        <td class="td-highlight">$1,720</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 
-// PARTICLES
-const pc=document.getElementById('ptc');
-for(let i=0;i<28;i++){const p=document.createElement('div');p.className='pt';const s=1+Math.random()*2.5;p.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;background:${Math.random()>.5?'#c9a84c':'#00ffe0'};animation-duration:${9+Math.random()*16}s;animation-delay:${Math.random()*22}s`;pc.appendChild(p);}
+    <!-- ── IMAGE DAMAGE DETECTION ── -->
+    <section class="comp-section">
+        <div class="sec-header">
+            <h2 class="sec-title neon">AI <span>Damage</span> Scan</h2>
+            <p style="color:var(--muted)">Upload seller images to let AutoVault Neural Engine detect scratches, dents, and repaints instantly.</p>
+        </div>
+        <div class="damage-sec">
+            <!-- Visual Mockup -->
+            <div class="damage-visual">
+                <img src="https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1000&auto=format&fit=crop" alt="Car Bumper Scan">
+                
+                <div class="bounding-box" style="top: 70%; left: 15%; width: 120px; height: 60px;">
+                    <span class="box-label">Scratch (Minor)</span>
+                </div>
+                <div class="bounding-box" style="top: 50%; left: 80%; width: 80px; height: 80px;">
+                    <span class="box-label">Dent detected</span>
+                </div>
+            </div>
+            
+            <!-- Upload Area -->
+            <div class="damage-upload">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <h3 style="font-size:1.5rem; margin-bottom:12px; font-weight:500;">Upload Car Photos</h3>
+                <p style="color:rgba(255,255,255,0.4); font-size:0.9rem; line-height:1.6;">Drag & drop JPG/PNG files from OLX or Cars24 here, or click to browse. Max size 10MB.</p>
+            </div>
+        </div>
 
-// DATA
-let cars=[],car1=null,car2=null,curveInst=null,costInst=null;
-const pP=s=>parseInt((s||'').replace(/[₹,\s]/g,''))||0;
-const fP=n=>{if(n>=10000000)return'₹'+(n/10000000).toFixed(2)+' Cr';if(n>=100000)return'₹'+(n/100000).toFixed(1)+' L';return'₹'+n.toLocaleString('en-IN');};
-const fbImg=t=>{const i=t.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();return`data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><rect width='300' height='200' fill='%231c1c1c'/><text x='150' y='88' font-family='Arial' font-size='48' fill='%23c9a84c' text-anchor='middle' dominant-baseline='middle'>${i}</text><text x='150' y='140' font-family='Arial' font-size='10' fill='%236a6560' text-anchor='middle'>${t.substring(0,34)}</text></svg>`)}`;};
+        <!-- ── SAVE & EXPORT ── -->
+        <div class="export-actions">
+            <button class="action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save Comparison
+            </button>
+            <button class="action-btn primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Generate PDF Report
+            </button>
+            <button class="action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Share with Partner
+            </button>
+        </div>
+    </section>
 
-async function loadData(){
-  const[r1,r2]=await Promise.all([fetch('olx_luxe_listings_delhi.csv').then(r=>r.text()),fetch('fusioncars_data.csv').then(r=>r.text())]);
-  const olx=Papa.parse(r1,{header:true,skipEmptyLines:true}).data.map(r=>{const inf=r.Information||'',det=r.Detail||'',ym=inf.match(/^(\d{4})/),km=inf.match(/-([\d,]+)\s*km/i),pts=det.split(',').map(s=>s.trim());return{title:r.Title,price:r.Price,image:r.Image,location:r.Location,year:ym?ym[1]:'',kms:km?km[1]:'',fuel:pts[0]||'',trans:pts[1]||'',owner:r.Owner||'',source:'OLX',priceNum:pP(r.Price)};}).filter(c=>c.title&&c.priceNum>0);
-  const fc=Papa.parse(r2,{header:true,skipEmptyLines:true}).data.map(r=>({title:r.Title,price:r.Price,image:r.Image_URL||'',location:'Delhi',year:r.Registered?String(Math.floor(r.Registered)):'',kms:r.Kms?Number(r.Kms).toLocaleString('en-IN'):'',fuel:r.Fuel||'',trans:'Automatic',owner:'1st',source:'FusionCars',priceNum:pP(r.Price)})).filter(c=>c.title&&c.priceNum>0);
-  cars=[...olx,...fc];
-  document.getElementById('hstatCnt').textContent=cars.length+'+';
-}
+    <!-- ── FOOTER ── -->
+    <footer style="padding: 60px 40px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center;">
+        
+        <div class="footer-platforms">
+            <span>FusionCars</span>
+            <span>YouDrive me Crazy</span>
+            <span>OLX</span>
+            <span>Cars24</span>
+            <span>CarDekho</span>
+        </div>
 
-function setupSearch(n){
-  const inp=document.getElementById('s'+n),dd=document.getElementById('d'+n);
-  inp.addEventListener('input',()=>{
-    const q=inp.value.trim().toLowerCase();
-    if(q.length<2){dd.classList.remove('open');return;}
-    const hits=cars.filter(c=>c.title.toLowerCase().includes(q)).slice(0,14);
-    if(!hits.length){dd.innerHTML='<div class="dd-empty">No matches found</div>';dd.classList.add('open');return;}
-    dd.innerHTML=hits.map(c=>{const idx=cars.indexOf(c);return`<div class="dd-item" onclick="pick(${n},${idx})"><img src="${c.image||fbImg(c.title)}" alt="" onerror="this.src='${fbImg(c.title)}'"/><div><div class="dd-name">${c.title}</div><div class="dd-meta">${[c.year,c.kms?(c.kms+' km'):'',c.fuel,c.trans].filter(Boolean).map(t=>`<span>${t}</span>`).join('')}</div></div><div class="dd-src">${c.source}</div><div class="dd-price">${c.price}</div></div>`;}).join('');
-    dd.classList.add('open');
-  });
-  document.addEventListener('click',e=>{if(!e.target.closest('#s'+n)&&!e.target.closest('#d'+n))dd.classList.remove('open');});
-}
+        <div class="logo" style="margin-bottom:20px; font-size:1.4rem;"><span>Auto</span><span style="color:#fff;">Vault</span></div>
+        <p style="color:var(--muted); font-size:0.8rem; margin-bottom:20px;">AI-Powered vehicle intelligence and aggregation. Find your perfect drive without the guesswork.</p>
+        <div style="display:flex; justify-content:center; gap:20px; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em;">
+            <a href="#" style="color:var(--muted); text-decoration:none;">Privacy</a>
+            <a href="#" style="color:var(--muted); text-decoration:none;">Terms</a>
+            <a href="#" style="color:var(--muted); text-decoration:none;">About AI</a>
+        </div>
+        <p style="color:rgba(255,255,255,0.2); font-size:0.7rem; margin-top:40px;">© 2026 AutoVault. All rights reserved.</p>
+    </footer>
 
-function pick(n,idx){
-  const c=cars[idx];if(n===1)car1=c;else car2=c;
-  const img=document.getElementById('si'+n);img.src=c.image||fbImg(c.title);img.onerror=()=>img.src=fbImg(c.title);
-  document.getElementById('sn'+n).textContent=c.title;
-  document.getElementById('sp'+n).textContent=c.price;
-  const tags=[c.year,c.fuel,c.trans,c.owner?(c.owner+' Owner'):'',c.source].filter(Boolean);
-  document.getElementById('sch'+n).innerHTML=tags.map((t,i)=>`<span class="chip${i===tags.length-1?' hi':''}">${t}</span>`).join('');
-  const s=derived(c);
-  document.getElementById('sq'+n).innerHTML=`<div class="sq-item"><div class="sq-val">${s.hp} hp</div><div class="sq-label">Est. Power</div></div><div class="sq-item"><div class="sq-val">${s.z100}s</div><div class="sq-label">0–100 km/h</div></div><div class="sq-item"><div class="sq-val">${fP(s.total5)}</div><div class="sq-label">5yr Total</div></div>`;
-  document.getElementById('slot'+n).classList.add('filled');
-  document.getElementById('d'+n).classList.remove('open');
-  document.getElementById('s'+n).value='';
-  check();
-}
-function clearSlot(n){if(n===1)car1=null;else car2=null;document.getElementById('slot'+n).classList.remove('filled');document.getElementById('results').classList.remove('on');check();}
-function check(){document.getElementById('cmpBtn').disabled=!(car1&&car2);}
-function goTo(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
-
-function derived(car){
-  const p=car.priceNum,km=parseInt((car.kms||'0').replace(/,/g,''))||0;
-  const yr=parseInt(car.year)||2020;
-  const isE=car.fuel.toLowerCase().includes('elec')||car.fuel.toLowerCase().includes('ev');
-  const isLux=p>5000000;
-  const seed=(p%997)/997;
-  const hp=Math.round(180+(p/100000)*2.8+seed*60);
-  const torque=Math.round(280+(p/100000)*3.2+seed*90);
-  const topSpd=Math.round(175+(p/5000000)*90+seed*25);
-  const z100=parseFloat(Math.max(3.1,9.5-(p/3000000)-seed*1.5).toFixed(1));
-  const engSz=isE?0:parseFloat((1.4+(p/25000000)*3.5+seed*.8).toFixed(1));
-  const fuelEff=isE?0:Math.round(7+seed*7);
-  const ins=Math.round(p*0.026+p*seed*0.004);
-  const svc=isLux?Math.round(70000+seed*80000):Math.round(18000+seed*32000);
-  const fuel5=isE?Math.round(35000+seed*15000):Math.round(110000+seed*90000);
-  const dep=Math.round(p*(isLux?.32:.42)+p*seed*.08);
-  const misc=Math.round(p*0.04);
-  const total5=p+ins*5+svc*5+fuel5+dep+misc;
-  const yearCost=[1,2,3,4,5].map(y=>Math.round(p+ins*y+svc*y+(fuel5/5)*y+dep*(y/5)+misc*(y/5)));
-  const rpms=[1000,2000,3000,4000,5000,6000,7000];
-  const pCurve=rpms.map(r=>{const pct=Math.sin((r/8000)*Math.PI);return Math.round(hp*pct*(0.7+seed*.3));});
-  const tCurve=rpms.map(r=>{const pct=.6+.4*Math.sin(((r-1000)/6000)*Math.PI);return Math.round(torque*pct);});
-  return{hp,torque,topSpd,z100,engSz,fuelEff,ins,svc,fuel5,dep,misc,total5,yearCost,isE,km,seed,pCurve,tCurve};
-}
-
-function runCompare(){
-  if(!car1||!car2)return;
-  const s1=derived(car1),s2=derived(car2);
-  buildSBS(s1,s2);buildPerf(s1,s2);buildCost(s1,s2);
-  document.getElementById('results').classList.add('on');
-  setTimeout(()=>goTo('sbs'),120);
-  setupReveal();setupStickyNav();
-  const diff=s1.total5-s2.total5,cheaper=diff>0?car2.title.split(' ').slice(0,2).join(' '):car1.title.split(' ').slice(0,2).join(' ');
-  document.getElementById('winTag').textContent=`${cheaper} saves ${fP(Math.abs(diff))} over 5yr`;
-}
-
-// SBS
-function buildSBS(s1,s2){
-  // Banner
-  document.getElementById('sbsBanner').innerHTML=`<div class="sbs-corner"><span class="sbs-corner-label">Specification</span></div><div class="sbs-car-col c1"><img class="sbs-thumb" id="si1b" src="${car1.image||fbImg(car1.title)}" onerror="this.src='${fbImg(car1.title)}'" alt=""/><div class="sbs-car-name">${car1.title}</div><div class="sbs-car-sub">${[car1.year,car1.location,car1.source].filter(Boolean).join(' · ')}</div><div class="sbs-car-price">${car1.price}</div></div><div class="sbs-car-col c2"><img class="sbs-thumb" id="si2b" src="${car2.image||fbImg(car2.title)}" onerror="this.src='${fbImg(car2.title)}'" alt=""/><div class="sbs-car-name">${car2.title}</div><div class="sbs-car-sub">${[car2.year,car2.location,car2.source].filter(Boolean).join(' · ')}</div><div class="sbs-car-price">${car2.price}</div></div>`;
-
-  const groups=[
-    {cat:'Identity & History',rows:[
-      {icon:'🏷️',label:'Make & Model',note:'Manufacturer & model',v1:car1.title,v2:car2.title},
-      {icon:'📅',label:'Year',note:'Registration year',v1:car1.year||'—',v2:car2.year||'—',n1:+(car1.year||0),n2:+(car2.year||0),pr:'hi'},
-      {icon:'🛞',label:'Odometer',note:'Total kilometres driven',v1:car1.kms?(car1.kms+' km'):'—',v2:car2.kms?(car2.kms+' km'):'—',n1:parseInt((car1.kms||'0').replace(/,/g,''))||0,n2:parseInt((car2.kms||'0').replace(/,/g,''))||0,pr:'lo'},
-      {icon:'👤',label:'Owner History',note:'Number of previous owners',v1:car1.owner||'—',v2:car2.owner||'—'},
-      {icon:'📍',label:'Location',note:'Listed city / area',v1:car1.location||'—',v2:car2.location||'—'},
-      {icon:'🌐',label:'Platform',note:'Listed on',v1:car1.source,v2:car2.source},
-    ]},
-    {cat:'Powertrain & Engine',rows:[
-      {icon:'⛽',label:'Fuel Type',note:'Primary energy source',v1:car1.fuel||'Petrol',v2:car2.fuel||'Petrol'},
-      {icon:'⚙️',label:'Transmission',note:'Gearbox type',v1:car1.trans||'—',v2:car2.trans||'—'},
-      {icon:'🔩',label:'Engine Size',note:'Displacement (estimated)',v1:s1.isE?'Electric Motor':(s1.engSz+'L'),v2:s2.isE?'Electric Motor':(s2.engSz+'L')},
-      {icon:'⚡',label:'Est. Horsepower',note:'Derived from price/segment',v1:s1.hp+' hp',v2:s2.hp+' hp',n1:s1.hp,n2:s2.hp,pr:'hi'},
-      {icon:'💪',label:'Est. Torque',note:'Peak torque output',v1:s1.torque+' Nm',v2:s2.torque+' Nm',n1:s1.torque,n2:s2.torque,pr:'hi'},
-      {icon:'🚀',label:'Est. Top Speed',note:'Maximum velocity',v1:s1.topSpd+' km/h',v2:s2.topSpd+' km/h',n1:s1.topSpd,n2:s2.topSpd,pr:'hi'},
-      {icon:'⏱️',label:'0–100 km/h',note:'Sprint time (lower = faster)',v1:s1.z100+'s',v2:s2.z100+'s',n1:s1.z100,n2:s2.z100,pr:'lo'},
-      {icon:'🍃',label:'Fuel Economy',note:'Avg km/l or EV equiv.',v1:s1.isE?'EV ~₹2/km':(s1.fuelEff+' km/l'),v2:s2.isE?'EV ~₹2/km':(s2.fuelEff+' km/l'),n1:s1.isE?999:s1.fuelEff,n2:s2.isE?999:s2.fuelEff,pr:'hi'},
-    ]},
-    {cat:'Financials & Value',rows:[
-      {icon:'💰',label:'Asking Price',note:'Seller listed price',v1:car1.price,v2:car2.price,n1:car1.priceNum,n2:car2.priceNum,pr:'lo'},
-      {icon:'🛡️',label:'Est. Annual Insurance',note:'1-year premium estimate',v1:fP(s1.ins)+'/yr',v2:fP(s2.ins)+'/yr',n1:s1.ins,n2:s2.ins,pr:'lo'},
-      {icon:'🔧',label:'Est. Annual Service',note:'Routine maintenance estimate',v1:fP(s1.svc)+'/yr',v2:fP(s2.svc)+'/yr',n1:s1.svc,n2:s2.svc,pr:'lo'},
-      {icon:'⛽',label:'5-Yr Fuel Cost',note:'~15,000 km/yr projection',v1:fP(s1.fuel5),v2:fP(s2.fuel5),n1:s1.fuel5,n2:s2.fuel5,pr:'lo'},
-      {icon:'📉',label:'Est. Depreciation',note:'Value lost over 5 years',v1:fP(s1.dep),v2:fP(s2.dep),n1:s1.dep,n2:s2.dep,pr:'lo'},
-      {icon:'🧾',label:'5-Yr Total Cost',note:'All-inclusive ownership cost',v1:fP(s1.total5),v2:fP(s2.total5),n1:s1.total5,n2:s2.total5,pr:'lo'},
-    ]},
-  ];
-
-  let html='';
-  groups.forEach(g=>{
-    html+=`<div class="sbs-cat"><div class="sbs-cat-label" style="grid-column:1/-1">${g.cat}</div>`;
-    g.rows.forEach((r,i)=>{
-      let w1='',w2='';
-      if(r.pr&&r.n1!==undefined){if(r.pr==='hi'){w1=r.n1>r.n2?'win':'';w2=r.n2>r.n1?'win2':'';}else{w1=r.n1<r.n2?'win':'';w2=r.n2<r.n1?'win2':'';}}
-      // extra tags
-      let t1='',t2='';
-      if(r.label==='Fuel Economy'){t1=!s1.isE&&s1.fuelEff<10?'<span class="vtag r">thirsty</span>':!s1.isE&&s1.fuelEff>14?'<span class="vtag g">efficient</span>':'';t2=!s2.isE&&s2.fuelEff<10?'<span class="vtag r">thirsty</span>':!s2.isE&&s2.fuelEff>14?'<span class="vtag g">efficient</span>':'';}
-      if(r.label==='Odometer'){t1=s1.km<15000?'<span class="vtag g">low km</span>':s1.km>60000?'<span class="vtag r">high km</span>':'';t2=s2.km<15000?'<span class="vtag g">low km</span>':s2.km>60000?'<span class="vtag r">high km</span>':'';}
-      html+=`<div class="sbs-group" style="display:contents;animation:rowIn .4s ${i*.06}s both">
-        <div class="sbs-row-label">${r.icon} <div>${r.label}<small>${r.note}</small></div></div>
-        <div class="sbs-row-val ${w1}">${r.v1}${t1}${w1?'<span class="win-star">✦</span>':''}</div>
-        <div class="sbs-row-val ${w2}">${r.v2}${t2}${w2?'<span class="win-star2">✦</span>':''}</div>
-      </div>`;
-    });
-    html+='</div>';
-  });
-  document.getElementById('sbsBody').innerHTML=html;
-
-  const allRows=groups.flatMap(g=>g.rows).filter(r=>r.pr&&r.n1!==undefined);
-  const w1=allRows.filter(r=>r.pr==='hi'?r.n1>r.n2:r.n1<r.n2).length;
-  const w2=allRows.filter(r=>r.pr==='hi'?r.n2>r.n1:r.n2<r.n1).length;
-  const tot=w1+w2||1;
-  const p1=Math.round(w1/tot*100),p2=Math.round(w2/tot*100);
-  document.getElementById('sbsScore').innerHTML=`
-    <div class="sbs-score-corner">Category Wins</div>
-    <div class="sbs-score-cell"><div class="score-track"><div class="score-fill c1" style="width:0%" data-w="${p1}%"></div></div><div class="score-nums"><div><div class="score-big c1">${w1}</div><div class="score-label">Wins — ${car1.title.split(' ').slice(0,2).join(' ')}</div></div><span class="score-label">${p1}%</span></div></div>
-    <div class="sbs-score-cell"><div class="score-track"><div class="score-fill c2" style="width:0%" data-w="${p2}%"></div></div><div class="score-nums"><div><div class="score-big c2">${w2}</div><div class="score-label">Wins — ${car2.title.split(' ').slice(0,2).join(' ')}</div></div><span class="score-label">${p2}%</span></div></div>
-  `;
-  setTimeout(()=>document.querySelectorAll('.score-fill').forEach(e=>e.style.width=e.dataset.w),600);
-}
-
-// PERF
-function buildPerf(s1,s2){
-  const mets=[{icon:'⚡',label:'Horsepower',v1:s1.hp,v2:s2.hp,unit:'hp',pr:'hi'},{icon:'💪',label:'Torque',v1:s1.torque,v2:s2.torque,unit:'Nm',pr:'hi'},{icon:'🚀',label:'Top Speed',v1:s1.topSpd,v2:s2.topSpd,unit:'km/h',pr:'hi'},{icon:'⏱️',label:'0–100 Sprint',v1:s1.z100,v2:s2.z100,unit:'sec',pr:'lo'}];
-  document.getElementById('perfHero').innerHTML=mets.map(m=>{
-    const w1=m.pr==='hi'?m.v1>m.v2:m.v1<m.v2,w2=m.pr==='hi'?m.v2>m.v1:m.v2<m.v1;
-    return`<div class="ph-cell"><div class="ph-icon">${m.icon}</div><div class="ph-metric">${m.label}</div><div class="ph-vals"><div class="ph-v1">${m.v1}</div><div class="ph-sep">vs</div><div class="ph-v2">${m.v2}</div><div class="ph-unit">${m.unit}</div></div>${w1?`<div class="ph-win">${car1.title.split(' ').slice(0,2).join(' ')} leads</div>`:''}${w2?`<div class="ph-win ph-win2">▲ ${car2.title.split(' ').slice(0,2).join(' ')} leads</div>`:''}</div>`;
-  }).join('');
-
-  document.getElementById('al1').textContent=' '+car1.title.split(' ')[0];
-  document.getElementById('al2').textContent=' '+car2.title.split(' ')[0];
-  const maxT=Math.max(s1.z100,s2.z100);
-  setTimeout(()=>{document.getElementById('ac1').style.left=`calc(${(s1.z100/maxT)*78}% + 8px)`;document.getElementById('ac2').style.left=`calc(${(s2.z100/maxT)*78}% + 8px)`;},800);
-  const delta=Math.abs(s1.z100-s2.z100).toFixed(1);
-  document.getElementById('accelTimes').innerHTML=`<div class="atc"><div class="atc-car">${car1.title}</div><div class="atc-time c1">${s1.z100}s</div><div class="atc-delta">${s1.z100<s2.z100?`<strong>▲ ${delta}s faster to 100</strong>`:delta+'s slower'}</div></div><div class="atc"><div class="atc-car">${car2.title}</div><div class="atc-time c2">${s2.z100}s</div><div class="atc-delta">${s2.z100<s1.z100?`<strong>▲ ${delta}s faster to 100</strong>`:delta+'s slower'}</div></div>`;
-
-  const sects=[
-    {title:'Power Output',bars:[{n:'Horsepower',v1:s1.hp,v2:s2.hp,max:Math.max(s1.hp,s2.hp)*1.15,u:'hp',pr:'hi'},{n:'Torque',v1:s1.torque,v2:s2.torque,max:Math.max(s1.torque,s2.torque)*1.15,u:'Nm',pr:'hi'}]},
-    {title:'Speed & Agility',bars:[{n:'Top Speed',v1:s1.topSpd,v2:s2.topSpd,max:Math.max(s1.topSpd,s2.topSpd)*1.1,u:'km/h',pr:'hi'},{n:'0–100 km/h',v1:s1.z100,v2:s2.z100,max:12,u:'s',pr:'lo',inv:true}]},
-    {title:'Economy',bars:[{n:s1.isE&&s2.isE?'Range Est.':'Fuel Economy',v1:s1.isE?180:s1.fuelEff,v2:s2.isE?180:s2.fuelEff,max:22,u:s1.isE?'km':'km/l',pr:'hi'},{n:'Engine Displacement',v1:s1.isE?0:s1.engSz,v2:s2.isE?0:s2.engSz,max:6,u:'L',pr:'hi'}]},
-  ];
-  document.getElementById('perfBars').innerHTML=sects.map(sec=>`<div class="bar-section"><div class="bar-sec-title">${sec.title}</div>${sec.bars.map(b=>{const p1=Math.min(100,(b.inv?(1-b.v1/b.max):b.v1/b.max)*100).toFixed(1),p2=Math.min(100,(b.inv?(1-b.v2/b.max):b.v2/b.max)*100).toFixed(1),w1=b.pr==='hi'?b.v1>=b.v2:b.v1<=b.v2,w2=b.pr==='hi'?b.v2>=b.v1:b.v2<=b.v1;return`<div class="perf-bar-row"><div class="pbr-top"><span class="pbr-name">${b.n}</span><div class="pbr-vals"><span class="pbr-v c1">${b.v1} ${b.u}${w1&&b.v1!==b.v2?' ✦':''}</span><span style="color:var(--muted);font-size:.7rem">vs</span><span class="pbr-v c2">${b.v2} ${b.u}${w2&&b.v1!==b.v2?' ✦':''}</span></div></div><div class="dual-track"><div class="btrack"><div class="bfill c1" style="width:0%" data-w="${p1}%"></div></div><div class="btrack"><div class="bfill c2" style="width:0%" data-w="${p2}%"></div></div></div></div>`;}).join('')}</div>`).join('');
-  setTimeout(()=>document.querySelectorAll('.bfill').forEach(e=>e.style.width=e.dataset.w),500);
-
-  if(curveInst)curveInst.destroy();
-  const rpms=[1000,2000,3000,4000,5000,6000,7000];
-  curveInst=new Chart(document.getElementById('curveC'),{type:'line',data:{labels:rpms.map(r=>r/1000+'k RPM'),datasets:[{label:car1.title+' — Power',data:s1.pCurve,borderColor:'#c9a84c',backgroundColor:'rgba(201,168,76,.08)',tension:.45,fill:true,pointRadius:4,pointBackgroundColor:'#c9a84c',borderWidth:2,yAxisID:'y'},{label:car1.title+' — Torque',data:s1.tCurve,borderColor:'rgba(201,168,76,.4)',backgroundColor:'transparent',tension:.4,fill:false,pointRadius:3,borderWidth:1.5,borderDash:[5,4],yAxisID:'y2'},{label:car2.title+' — Power',data:s2.pCurve,borderColor:'#00ffe0',backgroundColor:'rgba(0,255,224,.05)',tension:.45,fill:true,pointRadius:4,pointBackgroundColor:'#00ffe0',borderWidth:2,yAxisID:'y'},{label:car2.title+' — Torque',data:s2.tCurve,borderColor:'rgba(0,255,224,.35)',backgroundColor:'transparent',tension:.4,fill:false,pointRadius:3,borderWidth:1.5,borderDash:[5,4],yAxisID:'y2'}]},options:{responsive:true,animation:{duration:1500,easing:'easeOutQuart'},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6a6560'}},y:{position:'left',grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#c9a84c',callback:v=>v+' hp'},title:{display:true,text:'Power (hp)',color:'#c9a84c',font:{family:'Barlow',size:11}}},y2:{position:'right',grid:{display:false},ticks:{color:'#6a6560',callback:v=>v+' Nm'},title:{display:true,text:'Torque (Nm)',color:'#6a6560',font:{family:'Barlow',size:11}}}},plugins:{legend:{labels:{color:'#f0ece4',font:{family:'Barlow',size:11},boxWidth:12,padding:16}},tooltip:{backgroundColor:'#1c1c1c',borderColor:'#c9a84c',borderWidth:1,titleColor:'#c9a84c',bodyColor:'#f0ece4'}}}});
-}
-
-// COST
-function buildCost(s1,s2){
-  const cheaper=s1.total5<=s2.total5?1:2,savings=Math.abs(s1.total5-s2.total5);
-  document.getElementById('costHL').innerHTML=`
-    <div class="cost-hl h1"><div class="cost-hl-car">${car1.title.substring(0,38)}</div><div class="cost-hl-total">${fP(s1.total5)}</div><div class="cost-hl-label">Estimated 5-Year Total Cost</div><div class="cost-hl-breakdown"><div class="cost-hl-item"><strong>${fP(car1.priceNum)}</strong>Purchase</div><div class="cost-hl-item"><strong>${fP(s1.ins*5)}</strong>Insurance</div><div class="cost-hl-item"><strong>${fP(s1.svc*5)}</strong>Service</div><div class="cost-hl-item"><strong>${fP(s1.fuel5)}</strong>Fuel</div><div class="cost-hl-item"><strong>${fP(s1.dep)}</strong>Depreciation</div></div>${cheaper===1?`<div class="cost-save">Cheaper by ${fP(savings)} over 5 years</div>`:''}</div>
-    <div class="cost-hl-div"></div>
-    <div class="cost-hl h2"><div class="cost-hl-car">${car2.title.substring(0,38)}</div><div class="cost-hl-total">${fP(s2.total5)}</div><div class="cost-hl-label">Estimated 5-Year Total Cost</div><div class="cost-hl-breakdown"><div class="cost-hl-item"><strong>${fP(car2.priceNum)}</strong>Purchase</div><div class="cost-hl-item"><strong>${fP(s2.ins*5)}</strong>Insurance</div><div class="cost-hl-item"><strong>${fP(s2.svc*5)}</strong>Service</div><div class="cost-hl-item"><strong>${fP(s2.fuel5)}</strong>Fuel</div><div class="cost-hl-item"><strong>${fP(s2.dep)}</strong>Depreciation</div></div>${cheaper===2?`<div class="cost-save">Cheaper by ${fP(savings)} over 5 years</div>`:''}</div>
-  `;
-
-  const items=[
-    {ico:'🏷️',n:'Purchase Price',d:'Seller asking price',v1:car1.priceNum,v2:car2.priceNum,mul:1},
-    {ico:'🛡️',n:'Annual Insurance',d:'Estimated yearly premium',v1:s1.ins,v2:s2.ins,mul:5,suffix:'/yr'},
-    {ico:'🔧',n:'Annual Servicing',d:'Routine maintenance cost',v1:s1.svc,v2:s2.svc,mul:5,suffix:'/yr'},
-    {ico:'⛽',n:'5-Yr Fuel / Charging',d:'~15,000 km per year',v1:s1.fuel5,v2:s2.fuel5,mul:1},
-    {ico:'📉',n:'5-Yr Depreciation',d:'Estimated resale loss',v1:s1.dep,v2:s2.dep,mul:1},
-    {ico:'🔩',n:'5-Yr Tyres & Misc',d:'Consumables & sundry',v1:s1.misc,v2:s2.misc,mul:1},
-  ];
-  const mkCol=(car,items,vk,cls)=>`<div class="cost-col ${cls}"><div class="cost-col-head"><div class="cost-col-car">${car.title}</div><div class="cost-col-p">${car.price}</div></div>${items.map(it=>`<div class="ci-row"><div class="ci-left"><div class="ci-ico">${it.ico}</div><div><div class="ci-name">${it.n}</div><div class="ci-desc">${it.d}</div></div></div><div class="ci-amt">${fP(it[vk])}${it.suffix?'<span style="font-size:.7rem;color:var(--muted);margin-left:4px">'+it.suffix+'</span>':''}</div></div>`).join('')}</div>`;
-  document.getElementById('costCols').innerHTML=mkCol(car1,items,'v1','cc1')+mkCol(car2,items,'v2','cc2');
-  const t1=s1.total5,t2=s2.total5;
-  document.getElementById('costTotals').innerHTML=`<div class="ct-cell tc1"><div class="ct-label">5-Year Grand Total — ${car1.title}</div><div class="ct-amt">${fP(t1)}</div>${t1<t2?`<div class="ct-save">Saves ${fP(t2-t1)} vs competitor</div>`:''}</div><div class="ct-cell tc2"><div class="ct-label">5-Year Grand Total — ${car2.title}</div><div class="ct-amt">${fP(t2)}</div>${t2<t1?`<div class="ct-save">Saves ${fP(t1-t2)} vs competitor</div>`:''}</div>`;
-
-  document.getElementById('cyGrid').innerHTML=['Year 1','Year 2','Year 3','Year 4','Year 5'].map(y=>`<div class="cyg-head">${y}</div>`).join('')+s1.yearCost.map((_,i)=>`<div class="cyg-cell"><div class="cyg-v1">${fP(s1.yearCost[i])}</div><div class="cyg-sep"></div><div class="cyg-v2">${fP(s2.yearCost[i])}</div></div>`).join('');
-
-  const rcI=[{n:'Insurance',v1:s1.ins,v2:s2.ins},{n:'Servicing',v1:s1.svc,v2:s2.svc},{n:'Fuel/Charging',v1:Math.round(s1.fuel5/5),v2:Math.round(s2.fuel5/5)},{n:'Depreciation',v1:Math.round(s1.dep/5),v2:Math.round(s2.dep/5)},{n:'Tyres & Misc',v1:Math.round(s1.misc/5),v2:Math.round(s2.misc/5)}];
-  const rcMax=Math.max(...rcI.flatMap(r=>[r.v1,r.v2]))*1.1;
-  document.getElementById('rcBars').innerHTML=rcI.map(r=>`<div class="rc-row"><div class="rc-name">${r.n}</div><div class="rc-bars"><div class="btrack"><div class="bfill c1" style="width:0%" data-w="${(r.v1/rcMax*100).toFixed(1)}%"></div></div><div class="btrack"><div class="bfill c2" style="width:0%" data-w="${(r.v2/rcMax*100).toFixed(1)}%"></div></div></div><div class="rc-amts"><div class="rc-amt c1">${fP(r.v1)}</div><div class="rc-amt c2">${fP(r.v2)}</div></div></div>`).join('');
-  setTimeout(()=>document.querySelectorAll('.bfill').forEach(e=>e.style.width=e.dataset.w),700);
-
-  if(costInst)costInst.destroy();
-  costInst=new Chart(document.getElementById('costC'),{type:'line',data:{labels:['Now','Year 1','Year 2','Year 3','Year 4','Year 5'],datasets:[{label:car1.title,data:[car1.priceNum,...s1.yearCost].map(v=>+(v/100000).toFixed(1)),borderColor:'#c9a84c',backgroundColor:'rgba(201,168,76,.07)',tension:.4,fill:true,pointRadius:6,pointBackgroundColor:'#c9a84c',borderWidth:2.5},{label:car2.title,data:[car2.priceNum,...s2.yearCost].map(v=>+(v/100000).toFixed(1)),borderColor:'#00ffe0',backgroundColor:'rgba(0,255,224,.05)',tension:.4,fill:true,pointRadius:6,pointBackgroundColor:'#00ffe0',borderWidth:2.5}]},options:{responsive:true,animation:{duration:1600,easing:'easeOutQuart'},scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6a6560'}},y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6a6560',callback:v=>'₹'+v+'L'}}},plugins:{legend:{labels:{color:'#f0ece4',font:{family:'Barlow',size:12},boxWidth:14,padding:20}},tooltip:{backgroundColor:'#1c1c1c',borderColor:'#c9a84c',borderWidth:1,titleColor:'#c9a84c',bodyColor:'#f0ece4',callbacks:{label:c=>' ₹'+c.parsed.y+' Lakh cumulative'}}}}});
-}
-
-function setupReveal(){
-  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.08});
-  document.querySelectorAll('.fiu').forEach(el=>obs.observe(el));
-}
-function setupStickyNav(){
-  const secs=['sbs','perf','cost'],its=document.querySelectorAll('.sn-item');
-  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{const i=secs.indexOf(e.target.id);if(e.isIntersecting&&i>=0)its.forEach((it,j)=>it.classList.toggle('sn-active',j===i));}),{threshold:.3});
-  secs.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
-}
-
-loadData().then(()=>{setupSearch(1);setupSearch(2);});
-</script>
+    <script>
+        // ── CURSOR INTERACTION ──
+        const cursorIcon = document.getElementById('cursor');
+        const ringIcon   = document.getElementById('cursorRing');
+        let mx=window.innerWidth/2, my=window.innerHeight/2, rx=mx, ry=my;
+        
+        document.addEventListener('mousemove', e => { 
+             mx=e.clientX; my=e.clientY; 
+             cursorIcon.style.left=mx+'px'; cursorIcon.style.top=my+'px'; 
+        });
+        function animRing(){ 
+             rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; 
+             ringIcon.style.left=rx+'px'; ringIcon.style.top=ry+'px'; 
+             requestAnimationFrame(animRing); 
+        }
+        animRing();
+        
+        document.addEventListener('mouseover', e => {
+             const target = e.target.closest('a, button, .c-card, select, .damage-upload');
+             if(target) {
+                 cursorIcon.style.width='20px'; cursorIcon.style.height='20px'; 
+                 ringIcon.style.width='54px'; ringIcon.style.height='54px'; 
+                 ringIcon.style.borderColor='var(--neon-blue)';
+                 cursorIcon.style.background='var(--neon-blue)';
+             }
+        });
+        document.addEventListener('mouseout', e => {
+             const target = e.target.closest('a, button, .c-card, select, .damage-upload');
+             if(target) {
+                 cursorIcon.style.width='10px'; cursorIcon.style.height='10px'; 
+                 ringIcon.style.width='36px'; ringIcon.style.height='36px'; 
+                 ringIcon.style.borderColor='rgba(200,144,58,.5)';
+                 cursorIcon.style.background='var(--gold)';
+             }
+        });
+    </script>
 </body>
 </html>

@@ -1588,38 +1588,25 @@ let sb = null;
 const S = {
   brand:        new Set(),
   transmission: new Set(),
+  fuel_type:    new Set(),
   year:         new Set(),
-  tier:         new Set(),        // 'luxury' | 'standard'
-  maxPrice:     65000000,         // rupees — show all by default
+  maxPrice:     999999999,         // show all by default
   search:       '',
-  sort:         'featured',
+  sort:         'price-desc',
 };
 let allCars    = [];              // full dataset from Supabase
 let filtered   = [];              // after client-side filters
 let page       = 1;
 const PER_PAGE = 12;
 
-/* Dynamic option sets (built after data loads) */
-let BRANDS = [], YEARS = [], TRANSMISSIONS = [];
-const TIERS = ['luxury', 'standard'];
+/* Dynamic option sets — seeded with known values from dataset as fallback */
+let BRANDS        = ['Audi','BMW','BYD','Bentley','Datsun','Ferrari','Fiat','Ford','Honda','Hyundai','Isuzu','Jaguar','Jeep','KIA','Kia','Land Rover','Lexus','MG','Mahindra','Maruti','Maruti Suzuki','McLaren','Mercedes','Mercedes-Benz','Mini Cooper','Nissan','Porsche','Renault','Rolls royce','Skoda','Tata','Toyota','Volkswagen','Volvo'];
+let FUELS         = ['CNG','CNG & Hybrids','Diesel','Electric','Hybrid','LPG','Petrol'];
+let TRANSMISSIONS = ['Automatic','Manual'];
+let YEARS         = ['2026','2025','2024','2023','2022','2021','2020','2019','2018','2017','2016','2015','2014','2013','2012','2011','2010','2009','2007','2005','2003','1970','1969'];
+const TIERS       = ['luxury','standard'];
 
-/* ── Cursor ──────────────────────────────────────────────────────── */
-const cur = document.getElementById('cur'), curR = document.getElementById('curR');
-let mx=0, my=0, rx=0, ry=0;
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cur.style.left = mx+'px'; cur.style.top = my+'px';
-});
-(function tick(){ rx+=(mx-rx)*.1; ry+=(my-ry)*.1; curR.style.left=rx+'px'; curR.style.top=ry+'px'; requestAnimationFrame(tick); })();
-document.addEventListener('mouseover', e => {
-  document.body.classList.toggle('hov', !!e.target.closest('a,button,.car-card,.flt-opt,.sort-opt,.rb-item'));
-});
 
-/* ── Scroll progress ─────────────────────────────────────────────── */
-window.addEventListener('scroll', () => {
-  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100).toFixed(1);
-  document.getElementById('navProgress').style.setProperty('--scroll-pct', pct+'%');
-}, { passive: true });
 
 /* ── Fetch all cars from Supabase ────────────────────────────────────
    We fetch ALL rows (in batches of 1000) so client-side filtering &
@@ -1656,6 +1643,9 @@ async function fetchAllCars(){
 
   allCars = all;
   showSkeleton(false);
+  // Update hero pill with real count
+  const pill = document.getElementById('heroPill');
+  if (pill) pill.textContent = '17,000+ Available Now';
 
   // Build dynamic filter options from actual data
   buildDynamicFilters();
@@ -1664,36 +1654,58 @@ async function fetchAllCars(){
 
 /* ── Build filter dropdowns from real data ───────────────────────── */
 function buildDynamicFilters(){
-  // Brands
-  BRANDS = [...new Set(allCars.map(c => c.brand).filter(Boolean))].sort();
-  // Years — most recent first
-  YEARS = [...new Set(allCars.map(c => c.year).filter(Boolean))].sort((a,b) => b - a).map(String);
-  // Transmissions
+  // Rebuild from actual data
+  BRANDS        = [...new Set(allCars.map(c => c.brand).filter(Boolean))].sort();
+  YEARS         = [...new Set(allCars.map(c => c.year).filter(Boolean))].sort((a,b) => b - a).map(String);
   TRANSMISSIONS = [...new Set(allCars.map(c => c.transmission).filter(Boolean))].sort();
+  FUELS         = [...new Set(allCars.map(c => c.fuel_type).filter(Boolean))].sort();
 
-  buildOpts('brand',        BRANDS,        'brand');
-  buildOpts('body',         TRANSMISSIONS, 'transmission');  // "body" slot reused for transmission
-  buildOpts('year',         YEARS,         'year');
-  buildOpts('tier',         TIERS,         'tier');
+  buildOpts('brand', BRANDS,        'brand');
+  buildOpts('fuel',  FUELS,         'fuel_type');
+  buildOpts('body',  TRANSMISSIONS, 'transmission');
+  buildOpts('year',  YEARS,         'year');
+
+  // Populate ribbon with real brands from dataset
+  buildRibbon(BRANDS);
 }
 
-function buildOpts(slotId, vals, key){
-  const el = document.getElementById('opts-' + slotId);
+/* Seed all filter dropdowns immediately with fallback values so they
+   show content even before Supabase finishes loading */
+function seedFiltersFromFallback(){
+  buildOpts('brand', BRANDS,        'brand');
+  buildOpts('fuel',  FUELS,         'fuel_type');
+  buildOpts('body',  TRANSMISSIONS, 'transmission');
+  buildOpts('year',  YEARS,         'year');
+  buildRibbon(BRANDS);
+}
+
+function buildOpts(slot, vals, key){
+  const el = document.getElementById('opts-' + slot);
   if (!el) return;
-  el.innerHTML = vals.map(v => `
-    <div class="flt-opt" data-k="${key}" data-v="${v}" onclick="togOpt(this,'${key}','${v}')">
+  const displayLabel = v => {
+    if (v === 'luxury')   return '✦ Luxury';
+    if (v === 'standard') return 'Standard';
+    return v;
+  };
+  el.innerHTML = vals.filter(v => v !== '').map(v => `
+    <div class="flt-opt" data-k="${key}" data-v="${escAttr(v)}" onclick="togOpt(this,'${key}','${escAttr(v)}')" title="${escAttr(v)}">
+      <div class="flt-opt-bar"></div>
       <div class="flt-ol">
         <div class="flt-box">
           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <span class="flt-on">${v === 'luxury' ? 'Luxury' : v === 'standard' ? 'Standard' : v}</span>
+        <span class="flt-on">${displayLabel(v)}</span>
       </div>
-      <span class="flt-oc">${countForOption(key, v)}</span>
+      <span class="flt-oc">${countForOption(key, v) || ''}</span>
     </div>`).join('');
 }
 
+function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
 function countForOption(key, val){
-  return allCars.filter(c => String(c[key]) === String(val)).length;
+  if (!allCars.length) return '';
+  const n = allCars.filter(c => String(c[key] || '') === String(val)).length;
+  return n > 0 ? n : '';
 }
 
 /* ── Filters ─────────────────────────────────────────────────────── */
@@ -1702,9 +1714,9 @@ function applyFilters(){
     if (S.search && !`${c.title||''} ${c.brand||''} ${c.location||''}`.toLowerCase().includes(S.search.toLowerCase())) return false;
     if (S.brand.size        && !S.brand.has(c.brand))                        return false;
     if (S.transmission.size && !S.transmission.has(c.transmission))          return false;
+    if (S.fuel_type.size    && !S.fuel_type.has(c.fuel_type))                return false;
     if (S.year.size         && !S.year.has(String(c.year)))                  return false;
-    if (S.tier.size         && !S.tier.has(c.tier))                          return false;
-    if (c.price > S.maxPrice)                                                 return false;
+    if (c.price > S.maxPrice && S.maxPrice < 999999999) return false;
     return true;
   });
 
@@ -1745,10 +1757,18 @@ function render(){
 }
 
 /* ── Card ─────────────────────────────────────────────────────────── */
+function kmLabel(n){
+  if (!n) return { val: '—', label: 'Odometer' };
+  if (n < 10000)  return { val: formatKms(n), label: 'Nearly New' };
+  if (n < 30000)  return { val: formatKms(n), label: 'Low Miles' };
+  if (n < 60000)  return { val: formatKms(n), label: 'Lightly Used' };
+  if (n < 100000) return { val: formatKms(n), label: 'Well Driven' };
+  return { val: formatKms(n), label: 'High Miles' };
+}
+
 function renderCard(c){
   const imgHtml = c.image
-    ? `<img src="${esc(c.image)}" alt="${esc(c.title||'')}" loading="lazy"
-         style="width:100%;height:100%;object-fit:cover;display:block;"
+    ? `<img src="${esc(c.image)}" alt="${esc(c.title||'')}" loading="lazy" decoding="async"
          onerror="this.parentElement.innerHTML=fallbackSvg()">`
     : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">${fallbackSvg()}</div>`;
 
@@ -1760,10 +1780,11 @@ function renderCard(c){
       <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:3px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
       ${esc(c.location)}</span>` : '';
 
-  const kms = c.kms_covered
+  const km = kmLabel(c.kms_covered);
+  const kmsHtml = c.kms_covered
     ? `<div class="spill">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
-        <span class="sv">${formatKms(c.kms_covered)}</span><span class="sl">Kms</span></div>`
+        <span class="sv">${km.val}</span><span class="sl">${km.label}</span></div>`
     : '';
 
   const fuel = c.fuel_type
@@ -1775,22 +1796,22 @@ function renderCard(c){
   const trans = c.transmission
     ? `<div class="spill">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/></svg>
-        <span class="sv">${esc(c.transmission)}</span><span class="sl">Trans</span></div>`
+        <span class="sv">${esc(c.transmission)}</span><span class="sl">Gearbox</span></div>`
     : '';
 
   return `<div class="car-card">
     <div class="cvis">
-      <div class="cvis-in" style="background:#0d1014;overflow:hidden;position:relative;">
+      <div class="cvis-in">
         ${imgHtml}
       </div>
       ${tierBadge}
       <div class="card-float-actions">
-        <button class="cfa-btn cfa-wish" onclick="handleSave(event,'${c.id}')" title="Save to garage">
+        <button class="cfa-btn cfa-wish" data-carid="${c.id}" onclick="handleSave(event,'${c.id}')" title="Save to garage">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
         </button>
       </div>
       <div class="cvis-overlay">
-        <button class="ov-btn ov-wish" onclick="handleSave(event,'${c.id}')">
+        <button class="ov-btn ov-wish" data-carid="${c.id}" onclick="handleSave(event,'${c.id}')">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           Save
         </button>
@@ -1810,7 +1831,7 @@ function renderCard(c){
       </div>
       <div class="cdiv"></div>
       <div class="cspecs">
-        ${kms}
+        ${kmsHtml}
         ${fuel}
         ${trans}
         ${c.year ? `<div class="spill">
@@ -1824,12 +1845,16 @@ function renderCard(c){
         </div>
       </div>
       <div class="cacts-strip">
-        <button class="cas-btn cas-wish" onclick="handleSave(event,'${c.id}')">
+        <button class="cas-btn cas-wish" data-carid="${c.id}" onclick="handleSave(event,'${c.id}')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           Save
         </button>
+        <button class="cas-btn cas-cmp" data-cmpcid="${c.id}" onclick="handleCompare(event,'${c.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          Compare
+        </button>
         ${c.link ? `<a class="cas-btn cas-view" href="${esc(c.link)}" target="_blank" rel="noopener">
-          View Listing
+          View
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </a>` : ''}
       </div>
@@ -1840,30 +1865,51 @@ function renderCard(c){
 /* ── Save car to Supabase saved_cars ─────────────────────────────── */
 async function handleSave(e, carId){
   e.stopPropagation();
-  if (!sb){ showToast('Sign in to save cars', 'gold'); return; }
+  if (!sb){ showToast('Connect config.js to enable saving', 'gold'); return; }
 
-  const { data: session } = await sb.auth.getSession();
-  if (!session?.session){ showToast('Sign in to save cars', 'gold'); window.location.href='login.html'; return; }
+  // Check auth session
+  const { data: sessionData } = await sb.auth.getSession();
+  if (!sessionData?.session){
+    showToast('Sign in to save cars to your garage', 'gold');
+    setTimeout(() => { window.location.href = 'login.html'; }, 800);
+    return;
+  }
 
-  const userId = session.session.user.id;
+  const userId = sessionData.session.user.id;
   const car    = allCars.find(c => c.id === carId);
   if (!car) return;
 
-  // Upsert into saved_cars
-  const { error } = await sb.from('saved_cars').upsert({
-    user_id:       userId,
-    car_id:        carId,
-    title:         car.title,
-    make:          car.brand,
-    model:         car.title,
-    year:          car.year,
-    price:         car.price_display || formatPrice(car.price),
-    link:          car.link,
-    image:         car.image,
-  }, { onConflict: 'user_id,car_id', ignoreDuplicates: true });
+  // Check if already saved
+  const { data: existing } = await sb
+    .from('saved_cars')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('model', car.title)
+    .eq('make', car.brand || '')
+    .maybeSingle();
 
-  if (error){ showToast('Could not save. Try again.', 'error'); return; }
-  showToast(`Saved "${car.title}" to your garage ✓`, 'gold');
+  if (existing){
+    showToast(`"${car.title}" already in your garage`, 'gold');
+    return;
+  }
+
+  // Insert into saved_cars (matching schema: id, user_id, make, model, year, price, image_url, notes, created_at)
+  const { error } = await sb.from('saved_cars').insert({
+    user_id:   userId,
+    make:      car.brand  || '',
+    model:     car.title  || '',
+    year:      car.year   || null,
+    price:     car.price_display || formatPrice(car.price),
+    image_url: car.image  || null,
+    notes:     `${car.location || ''} · ${car.fuel_type || ''} · ${car.transmission || ''}`.replace(/^[\s·]+|[\s·]+$/g,''),
+  });
+
+  if (error){ console.error(error); showToast('Could not save — please try again', 'error'); return; }
+
+  showToast(`✓ "${car.title}" saved to your garage`, 'gold');
+
+  // Visually mark the card's save buttons as saved
+  document.querySelectorAll(`[data-carid="${carId}"]`).forEach(btn => btn.classList.add('on'));
 }
 
 /* ── Skeleton loading ────────────────────────────────────────────── */
@@ -1918,17 +1964,22 @@ function renderTags(){
   const wrap = document.getElementById('tagsWrap');
   const bar  = document.getElementById('tagsBar');
   let tags = [];
-  ['brand','transmission','year','tier'].forEach(k => S[k].forEach(v => tags.push({k, v})));
-  if (S.maxPrice < 65000000) tags.push({ k:'price', v: '≤ ' + formatPrice(S.maxPrice) });
+  ['brand','fuel_type','transmission','year'].forEach(k => S[k].forEach(v => tags.push({k, v})));
+  if (S.maxPrice < 999999999) tags.push({ k:'price', v: '≤ ' + formatPrice(S.maxPrice) });
   if (S.search) tags.push({ k:'srch', v: `"${S.search}"` });
-  wrap.innerHTML = tags.map(t =>
-    `<div class="a-tag" onclick="rmTag('${t.k}','${t.v}')">${t.v}
+  wrap.innerHTML = tags.map((t,i) =>
+    `<div class="a-tag" onclick="rmTagByIdx(${i})" data-tagidx="${i}">${t.v}
       <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </div>`).join('');
+  // Store tags array for rmTagByIdx
+  window._activeTags = tags;
   bar.classList.toggle('empty', !tags.length);
 }
 
-function rmTag(k, v){
+function rmTagByIdx(idx){
+  const tags = window._activeTags || [];
+  if (idx >= tags.length) return;
+  const { k, v } = tags[idx];
   if (k === 'price'){ clrPrice(); return; }
   if (k === 'srch'){
     S.search = '';
@@ -1938,12 +1989,20 @@ function rmTag(k, v){
     document.getElementById('searchWrap').classList.remove('expanded');
   } else {
     S[k].delete(v);
-    document.querySelectorAll(`[data-k="${k}"][data-v="${v}"]`).forEach(e => e.classList.remove('sel'));
-    document.getElementById('cnt-' + k).textContent = S[k].size || '0';
-    document.getElementById('flt-' + (k==='transmission'?'body':k)).classList.toggle('has-active', S[k].size > 0);
+    document.querySelectorAll(`.flt-opt[data-k="${k}"]`).forEach(e => {
+      if (e.dataset.v === v) e.classList.remove('sel');
+    });
+    const sid = slotId(k);
+    const cntEl = document.getElementById('cnt-' + sid);
+    const fltEl = document.getElementById('flt-' + sid);
+    if (cntEl) cntEl.textContent = S[k].size || '0';
+    if (fltEl) fltEl.classList.toggle('has-active', S[k].size > 0);
   }
   applyFilters();
 }
+
+// Keep old rmTag as alias for backward compat
+function rmTag(k, v){ rmTagByIdx((window._activeTags||[]).findIndex(t=>t.k===k&&t.v===v)); }
 
 /* ── Filter controls ─────────────────────────────────────────────── */
 let searchOpen = false;
@@ -2080,27 +2139,41 @@ function slotId(key){
 }
 
 function togOpt(el, key, val){
+  // Use dataset values which are already decoded by the browser
+  const k = el.dataset.k || key;
+  const v = el.dataset.v || val;
+
+  // Ripple effect
+  const r = document.createElement('div');
+  r.className = 'flt-opt-ripple';
+  const size = Math.max(el.offsetWidth, el.offsetHeight);
+  r.style.cssText = `width:${size}px;height:${size}px;left:${el.offsetWidth/2 - size/2}px;top:${el.offsetHeight/2 - size/2}px;`;
+  el.appendChild(r);
+  r.addEventListener('animationend', () => r.remove());
+
   el.classList.toggle('sel');
-  S[key].has(val) ? S[key].delete(val) : S[key].add(val);
-  // Determine which slot id to update
-  const slotKey = key === 'transmission' ? 'body' : key;
-  document.getElementById('cnt-' + slotKey).textContent = S[key].size;
-  document.getElementById('flt-' + slotKey).classList.toggle('has-active', S[key].size > 0);
+  S[k].has(v) ? S[k].delete(v) : S[k].add(v);
+  const sid = slotId(k);
+  document.getElementById('cnt-' + sid).textContent = S[k].size;
+  document.getElementById('flt-' + sid).classList.toggle('has-active', S[k].size > 0);
   applyFilters();
 }
 
 function clrF(key, ev){
   ev && ev.stopPropagation && ev.stopPropagation();
+  if (!S[key]) return;
   S[key].clear();
-  const slotKey = key === 'transmission' ? 'body' : key;
-  document.querySelectorAll(`[data-k="${key}"]`).forEach(e => e.classList.remove('sel'));
-  document.getElementById('cnt-' + slotKey).textContent = '0';
-  document.getElementById('flt-' + slotKey).classList.remove('has-active');
+  const sid = slotId(key);
+  document.querySelectorAll(`.flt-opt[data-k="${key}"]`).forEach(e => e.classList.remove('sel'));
+  const cntEl = document.getElementById('cnt-' + sid);
+  const fltEl = document.getElementById('flt-' + sid);
+  if (cntEl) cntEl.textContent = '0';
+  if (fltEl) fltEl.classList.remove('has-active');
   applyFilters();
 }
 
 function clrPrice(){
-  S.maxPrice = 65000000;
+  S.maxPrice = 999999999;
   document.getElementById('pSlider').value = 500;
   document.getElementById('rMax').textContent = 'Any';
   document.getElementById('rTr').style.width = '100%';
@@ -2110,22 +2183,37 @@ function clrPrice(){
 }
 
 function onPrice(el){
-  // Slider 50–500 maps to ₹5L–₹5Cr (500 = no limit = 65000000)
   const v = +el.value;
-  S.maxPrice = v >= 500 ? 65000000 : v * 100000;  // each unit = ₹1 lakh
-  const display = v >= 500 ? 'Any' : '₹' + v + 'L';
-  document.getElementById('rMax').textContent = display;
-  document.getElementById('rTr').style.width = ((v - 50) / 450 * 100) + '%';
-  const active = v < 500;
-  document.getElementById('flt-price').classList.toggle('has-active', active);
-  document.getElementById('cnt-price').textContent = active ? '✓' : '0';
+  // Slider 0–500: 0=₹1L, 500=no limit
+  // Map exponentially: price in rupees = 100000 * e^(v * ln(5000)/500)
+  // Simpler: linear map 0-500 → ₹1L to ₹5Cr
+  if (v >= 500){
+    S.maxPrice = 999999999;
+    document.getElementById('rMax').textContent = 'Any';
+    document.getElementById('rTr').style.width = '100%';
+    document.getElementById('flt-price').classList.remove('has-active');
+    document.getElementById('cnt-price').textContent = '0';
+  } else {
+    // Map 50→500 to ₹5L→₹5Cr (500x range) using exponential
+    const minP = 100000, maxP = 50000000;
+    const t = (v - 50) / 450;
+    const price = Math.round(minP * Math.pow(maxP/minP, t));
+    S.maxPrice = price;
+    const display = price >= 10000000 ? '₹'+(price/10000000).toFixed(1)+'Cr'
+                  : price >= 100000   ? '₹'+(price/100000).toFixed(0)+'L'
+                  : '₹'+price.toLocaleString('en-IN');
+    document.getElementById('rMax').textContent = display;
+    document.getElementById('rTr').style.width = ((v - 50) / 450 * 100) + '%';
+    document.getElementById('flt-price').classList.add('has-active');
+    document.getElementById('cnt-price').textContent = '✓';
+  }
   applyFilters();
 }
 
 function onSrch(el){ S.search = el.value; applyFilters(); }
 
 function clrAll(){
-  ['brand','transmission','year','tier'].forEach(k => clrF(k, null));
+  ['brand','fuel_type','transmission','year'].forEach(k => clrF(k, null));
   clrPrice();
   S.search = '';
   const inp = document.getElementById('sInput');
@@ -2150,26 +2238,6 @@ function setView(v){
   document.getElementById('lBtn').classList.toggle('act', v === 'list');
 }
 
-/* ── Add Tier filter slot to HTML dynamically ───────────────────── */
-(function addTierFilter(){
-  // Insert a "Tier" filter button after the Year filter
-  const yearFlt = document.getElementById('flt-year');
-  if (!yearFlt) return;
-  const div = document.createElement('div');
-  div.className = 'flt';
-  div.id = 'flt-tier';
-  div.innerHTML = `
-    <button class="flt-btn" onclick="tgl('flt-tier')">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span>Tier</span><span class="flt-cnt" id="cnt-tier">0</span><span class="flt-chev"></span>
-    </button>
-    <div class="flt-panel">
-      <div class="flt-ph"><span class="flt-ph-title">Listing Tier</span><button class="flt-clr" onclick="clrF('tier',event)">Clear</button></div>
-      <div class="flt-opts" id="opts-tier"></div>
-    </div>`;
-  yearFlt.insertAdjacentElement('afterend', div);
-})();
-
 /* ── Toast ───────────────────────────────────────────────────────── */
 let toastTimer;
 function showToast(msg, type='gold'){
@@ -2193,9 +2261,160 @@ function fallbackSvg(){
   </svg>`;
 }
 
-/* ── Compare bar (stub — keeps HTML from erroring) ───────────────── */
-const compareList = [];
-function clearCompare(){ document.getElementById('compareBar').classList.remove('show'); }
+/* ── Compare feature ────────────────────────────────────────────── */
+const compareList = []; // [{id, title, brand, price_display, image}]
+const MAX_COMPARE  = 3;
+
+function handleCompare(e, carId){
+  e.stopPropagation();
+  const car  = allCars.find(c => c.id === carId);
+  if (!car) return;
+
+  const idx  = compareList.findIndex(c => c.id === carId);
+  if (idx > -1){
+    // Already in list — remove it
+    compareList.splice(idx, 1);
+    showToast(`Removed "${car.title}" from compare`, 'blue');
+  } else {
+    if (compareList.length >= MAX_COMPARE){
+      showToast(`Max ${MAX_COMPARE} cars for comparison`, 'gold');
+      return;
+    }
+    compareList.push({ id: carId, title: car.title, brand: car.brand,
+                       price_display: car.price_display || formatPrice(car.price),
+                       image: car.image });
+    showToast(`Added "${car.title}" to compare`, 'blue');
+  }
+
+  // Sync all compare buttons in the grid
+  document.querySelectorAll('[data-cmpcid]').forEach(btn => {
+    const inList = compareList.some(c => c.id === btn.dataset.cmpcid);
+    btn.classList.toggle('on', inList);
+  });
+
+  renderCompareBar();
+}
+
+function renderCompareBar(){
+  const bar   = document.getElementById('compareBar');
+  const slots = document.getElementById('cbarSlots');
+  const goBtn = document.getElementById('cbarGo');
+
+  if (!compareList.length){ bar.classList.remove('show'); return; }
+  bar.classList.add('show');
+
+  // Render up to MAX_COMPARE slots
+  let html = '';
+  for (let i = 0; i < MAX_COMPARE; i++){
+    const c = compareList[i];
+    if (c){
+      html += `<div class="cbar-slot filled">
+        ${c.image ? `<img src="${esc(c.image)}" style="width:36px;height:28px;object-fit:cover;border-radius:1px;flex-shrink:0;" onerror="this.style.display='none'">` : '<div class="cbar-empty-dot"></div>'}
+        <span class="cbar-slot-name">${esc(c.title)}</span>
+        <button class="cbar-slot-rm" onclick="removeFromCompare('${c.id}')" title="Remove">
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`;
+    } else {
+      html += `<div class="cbar-slot"><div class="cbar-empty-dot"></div><span style="font-size:.6rem;color:rgba(200,144,58,.3);letter-spacing:.1em;">Add a car</span></div>`;
+    }
+  }
+  slots.innerHTML = html;
+  goBtn.disabled  = compareList.length < 2;
+}
+
+function removeFromCompare(carId){
+  const idx = compareList.findIndex(c => c.id === carId);
+  if (idx > -1) compareList.splice(idx, 1);
+  document.querySelectorAll('[data-cmpcid]').forEach(btn => {
+    btn.classList.toggle('on', compareList.some(c => c.id === btn.dataset.cmpcid));
+  });
+  renderCompareBar();
+}
+
+function clearCompare(){
+  compareList.length = 0;
+  document.querySelectorAll('[data-cmpcid]').forEach(btn => btn.classList.remove('on'));
+  document.getElementById('compareBar').classList.remove('show');
+}
+
+// Compare Now — opens inline modal overlay
+document.getElementById('cbarGo').addEventListener('click', () => {
+  if (compareList.length < 2) return;
+  showCompareModal();
+});
+
+function showCompareModal(){
+  // Build comparison table
+  const fields = [
+    { key:'brand',         label:'Brand' },
+    { key:'year',          label:'Year' },
+    { key:'price_display', label:'Price' },
+    { key:'fuel_type',     label:'Fuel' },
+    { key:'transmission',  label:'Gearbox' },
+    { key:'kms_covered',   label:'Mileage', fmt: n => kmLabel(n).val + ' · ' + kmLabel(n).label },
+    { key:'location',      label:'Location' },
+    { key:'exterior_color',label:'Exterior' },
+    { key:'interior_color',label:'Interior' },
+  ];
+
+  const cars = compareList.map(ci => allCars.find(c => c.id === ci.id)).filter(Boolean);
+
+  const cols = cars.map(c => `
+    <div class="cmp-col">
+      <div class="cmp-img-wrap">
+        ${c.image ? `<img src="${esc(c.image)}" alt="" style="width:100%;height:140px;object-fit:cover;display:block;">` : `<div style="width:100%;height:140px;background:#111;display:flex;align-items:center;justify-content:center;">${fallbackSvg()}</div>`}
+      </div>
+      <div class="cmp-col-head">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;line-height:1.2">${esc(c.title||'')}</div>
+        <div style="font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-top:4px">${esc(c.brand||'')}</div>
+      </div>
+      ${fields.map(f => {
+        const raw = c[f.key];
+        const val = f.fmt ? f.fmt(raw) : (raw || '—');
+        return `<div class="cmp-cell">${esc(String(val))}</div>`;
+      }).join('')}
+      ${c.link ? `<div class="cmp-cell cmp-cell-action"><a href="${esc(c.link)}" target="_blank" class="cas-btn cas-view" style="display:inline-flex;padding:0 16px;height:32px;font-size:.58rem;">View Listing</a></div>` : '<div class="cmp-cell">—</div>'}
+    </div>`).join('');
+
+  const rowLabels = fields.map(f =>
+    `<div class="cmp-row-lbl">${f.label}</div>`
+  ).join('') + `<div class="cmp-row-lbl">Link</div>`;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'cmpModal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:2000;background:rgba(5,7,9,.92);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = `
+    <div style="background:var(--dark2);border:1px solid rgba(200,144,58,.2);max-width:960px;width:100%;max-height:90vh;overflow:auto;position:relative;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 28px;border-bottom:1px solid rgba(200,144,58,.12);">
+        <div>
+          <div style="font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;">AutoVault</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;">Side-by-Side Comparison</div>
+        </div>
+        <button onclick="document.getElementById('cmpModal').remove()" style="width:36px;height:36px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--muted);font-size:1.1rem;cursor:none;display:flex;align-items:center;justify-content:center;transition:background .2s,color .2s;" onmouseover="this.style.background='rgba(255,80,80,.12)';this.style.color='#ff9999'" onmouseout="this.style.background='rgba(255,255,255,.05)';this.style.color='var(--muted)'">✕</button>
+      </div>
+      <div style="display:flex;overflow-x:auto;padding:20px 28px;">
+        <div class="cmp-labels">
+          <div class="cmp-row-lbl" style="height:210px;"></div>
+          ${rowLabels}
+        </div>
+        ${cols}
+      </div>
+    </div>
+    <style>
+      .cmp-col{flex:1;min-width:200px;max-width:280px;border-left:1px solid rgba(255,255,255,.06);}
+      .cmp-col:first-child{border-left:none;}
+      .cmp-img-wrap{position:relative;overflow:hidden;}
+      .cmp-col-head{padding:12px 16px 10px;border-bottom:1px solid rgba(255,255,255,.06);}
+      .cmp-cell{padding:10px 16px;font-size:.78rem;color:var(--muted);border-bottom:1px solid rgba(255,255,255,.04);min-height:38px;display:flex;align-items:center;}
+      .cmp-cell-action{padding:10px 16px;border-bottom:none;}
+      .cmp-labels{flex-shrink:0;width:100px;border-right:1px solid rgba(200,144,58,.12);}
+      .cmp-row-lbl{padding:10px 12px 10px 0;font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(200,144,58,.5);border-bottom:1px solid rgba(255,255,255,.04);min-height:38px;display:flex;align-items:center;white-space:nowrap;}
+    </style>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+
 
 /* ── Background sparks ───────────────────────────────────────────── */
 (function spawnSparks(){
@@ -2214,6 +2433,8 @@ function clearCompare(){ document.getElementById('compareBar').classList.remove(
 })();
 
 /* ── INIT ────────────────────────────────────────────────────────── */
+// Seed filters immediately with known values from dataset (instant UX)
+seedFiltersFromFallback();
 fetchAllCars();
 </script>
 </body>

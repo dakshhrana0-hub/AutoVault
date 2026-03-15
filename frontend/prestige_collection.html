@@ -465,11 +465,7 @@
         const ctx = canvas.getContext("2d");
         const darkOverlay = document.getElementById("dark-overlay");
 
-        // The exact target frames defined by user: 21, 89, 148, and final
         const TOTAL_FRAMES = 240;
-        const STOPS = [21, 89, 148, TOTAL_FRAMES]; 
-        let currentStopIndex = -1; // -1 means hasn't started
-        
         let currentFrame = 1;
         let isPlaying = false;
         
@@ -546,7 +542,6 @@
         let lastDrawTime = 0;
         const FPS = 24; // Medium speed, between fast and very slow cinematic
         const FRAME_DURATION = 1000 / FPS;
-        const PAUSE_DURATION = 1000; // 1 second stop at each key frame
 
         function animateSequence(timestamp) {
             if (!isPlaying) return;
@@ -555,30 +550,12 @@
             if (timestamp - lastDrawTime >= FRAME_DURATION) {
                 lastDrawTime = timestamp;
                 
-                // If we are waiting at a stop, just return and wait for timeout to resume
-                if (currentFrame === STOPS[currentStopIndex]) {
-                    isPlaying = false;
-                    
-                    setTimeout(() => {
-                        // After pause, check if we need to loop back to start
-                        if (currentStopIndex >= STOPS.length - 1) {
-                            currentFrame = 1;
-                            currentStopIndex = 0;
-                        } else {
-                            currentStopIndex++;
-                        }
-                        
-                        isPlaying = true;
-                        requestAnimationFrame((ts) => {
-                            lastDrawTime = ts;
-                            animateSequence(ts);
-                        });
-                    }, PAUSE_DURATION);
-                    
-                    return; // Stop current animation loop until setTimeout fires
+                if (currentFrame >= TOTAL_FRAMES) {
+                    currentFrame = 1; // loop back to the beginning
+                } else {
+                    currentFrame++;
                 }
 
-                currentFrame++;
                 drawFrame(currentFrame);
             }
             
@@ -589,7 +566,6 @@
 
         // Start animation loop automatically once the first image is loaded
         function startAutoSequence() {
-            currentStopIndex = 0; 
             isPlaying = true;
             requestAnimationFrame((timestamp) => {
                  lastDrawTime = timestamp;
