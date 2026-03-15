@@ -111,15 +111,15 @@
     /* ── CURSOR ── */
     /* ── CURSOR ── */
     #cur,#curR{position:fixed;top:0;left:0;pointer-events:none;border-radius:50%;will-change:transform;}
-    #cur{width:10px;height:10px;background:var(--gold);z-index:9999;transition:width .18s,height .18s,opacity .18s;}
-    #curR{width:36px;height:36px;border:1.5px solid rgba(200,144,58,.55);background:rgba(200,144,58,.04);z-index:9998;transition:width .25s,height .25s,border-color .25s,background .25s;}
+    #cur{width:10px;height:10px;background:var(--gold);z-index:999999;transition:width .18s,height .18s,opacity .18s;}
+    #curR{width:36px;height:36px;border:1.5px solid rgba(200,144,58,.55);background:rgba(200,144,58,.04);z-index:999998;transition:width .25s,height .25s,border-color .25s,background .25s;}
     body.hov #cur{width:6px;height:6px;opacity:.7}
     body.hov #curR{width:54px;height:54px;border-color:rgba(200,144,58,.85);background:rgba(200,144,58,.07);}
     html{cursor:none !important}
     a,button,label,select,input,[onclick]{cursor:none !important}
 
     /* ── NAV ── */
-    nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 60px;height:72px;background:rgba(8,10,12,.93);border-bottom:1px solid rgba(200,144,58,.1);backdrop-filter:blur(24px)}
+    nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 60px;height:72px;background:rgba(8,10,12,.93);border-bottom:1px solid rgba(200,144,58,.1);backdrop-filter:blur(24px);overflow:visible}
     .logo{font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:600;text-decoration:none;color:var(--text)}
     .logo em{color:var(--gold);font-style:normal}
     .nav-links{display:flex;gap:40px;list-style:none}
@@ -130,6 +130,65 @@
     .nav-icon{width:36px;height:36px;border:1px solid rgba(200,144,58,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;background:rgba(200,144,58,.04);transition:background .3s,border-color .3s}
     .nav-icon:hover{background:rgba(200,144,58,.12);border-color:var(--gold)}
     .nav-icon svg{stroke:var(--gold)}
+    /* ── NAV DROPDOWN ── */
+    .nav-links li{position:relative}
+    .has-dropdown>a::after{display:none}
+    .has-dropdown>a{display:flex;align-items:center;gap:6px}
+    .has-dropdown>a::before{
+      content:'';width:4px;height:4px;
+      border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;
+      transform:rotate(45deg) translateY(-1px);
+      display:inline-block;opacity:.5;transition:transform .25s,opacity .25s;flex-shrink:0;
+    }
+    .has-dropdown:hover>a::before,.has-dropdown.open>a::before{
+      transform:rotate(-135deg) translateY(1px);opacity:1;
+    }
+    .has-dropdown:hover>a,.has-dropdown.open>a{color:var(--gold)}
+    /* Dropdowns detached to body via JS — position:fixed, positioned by JS */
+    .nav-dropdown{
+      position:fixed;
+      min-width:220px;
+      background:rgba(8,10,12,.97);
+      border:1px solid rgba(200,144,58,.18);
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+      opacity:0;visibility:hidden;pointer-events:none;
+      transform:translateY(-6px);
+      transition:opacity .2s ease,transform .2s ease,visibility 0s linear .2s;
+      z-index:9999;
+    }
+    /* Triangle caret pointing up — JS sets --nd-caret to align with link */
+    .nav-dropdown::before{
+      content:'';position:absolute;top:-7px;
+      left:var(--nd-caret,50%);transform:translateX(-50%);
+      width:0;height:0;
+      border-left:7px solid transparent;
+      border-right:7px solid transparent;
+      border-bottom:7px solid rgba(200,144,58,.55);
+    }
+    .nav-dropdown.open{
+      opacity:1;visibility:visible;pointer-events:all;
+      transform:translateY(0);
+      transition:opacity .2s ease,transform .2s ease,visibility 0s linear 0s;
+    }
+    .nav-dropdown-inner{display:flex;flex-direction:column}
+    .nav-dropdown-inner a{
+      display:flex;align-items:center;gap:12px;
+      padding:13px 20px;
+      font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;
+      color:rgba(240,237,232,.55);
+      text-decoration:none;
+      border-bottom:1px solid rgba(255,255,255,.04);
+      border-left:2px solid transparent;
+      transition:color .2s,background .2s,border-left-color .2s;
+    }
+    .nav-dropdown-inner a:last-child{border-bottom:none}
+    .nav-dropdown-inner a:hover{
+      color:var(--gold);
+      background:rgba(200,144,58,.06);
+      border-left-color:var(--gold);
+    }
+    .nav-dropdown-inner a svg{stroke:currentColor;flex-shrink:0;opacity:.7}
     @media(max-width:900px){nav{padding:0 20px}.nav-links{display:none}}
 
     /* ── HERO ── */
@@ -443,9 +502,8 @@
       color:var(--gold);
       background:rgba(200,144,58,.1);
       border-color:rgba(200,144,58,.55);
-      border-bottom-color:transparent;
       box-shadow:0 0 16px rgba(200,144,58,.15), inset 0 1px 0 rgba(200,144,58,.1);
-      border-radius:2px 2px 0 0;
+      border-radius:2px;
     }
     .flt.has-active .flt-btn{
       color:var(--gold);
@@ -491,43 +549,43 @@
       opacity:0;
       visibility:hidden;
       pointer-events:none;
-      transform:translateY(-8px) scaleY(.96);
+      transform:translateY(4px) scaleY(.97);
       transform-origin:top center;
       transition:
-        opacity .22s cubic-bezier(.4,0,.2,1),
-        transform .28s cubic-bezier(.34,1.5,.64,1),
-        visibility 0s linear .22s;
-      overflow:hidden;
+        opacity .2s cubic-bezier(.4,0,.2,1),
+        transform .22s cubic-bezier(.4,0,.2,1),
+        visibility 0s linear .2s;
+      overflow:visible;
     }
     .flt-panel{ min-width:260px; }
     .sort-panel{ width:220px; }
 
     .flt.open .flt-panel,
-    .sort-dd.open .sort-panel{
+    .sort-dd.open .sort-panel,
+    .flt-panel.open,
+    .sort-panel.open{
       opacity:1;
       visibility:visible;
       pointer-events:all;
       transform:translateY(0) scaleY(1);
       transition:
         opacity .22s cubic-bezier(.4,0,.2,1),
-        transform .28s cubic-bezier(.34,1.5,.64,1),
+        transform .22s cubic-bezier(.4,0,.2,1),
         visibility 0s linear 0s;
     }
 
-    /* Gold shimmer line at very top of panel */
+    /* Triangle caret pointer — sits above the panel flush to filter-bar */
     .flt-panel::before, .sort-panel::before{
       content:'';
       position:absolute;
-      top:0; left:-100%; right:-100%; height:1px;
-      background:linear-gradient(90deg, transparent 0%, rgba(200,144,58,.6) 30%, rgba(232,176,96,.9) 50%, rgba(200,144,58,.6) 70%, transparent 100%);
+      top:-8px;
+      left:var(--caret-x, 20px);
+      width:0; height:0;
+      border-left:8px solid transparent;
+      border-right:8px solid transparent;
+      border-bottom:8px solid var(--gold);
       pointer-events:none;
-      animation:panelShimmer .6s .1s ease forwards;
-      opacity:0;
-    }
-    @keyframes panelShimmer{
-      0%{opacity:0;transform:translateX(-20%)}
-      40%{opacity:1}
-      100%{opacity:.5;transform:translateX(20%)}
+      z-index:1;
     }
 
     /* Subtle corner accent */
@@ -1216,8 +1274,27 @@
     <a class="logo" href="index.html"><em>Auto</em>Vault</a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="cars.html" class="active">Vehicles</a></li>
-      <li><a href="#">Compare</a></li>
+      <li class="has-dropdown">
+        <a href="all_listing.html" class="active">Vehicles</a>
+        <div class="nav-dropdown">
+          <div class="nav-dropdown-inner">
+            <a href="prestige_collection.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Prestige Collection</a>
+            <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Featured Models</a>
+            <a href="all_listing.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Browse All</a>
+            <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Saved Wishlist</a>
+          </div>
+        </div>
+      </li>
+      <li class="has-dropdown">
+        <a href="#">Compare</a>
+        <div class="nav-dropdown">
+          <div class="nav-dropdown-inner">
+            <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M16 3h5v5M4 20 21 3"/><path d="M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Side-by-Side</a>
+            <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Performance</a>
+            <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Cost of Ownership</a>
+          </div>
+        </div>
+      </li>
       <li><a href="#">Brands</a></li>
       <li><a href="#">Contact</a></li>
     </ul>
@@ -1289,10 +1366,9 @@
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
           <span>Brand</span><span class="flt-cnt" id="cnt-brand">0</span><span class="flt-chev"></span>
         </button>
-        <div class="flt-panel">
+        <div class="flt-panel" data-owner="flt-brand">
           <div class="flt-ph"><span class="flt-ph-title">Select Brand</span><button class="flt-clr" onclick="clrF('brand',event)">Clear</button></div>
-          <div class="flt-opts" id="opts-brand"></div>
-        </div>
+          <div class="flt-opts" id="opts-brand"></div></div>
       </div>
 
       <!-- FUEL TYPE -->
@@ -1301,10 +1377,9 @@
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 22V8a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v14"/><path d="M18 22V10.5"/><path d="M13 12h6a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1"/><line x1="3" y1="22" x2="21" y2="22"/></svg>
           <span>Fuel</span><span class="flt-cnt" id="cnt-fuel">0</span><span class="flt-chev"></span>
         </button>
-        <div class="flt-panel">
+        <div class="flt-panel" data-owner="flt-fuel">
           <div class="flt-ph"><span class="flt-ph-title">Fuel Type</span><button class="flt-clr" onclick="clrF('fuel_type',event)">Clear</button></div>
-          <div class="flt-opts" id="opts-fuel"></div>
-        </div>
+          <div class="flt-opts" id="opts-fuel"></div></div>
       </div>
 
       <!-- GEARBOX / TRANSMISSION -->
@@ -1313,10 +1388,9 @@
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/></svg>
           <span>Gearbox</span><span class="flt-cnt" id="cnt-body">0</span><span class="flt-chev"></span>
         </button>
-        <div class="flt-panel">
+        <div class="flt-panel" data-owner="flt-body">
           <div class="flt-ph"><span class="flt-ph-title">Transmission</span><button class="flt-clr" onclick="clrF('transmission',event)">Clear</button></div>
-          <div class="flt-opts" id="opts-body"></div>
-        </div>
+          <div class="flt-opts" id="opts-body"></div></div>
       </div>
 
       <!-- YEAR -->
@@ -1325,10 +1399,9 @@
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           <span>Year</span><span class="flt-cnt" id="cnt-year">0</span><span class="flt-chev"></span>
         </button>
-        <div class="flt-panel">
+        <div class="flt-panel" data-owner="flt-year">
           <div class="flt-ph"><span class="flt-ph-title">Model Year</span><button class="flt-clr" onclick="clrF('year',event)">Clear</button></div>
-          <div class="flt-opts" id="opts-year"></div>
-        </div>
+          <div class="flt-opts" id="opts-year"></div></div>
       </div>
 
       <!-- PRICE RANGE -->
@@ -1337,13 +1410,12 @@
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           <span>Price</span><span class="flt-cnt" id="cnt-price">0</span><span class="flt-chev"></span>
         </button>
-        <div class="flt-panel" style="min-width:270px">
+        <div class="flt-panel" data-owner="flt-price" style="min-width:270px">
           <div class="flt-ph"><span class="flt-ph-title">Budget Range</span><button class="flt-clr" onclick="clrPrice()">Reset</button></div>
           <div class="flt-range">
             <div class="range-disp">
               <div><span class="range-v">Min</span><span class="range-l">Minimum</span></div>
-              <div style="text-align:right"><span class="range-v" id="rMax">Any</span><span class="range-l">Maximum</span></div>
-            </div>
+              <div style="text-align:right"><span class="range-v" id="rMax">Any</span><span class="range-l">Maximum</span></div></div>
             <div class="range-sw">
               <input type="range" id="pSlider" min="50" max="500" value="500" step="10" oninput="onPrice(this)"/>
               <div class="range-tr" id="rTr" style="width:100%"></div>
@@ -1363,7 +1435,7 @@
           <span id="sortLbl">Price ↓</span>
           <span class="flt-chev"></span>
         </button>
-        <div class="sort-panel">
+        <div class="sort-panel" data-owner="sortDd">
           <div class="sort-opt" data-s="featured"   onclick="setSort(this,'Featured')">Featured <span class="sort-dot"></span></div>
           <div class="sort-opt" data-s="price-asc"  onclick="setSort(this,'Price ↑')">Price: Low → High <span class="sort-dot"></span></div>
           <div class="sort-opt act" data-s="price-desc" onclick="setSort(this,'Price ↓')">Price: High → Low <span class="sort-dot"></span></div>
@@ -1440,6 +1512,58 @@ window.addEventListener('scroll',()=>{
   document.getElementById('navProgress').style.setProperty('--scroll-pct', pct+'%');
 },{ passive:true });
 
+/* ── Custom cursor (GPU-accelerated) ── */
+(function initCursor(){
+  const dot  = document.getElementById('cur');
+  const ring = document.getElementById('curR');
+  if (!dot || !ring) return;
+
+  let mx = -200, my = -200;   // raw mouse position
+  let rx = -200, ry = -200;   // ring lerp position
+  const LERP = 0.13;           // ring smoothing (lower = more lag)
+
+  // Move dot instantly on every mousemove
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    dot.style.transform = `translate(calc(${mx}px - 50%), calc(${my}px - 50%))`;
+  }, { passive: true });
+
+  // Smoothly chase mouse for ring
+  (function loop(){
+    rx += (mx - rx) * LERP;
+    ry += (my - ry) * LERP;
+    ring.style.transform = `translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`;
+    requestAnimationFrame(loop);
+  })();
+
+  // Hover state via event delegation (works on dynamic cards too)
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest('a,button,.car-card,.flt-opt,.sort-opt,.rb-item,.nav-dropdown-inner a,.flt-panel,.sort-panel'))
+      document.body.classList.add('hov');
+    else
+      document.body.classList.remove('hov');
+  });
+  document.addEventListener('mouseout', e => {
+    if (!e.relatedTarget || !e.relatedTarget.closest('a,button,.car-card,.flt-opt,.sort-opt,.rb-item,.nav-dropdown-inner a,.flt-panel,.sort-panel'))
+      document.body.classList.remove('hov');
+  });
+})();
+
+/* ── Brand Ribbon — populated from live data after fetch ── */
+function buildRibbon(brands){
+  const track = document.getElementById('ribbonTrack');
+  if (!track || !brands || !brands.length) return;
+  const sorted = [...new Set(brands)].sort();
+  const chunk = sorted.map(b =>
+    `<div class="rb-item"><span class="rb-name">${b}</span><span class="rb-sep">◆</span></div>`
+  ).join('');
+  track.innerHTML = chunk + chunk + chunk;
+  const totalW = sorted.length * 180;
+  const dur = Math.max(20, totalW / 55);
+  track.style.animation = `ribbonScroll ${dur}s linear infinite`;
+}
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="config.js" onerror="console.warn('config.js missing — filters and data will not load.');"></script>
@@ -1838,15 +1962,122 @@ document.addEventListener('click', e => {
   }
 });
 
+/* ── NAV DROPDOWNS — detached to body to escape backdrop-filter stacking context ── */
+(function initNavDropdowns(){
+  function setup(){
+    document.querySelectorAll('.has-dropdown').forEach(li => {
+      const link = li.querySelector('a');
+      const dd   = li.querySelector('.nav-dropdown');
+      if (!dd) return;
+
+      // Detach dropdown to body
+      dd._owner = li;
+      document.body.appendChild(dd);
+
+      function posDD(){
+        const lr = link.getBoundingClientRect();
+        const dw = dd.offsetWidth || 220;
+        // Center dropdown under the link
+        let left = lr.left + lr.width/2 - dw/2;
+        // Clamp to viewport
+        left = Math.max(8, Math.min(left, window.innerWidth - dw - 8));
+        const top  = lr.bottom + 8; // 8px gap below nav bottom
+        dd.style.top  = top + 'px';
+        dd.style.left = left + 'px';
+        // Position caret to point at link center
+        const caretLeft = (lr.left + lr.width/2) - left;
+        dd.style.setProperty('--nd-caret', Math.max(12, Math.min(caretLeft, dw-12)) + 'px');
+      }
+
+      function open(){ posDD(); dd.classList.add('open'); li.classList.add('open'); }
+      function close(){ dd.classList.remove('open'); li.classList.remove('open'); }
+
+      li.addEventListener('mouseenter', open);
+      li.addEventListener('mouseleave', e => {
+        // Stay open if moving into the dropdown itself
+        if (!dd.contains(e.relatedTarget)) close();
+      });
+      dd.addEventListener('mouseleave', e => {
+        if (!li.contains(e.relatedTarget)) close();
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup);
+  else setup();
+})();
+
+// Move all panels to <body> so backdrop-filter on filter-bar doesn't trap fixed positioning
+function detachPanels(){
+  document.querySelectorAll('.flt-panel,.sort-panel').forEach(p => {
+    if (p.parentElement !== document.body) {
+      document.body.appendChild(p);
+    }
+  });
+}
+if (document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', detachPanels);
+} else {
+  detachPanels();
+}
+
+function positionPanel(el){
+  const btn   = el.querySelector('.flt-btn,.sort-tr');
+  const panel = document.querySelector('[data-owner="'+el.id+'"]');
+  if (!btn || !panel) return;
+  const br  = btn.getBoundingClientRect();
+  const filterBar = document.querySelector('.filter-bar');
+  const top = filterBar ? filterBar.getBoundingClientRect().bottom : br.bottom;
+  const pw  = panel.offsetWidth || (el.classList.contains('sort-dd') ? 220 : 260);
+  let left;
+  if (el.classList.contains('sort-dd')){
+    left = Math.max(8, br.right - pw);
+  } else {
+    left = br.left;
+    if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+    left = Math.max(8, left);
+  }
+  panel.style.top  = top + 'px';
+  panel.style.left = left + 'px';
+  const caretX = (br.left + br.width / 2) - left - 8;
+  panel.style.setProperty('--caret-x', Math.max(8, caretX) + 'px');
+}
+
 function tgl(id){
-  const el = document.getElementById(id), was = el.classList.contains('open');
+  const el = document.getElementById(id);
+  if (!el) return;
+  const was = el.classList.contains('open');
+  document.querySelectorAll('.flt.open,.sort-dd.open').forEach(d => {
+    d.classList.remove('open');
+    const p = document.querySelector('[data-owner="'+d.id+'"]');
+    if (p) p.classList.remove('open');
+  });
+  if (!was){
+    el.classList.add('open');
+    const panel = document.querySelector('[data-owner="'+el.id+'"]');
+    if (panel){
+      panel.classList.add('open');
+      positionPanel(el);
+    }
+  }
+}
+function closeAllDropdowns(){
   document.querySelectorAll('.flt.open,.sort-dd.open').forEach(d => d.classList.remove('open'));
-  if (!was) el.classList.add('open');
+  document.querySelectorAll('.flt-panel.open,.sort-panel.open').forEach(p => p.classList.remove('open'));
 }
 document.addEventListener('click', e => {
-  if (!e.target.closest('.flt') && !e.target.closest('.sort-dd'))
-    document.querySelectorAll('.flt.open,.sort-dd.open').forEach(d => d.classList.remove('open'));
+  if (!e.target.closest('.flt') && !e.target.closest('.sort-dd') && !e.target.closest('.flt-panel') && !e.target.closest('.sort-panel'))
+    closeAllDropdowns();
 });
+// Close dropdowns on scroll (they'd drift with fixed position otherwise)
+window.addEventListener('scroll', closeAllDropdowns, { passive: true });
+
+/* Maps state key → DOM slot id */
+function slotId(key){
+  if (key === 'transmission') return 'body';
+  if (key === 'fuel_type')    return 'fuel';
+  return key;
+}
 
 function togOpt(el, key, val){
   el.classList.toggle('sel');
