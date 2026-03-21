@@ -32,36 +32,43 @@ body { padding-top: 80px; overflow-x: hidden; background: var(--dark, #0a0a0c); 
 .cars-wrap { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
 #grid, #car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; max-width: 1400px; margin: 40px auto; padding: 0 20px; }
 
-/* ── CAR CARD STANDARD (LIKE INDEX.HTML) ── */
+/* ── CAR CARD HYPER-AUTOMOTIVE ── */
 .car-card {
-    background: rgba(15,15,18,0.6);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 12px; overflow: hidden;
-    backdrop-filter: blur(10px);
-    transition: transform 0.4s cubic-bezier(0.19,1,0.22,1), border-color 0.4s !important;
-    display: flex; flex-direction: column; position: relative;
-    cursor: none;
+    background: linear-gradient(145deg, rgba(20,20,25,0.9) 0%, rgba(5,5,8,0.95) 100%);
+    border: 1px solid rgba(255,255,255,0.03); 
+    clip-path: polygon(25px 0, 100% 0, 100% calc(100% - 25px), calc(100% - 25px) 100%, 0 100%, 0 25px);
+    overflow: hidden; backdrop-filter: blur(15px);
+    transition: transform 0.6s cubic-bezier(0.19,1,0.22,1), box-shadow 0.6s !important; display: flex; flex-direction: column; position: relative; cursor: none; box-shadow: 0 10px 40px rgba(0,0,0,0.8); perspective: 1000px;
 }
-.car-card:hover { border-color: #ff3300 !important; transform: translateY(-10px) !important; box-shadow: 0 10px 40px rgba(255,51,0,0.15) !important; }
-.cvis { width: 100%; height: 220px; overflow: hidden; position: relative; }
-.cvis img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.19,1,0.22,1); }
-.car-card { box-shadow: 0 4px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,51,0,0.1) !important; }
-.car-card:hover { border-color: #ff3300 !important; transform: translateY(-12px) scale(1.02) !important; box-shadow: 0 20px 40px rgba(255,51,0,0.2) !important; }
-.car-card:hover .cvis img { transform: scale(1.1); }
-.car-card:hover .cvis img { transform: scale(1.05); }
-.cbody { padding: 25px 20px; display: flex; flex-direction: column; flex-grow: 1; }
-.cname { font-family: 'Syne', sans-serif !important; text-transform: uppercase; color: #fff; font-size: 1.4rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px; }
-.cyear { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 15px; }
-.cspecs { display: flex; gap: 10px; margin-bottom: 15px; color: #fff; font-size: 0.8rem; flex-wrap: wrap; }
-.spill { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
-.cprice-row { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
-.plbl { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 5px; }
-.pval { font-family: 'Syne', sans-serif !important; color: #fff; font-size: 1.6rem; font-weight: 600; }
-.cacts-strip { display: flex; gap: 10px; margin-top: 15px; }
-.cas-btn { flex: 1; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px; border-radius: 6px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: none; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 5px; text-decoration: none; }
-.cas-view { background: #ff3300; border-color: #ff3300; color: #fff; font-weight: 600; }
+.car-card::before {
+    content: ''; position: absolute; top:0; left:25px; right:0; height:2px;
+    background: linear-gradient(90deg, #ff3300, transparent); z-index: 10; opacity: 0.5; transition: 0.4s;
+}
+.car-card::after {
+    content: ''; position: absolute; bottom:0; right:25px; left:0; height:1px;
+    background: linear-gradient(270deg, #ff3300, transparent); z-index: 10; opacity: 0.2; transition: 0.4s;
+}
+.car-card:hover { transform: translateY(-12px) scale(1.02) !important; box-shadow: -15px 30px 60px rgba(255,51,0,0.15), 15px 30px 60px rgba(0,0,0,0.8) !important; z-index: 10; }
+.car-card:hover::before { opacity: 1; height: 3px; box-shadow: 0 0 15px #ff3300; }
+.cvis { width: 100%; height: 260px; overflow: hidden; position: relative; background: #000; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 15px)); margin-bottom: 5px; }
+.cvis::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 60%, rgba(5,5,8,1) 100%); }
+.cvis img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.19,1,0.22,1), filter 0.8s ease; opacity: 0.85; filter: grayscale(20%); }
+.car-card:hover .cvis img { transform: scale(1.1) translateX(5px); filter: brightness(1.2) contrast(1.15) grayscale(0%); opacity: 1; }
+.cbody { padding: 15px 25px 25px; display: flex; flex-direction: column; flex-grow: 1; position: relative; z-index: 2; }
+.cname { font-family: 'Syne', sans-serif !important; text-transform: uppercase; color: #fff; font-size: 1.6rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; letter-spacing: -0.03em; }
+.cyear { color: var(--accent); font-weight: 600; font-size: 0.8rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.15em; font-family: 'Inter'; }
+.cspecs { display: flex; gap: 8px; margin-bottom: 20px; color: #e0e0e0; font-size: 0.75rem; flex-wrap: wrap; }
+.spill { display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.4); padding: 6px 10px; clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); border-left: 2px solid rgba(255,255,255,0.1); font-family: 'Inter'; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
+.cprice-row { margin-top: auto; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+.plbl { font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-bottom: 5px; font-weight: 600; }
+.pval { font-family: 'Syne', sans-serif !important; color: #fff; font-size: 1.8rem; font-weight: 800; }
+.cacts-strip { display: flex; gap: 10px; margin-top: 20px; }
+.cas-btn { flex: 1; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px; clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; cursor: none; transition: 0.4s; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-family: 'Syne'; font-weight: 700; position: relative; overflow: hidden; }
+.cas-view { background: #ff3300; border: none; color: #000; box-shadow: 0 0 15px rgba(255,51,0,0.2); }
+.cas-view::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); transform: translateX(-100%) skewX(-15deg); transition: 0.5s; }
 .cas-btn:hover { background: rgba(255,255,255,0.1); }
-.cas-view:hover { background: #ff4411; transform: translateY(-2px); }
+.cas-view:hover { background: #ff4411; transform: scale(1.05); box-shadow: 0 10px 20px rgba(255,51,0,0.4); }
+.cas-view:hover::before { transform: translateX(100%) skewX(-15deg); }
 
 /* Remove old nav UI */
 .page-nav { display: none !important; }
@@ -69,8 +76,8 @@ body { padding-top: 80px; overflow-x: hidden; background: var(--dark, #0a0a0c); 
 
 /* Prestige Hero Overrides */
 .hero { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-#hero-canvas { position: absolute; top:0; left:0; width:100%; height:100%; z-index:0; }
-#dark-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: #000; z-index:1; }
+#hero-video { position: absolute; top:0; left:0; width:100%; height:100%; z-index:0; object-fit: cover; opacity: 0.8; }
+#dark-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 100%); z-index:1; pointer-events: none; }
 .hero-content { position: relative; z-index: 2; text-align: center; }
 .hero-content h1 { font-family: 'Syne', sans-serif; font-size: clamp(3rem, 6vw, 6rem); font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: -0.02em; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 .collection { padding: 5vw; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 5; background: var(--dark, #0a0a0c); }
@@ -89,16 +96,36 @@ body { padding-top: 80px; overflow-x: hidden; background: var(--dark, #0a0a0c); 
 .pgb:hover:not([disabled]) { border-color: #ff3300; color: #ff3300; }
 .pgb.act { background: #ff3300; border-color: #ff3300; color: #fff; }
 </style>
-<nav class="aura-nav" style="background: rgba(10,10,12,0.8); display: flex; align-items: center; justify-content: space-between; padding: 22px 48px; position: fixed; width: 100%; top: 0; z-index: 1000; backdrop-filter: blur(12px);">
-    <a href="index.html" class="logo hover-target" style="font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.65rem; color: #fff; text-decoration: none;">AutoVault</a>
-    <div style="display:flex; gap:20px; align-items:center;" class="nav-links">
-        <a href="index.html" class="hover-target" style="color:rgba(255,255,255,0.5); text-decoration:none; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; font-family:'Inter',sans-serif;">Home</a>
-        <a href="all_listing.html" class="hover-target" style="color:rgba(255,255,255,0.5); text-decoration:none; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; font-family:'Inter',sans-serif;">Vehicles</a>
-        <a href="prestige_collection.html" class="hover-target" style="color:#ff3300; text-decoration:none; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; font-family:'Inter',sans-serif;">Prestige</a>
-        <a href="profile.html" class="hover-target" style="color:rgba(255,255,255,0.5); text-decoration:none; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; font-family:'Inter',sans-serif;">Contact</a>
-    </div>
-    <div class="nav-auth" id="navAuth"></div>
-</nav>
+  <nav class="aura-nav">
+    <a href="index.html" class="logo hover-target">AutoVault</a>
+    <ul class="nav-links">
+      <li><a href="all_listing.html" class="hover-target">Models</a></li>
+      <li><a href="compare.html" class="hover-target">Compare</a></li>
+      <li><a href="prestige_collection.html" class="hover-target">Prestige</a></li>
+      
+      <!-- Authentic Supabase Login Icon -->
+      <li>
+        <a class="nav-profile-btn" href="login.html" id="navProfileBtn" title="Sign In">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+      </li>
+
+      <!-- Supabase Auth Avatar Dropdown -->
+      <li>
+        <div class="nav-avatar" id="navAvatar">
+          <div class="nav-avatar-circle" id="navInitial">?</div>
+          <span class="nav-avatar-name" id="navName" style="display:none;">Driver</span>
+          <div class="nav-avatar-dropdown">
+            <a href="profile.html">My Profile</a>
+            <a href="profile.html#saved">Saved Cars</a>
+            <a href="#" class="logout" id="logoutBtn">Sign Out</a>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </nav>
 
 </head>
 <body>
@@ -109,7 +136,9 @@ body { padding-top: 80px; overflow-x: hidden; background: var(--dark, #0a0a0c); 
     
 
     <header class="hero">
-        <canvas id="hero-canvas"></canvas>
+        <video autoplay loop muted playsinline id="hero-video">
+            <source src="background_vdo.mp4" type="video/mp4">
+        </video>
         <div id="dark-overlay"></div>
         <div class="hero-content">
             <h1>Prestige Collection</h1>
@@ -361,76 +390,8 @@ body { padding-top: 80px; overflow-x: hidden; background: var(--dark, #0a0a0c); 
         });
 
         // ─────────────────────────────────────────────────────────────────
-        // HERO CANVAS ANIMATION
+        // VIDEO BACKGROUND INITIALIZED
         // ─────────────────────────────────────────────────────────────────
-        const canvas      = document.getElementById("hero-canvas");
-        const ctx         = canvas.getContext("2d");
-        const darkOverlay = document.getElementById("dark-overlay");
-
-        const TOTAL_FRAMES = 240;
-        let currentFrame   = 1;
-        let isPlaying      = false;
-        const images       = [];
-
-        function resizeCanvas() {
-            canvas.width  = window.innerWidth;
-            canvas.height = window.innerHeight;
-            if (images[currentFrame]) drawFrame(currentFrame);
-        }
-        window.addEventListener("resize", resizeCanvas);
-        resizeCanvas();
-
-        const getImagePath = (index) =>
-            `../data/prestige_hero/ezgif-frame-${index.toString().padStart(3, '0')}.jpg`;
-
-        const firstImg  = new Image();
-        firstImg.src    = getImagePath(1);
-        firstImg.onload = () => {
-            images[1] = firstImg;
-            drawFrame(1);
-            setTimeout(startAutoSequence, 500);
-        };
-        for (let i = 2; i <= TOTAL_FRAMES; i++) {
-            const img  = new Image();
-            img.src    = getImagePath(i);
-            img.onload = () => {};
-            images[i]  = img;
-        }
-
-        function drawFrame(index) {
-            const img = images[index];
-            if (!img || !img.complete) return;
-            const cw = canvas.width, ch = canvas.height;
-            const iw = img.width,    ih = img.height;
-            const scale = Math.max(cw / iw, ch / ih);
-            const sw = iw * scale, sh = ih * scale;
-            ctx.clearRect(0, 0, cw, ch);
-            ctx.drawImage(img, (cw - sw) / 2, (ch - sh) / 2, sw, sh);
-            if (index <= 21) {
-                const progress  = (index - 1) / 20;
-                darkOverlay.style.opacity = (0.8 - progress * 0.8).toFixed(2);
-            } else {
-                darkOverlay.style.opacity = '0';
-            }
-        }
-
-        let lastDrawTime = 0;
-        const FPS = 24, FRAME_DURATION = 1000 / FPS;
-
-        function animateSequence(ts) {
-            if (!isPlaying) return;
-            if (ts - lastDrawTime >= FRAME_DURATION) {
-                lastDrawTime = ts;
-                currentFrame = currentFrame >= TOTAL_FRAMES ? 1 : currentFrame + 1;
-                drawFrame(currentFrame);
-            }
-            requestAnimationFrame(animateSequence);
-        }
-
-        function startAutoSequence() {
-            isPlaying = true;
-            requestAnimationFrame(ts => { lastDrawTime = ts; animateSequence(ts); });
-        }
 
         // ─────────────────────────────────────────────────────────────────
         // CURSOR
@@ -489,7 +450,7 @@ body { padding-top: 80px; overflow-x: hidden; background: var(--dark, #0a0a0c); 
        });
        document.querySelectorAll('.car-card:not(.gsap-bound)').forEach((c, idx) => {
           c.classList.add('gsap-bound');
-          gsap.fromTo(c, { opacity: 0, scale: 0.95, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: c, start: 'top bottom-=50', toggleActions: 'play none none none' } });
+          gsap.fromTo(c, { x: -100, y: 50, opacity: 0, rotationY: -35, scale: 0.9 }, { x: 0, y: 0, opacity: 1, rotationY: 0, scale: 1, duration: 0.8, ease: "power4.out", scrollTrigger: { trigger: c, start: 'top bottom-=50', toggleActions: 'play none none none' } });
        });
     }, 500);
   </script>
