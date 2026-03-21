@@ -7,293 +7,106 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --gold: #C8903A;
-            --bg: #030304;
-            --bg-card: #0a0b0f;
-            --text: #f0ece4;
-            --muted: #888;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Barlow', sans-serif;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            cursor: none;
-        }
+    
+<link href="styles.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+/* ── AUTOVAULT STANDARD CSS ── */
+body { padding-top: 80px; overflow-x: hidden; background: var(--dark, #0a0a0c); font-family: var(--font-body, 'Inter'); }
+.filter-bar { 
+    background: rgba(10,10,12,0.8); backdrop-filter: blur(20px); 
+    border-bottom: 1px solid rgba(255,255,255,0.05); 
+    position: sticky; top: 0; z-index: 100; padding: 20px 0;
+    display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: wrap;
+}
+.flt {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    color: #fff; padding: 10px 20px; border-radius: 8px; font-family: 'Inter';
+    font-size: 0.9rem; letter-spacing: 0.05em; text-transform: uppercase; cursor: none; transition: all 0.3s ease;
+}
+.flt:hover, .flt.has-active { border-color: #ff3300; background: rgba(255,51,0,0.1); }
+.tags-bar { background: transparent; padding: 20px 60px 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.a-tag { background: rgba(255,51,0,0.2); border: 1px solid #ff3300; color: #fff; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; cursor: none; transition: 0.3s; }
+.a-tag:hover { background: #ff3300; }
 
-        /* ── CUSTOM CURSOR ── */
-        .cursor {
-            position: fixed; top:0; left:0; width:10px; height:10px;
-            background: var(--gold); border-radius:50%; pointer-events:none;
-            z-index:9999; transform:translate(-50%,-50%);
-            transition: width .15s, height .15s, background .2s;
-            mix-blend-mode: screen;
-        }
-        .cursor-ring {
-            position:fixed; top:0; left:0; width:36px; height:36px;
-            border:1px solid rgba(200,144,58,0.4); border-radius:50%;
-            pointer-events:none; z-index:9998; transform:translate(-50%,-50%);
-            transition: width .2s, height .2s;
-        }
+.cars-wrap { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+#grid, #car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; max-width: 1400px; margin: 40px auto; padding: 0 20px; }
 
-        /* ── NAV ── */
-        nav {
-            position: absolute; top: 0; left: 0; right: 0; z-index: 100;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 40px 6vw;
-        }
-        nav a { color: var(--text); text-decoration: none; transition: color 0.3s ease; }
-        .nav-back {
-            display: flex; align-items: center; gap: 10px;
-            font-size: 0.85rem; text-transform: uppercase;
-            letter-spacing: 0.15em; color: var(--muted);
-        }
-        .nav-back:hover { color: var(--gold); }
-        .nav-logo { font-family: 'Cinzel', serif; font-size: 1.5rem; letter-spacing: 0.1em; }
-        .nav-logo span:last-child { color: var(--gold); }
+/* ── CAR CARD STANDARD (LIKE INDEX.HTML) ── */
+.car-card {
+    background: rgba(15,15,18,0.6);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px; overflow: hidden;
+    backdrop-filter: blur(10px);
+    transition: transform 0.4s cubic-bezier(0.19,1,0.22,1), border-color 0.4s !important;
+    display: flex; flex-direction: column; position: relative;
+    cursor: none;
+}
+.car-card:hover { border-color: #ff3300 !important; transform: translateY(-10px) !important; box-shadow: 0 10px 40px rgba(255,51,0,0.15) !important; }
+.cvis { width: 100%; height: 220px; overflow: hidden; position: relative; }
+.cvis img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.19,1,0.22,1); }
+.car-card { box-shadow: 0 4px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,51,0,0.1) !important; }
+.car-card:hover { border-color: #ff3300 !important; transform: translateY(-12px) scale(1.02) !important; box-shadow: 0 20px 40px rgba(255,51,0,0.2) !important; }
+.car-card:hover .cvis img { transform: scale(1.1); }
+.car-card:hover .cvis img { transform: scale(1.05); }
+.cbody { padding: 25px 20px; display: flex; flex-direction: column; flex-grow: 1; }
+.cname { font-family: 'Syne', sans-serif !important; text-transform: uppercase; color: #fff; font-size: 1.4rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 5px; }
+.cyear { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 15px; }
+.cspecs { display: flex; gap: 10px; margin-bottom: 15px; color: #fff; font-size: 0.8rem; flex-wrap: wrap; }
+.spill { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
+.cprice-row { margin-top: auto; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+.plbl { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 5px; }
+.pval { font-family: 'Syne', sans-serif !important; color: #fff; font-size: 1.6rem; font-weight: 600; }
+.cacts-strip { display: flex; gap: 10px; margin-top: 15px; }
+.cas-btn { flex: 1; background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px; border-radius: 6px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: none; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 5px; text-decoration: none; }
+.cas-view { background: #ff3300; border-color: #ff3300; color: #fff; font-weight: 600; }
+.cas-btn:hover { background: rgba(255,255,255,0.1); }
+.cas-view:hover { background: #ff4411; transform: translateY(-2px); }
 
-        /* ── HERO ── */
-        .hero {
-            height: 100vh; display: flex; align-items: center;
-            justify-content: center; position: relative; overflow: hidden;
-        }
-        #hero-canvas {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%; object-fit: cover; z-index: 1;
-        }
-        .hero::before {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to bottom, rgba(3,3,4,0.1) 0%, rgba(3,3,4,0.3) 60%, var(--bg) 100%);
-            z-index: 2;
-        }
-        #dark-overlay {
-            position: absolute; inset: 0; background: #030304;
-            opacity: 0.8; z-index: 2; transition: opacity 0.5s ease; pointer-events: none;
-        }
-        .hero-content { position: relative; z-index: 3; text-align: center; margin-top: 10vh; }
-        .hero h1 {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(3rem, 7vw, 7rem);
-            font-weight: 400; letter-spacing: 0.05em; line-height: 1.1;
-            opacity: 0; animation: fadeInUp 1s 0.8s forwards;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.8);
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
+/* Remove old nav UI */
+.page-nav { display: none !important; }
+.ribbon-wrap { display: none !important; }
 
-        /* ── COLLECTION ── */
-        .collection {
-            padding: 120px 6vw;
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-        .section-tag {
-            display: block; color: var(--gold); font-size: 0.8rem;
-            text-transform: uppercase; letter-spacing: 0.3em;
-            margin-bottom: 20px; text-align: center;
-        }
-        .section-title {
-            font-family: 'Cinzel', serif; font-size: 3.5rem;
-            margin-bottom: 20px; color: var(--text);
-            text-align: center; font-weight: 400;
-        }
+/* Prestige Hero Overrides */
+.hero { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+#hero-canvas { position: absolute; top:0; left:0; width:100%; height:100%; z-index:0; }
+#dark-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: #000; z-index:1; }
+.hero-content { position: relative; z-index: 2; text-align: center; }
+.hero-content h1 { font-family: 'Syne', sans-serif; font-size: clamp(3rem, 6vw, 6rem); font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: -0.02em; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.collection { padding: 5vw; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 5; background: var(--dark, #0a0a0c); }
+.section-tag { font-family: 'Inter'; font-size: 0.8rem; color: #ff3300; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 10px; }
+.section-title { font-family: 'Syne'; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; color: #fff; margin-bottom: 30px; text-transform: uppercase; }
 
-        /* ── COUNT BADGE ── */
-        .count-badge {
-            text-align: center;
-            color: var(--muted);
-            font-size: 0.82rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            margin-bottom: 70px;
-        }
-        .count-badge span {
-            color: var(--gold);
-            font-weight: 600;
-        }
+/* Filter Dropdowns overriding */
+.flt-panel { background: rgba(15,15,18,0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+.flt-opt { padding: 10px 15px; border-radius: 6px; color: #fff; font-size: 0.9rem; transition: 0.2s; border: 1px solid transparent; margin-bottom: 5px; cursor: none; }
+.flt-opt:hover, .flt-opt.sel { background: rgba(255,51,0,0.1); border-color: rgba(255,51,0,0.3); color: #ff3300; }
 
-        /* ── LOADING STATE ── */
-        .loading-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            padding: 80px 0;
-            color: var(--muted);
-        }
-        .spinner {
-            width: 36px; height: 36px;
-            border: 1px solid rgba(200,144,58,0.2);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin 0.9s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.25em;
-        }
+#rCountText { font-family: 'Syne'; font-size: 1.5rem; color: #fff; }
+#rCount { color: #ff3300; }
+.pagi-wrap { display: flex; justify-content: center; gap: 10px; margin: 40px 0; }
+.pgb { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; width: 40px; height: 40px; border-radius: 8px; font-family: 'Syne'; cursor: none; transition: 0.3s; }
+.pgb:hover:not([disabled]) { border-color: #ff3300; color: #ff3300; }
+.pgb.act { background: #ff3300; border-color: #ff3300; color: #fff; }
+</style>
+<nav class="aura-nav" style="background: rgba(10,10,12,0.8); display: flex; align-items: center; justify-content: space-between; padding: 22px 48px; position: fixed; width: 100%; top: 0; z-index: 1000; backdrop-filter: blur(12px);">
+    <a href="index.html" class="logo hover-target" style="font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.65rem; color: #fff; text-decoration: none;">AutoVault</a>
+    <div style="display:flex; gap:20px; align-items:center;" class="nav-links">
+        <a href="index.html" class="hover-target" style="color:rgba(255,255,255,0.5); text-decoration:none; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; font-family:'Inter',sans-serif;">Home</a>
+        <a href="all_listing.html" class="hover-target" style="color:rgba(255,255,255,0.5); text-decoration:none; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; font-family:'Inter',sans-serif;">Vehicles</a>
+        <a href="prestige_collection.html" class="hover-target" style="color:#ff3300; text-decoration:none; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; font-family:'Inter',sans-serif;">Prestige</a>
+        <a href="profile.html" class="hover-target" style="color:rgba(255,255,255,0.5); text-decoration:none; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; font-family:'Inter',sans-serif;">Contact</a>
+    </div>
+    <div class="nav-auth" id="navAuth"></div>
+</nav>
 
-        /* ── ERROR STATE ── */
-        .error-state {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 14px;
-            padding: 80px 0;
-            color: var(--muted);
-            text-align: center;
-        }
-        .error-state p { font-size: 0.9rem; max-width: 400px; line-height: 1.6; }
-        .retry-btn {
-            margin-top: 10px;
-            padding: 12px 32px;
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            font-family: 'Barlow', sans-serif;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            cursor: none;
-            transition: background 0.3s, color 0.3s;
-        }
-        .retry-btn:hover { background: var(--gold); color: var(--bg); }
-
-        /* ── GRID ── */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 40px;
-        }
-
-        /* ── CARD ── */
-        .card-wrapper {
-            position: relative; isolation: isolate; cursor: none;
-        }
-        .card {
-            background: linear-gradient(145deg, #0a0b0f, #111218);
-            border-radius: 4px; overflow: hidden;
-            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.6s ease;
-            border: 1px solid rgba(255,255,255,0.03);
-            position: relative; z-index: 2; height: 100%;
-        }
-        .card-wrapper:hover .card {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 30px rgba(200,144,58,0.1);
-            border-color: rgba(200,144,58,0.3);
-        }
-
-        /* Smoke */
-        .smoke-container {
-            position: absolute; inset: -40px; z-index: 1;
-            pointer-events: none; overflow: hidden; border-radius: 10px;
-            opacity: 0; transition: opacity 0.4s ease;
-        }
-        .card-wrapper:hover .smoke-container { opacity: 1; }
-        .smoke-puff {
-            position: absolute; bottom: 30%; left: 50%;
-            transform: translateX(-50%); width: 80px; height: 80px;
-            background: radial-gradient(circle, rgba(120,120,120,0.15) 0%, transparent 60%);
-            border-radius: 50%; filter: blur(10px); opacity: 0;
-        }
-        @keyframes smokeBillow {
-            0%   { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
-            50%  { opacity: 0.8; }
-            100% { transform: translate(calc(-50% + var(--driftX)), -100px) scale(2.5); opacity: 0; }
-        }
-
-        /* Scroll reveal */
-        .reveal-on-scroll {
-            opacity: 0; transform: translateY(40px);
-            transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
-        .reveal-on-scroll.visible { opacity: 1; transform: translateY(0); }
-
-        .card-img-wrap { position: relative; width: 100%; height: 240px; overflow: hidden; }
-        .card-img {
-            width: 100%; height: 100%; object-fit: cover;
-            opacity: 0.85; transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        .card:hover .card-img { opacity: 1; transform: scale(1.05); }
-        .card-info { padding: 30px; }
-        .brand {
-            color: var(--gold); font-size: 0.75rem;
-            text-transform: uppercase; letter-spacing: 0.25em; margin-bottom: 10px;
-        }
-        .title { font-family: 'Cinzel', serif; font-size: 1.4rem; margin-bottom: 25px; line-height: 1.3; }
-        .specs {
-            display: flex; gap: 30px; margin-bottom: 25px;
-            padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .spec-item { display: flex; flex-direction: column; gap: 4px; }
-        .spec-val { font-size: 1.1rem; font-weight: 500; }
-        .spec-lbl { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em; }
-        .footer-row { display: flex; justify-content: space-between; align-items: center; }
-        .price { font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--gold); }
-        .link {
-            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em;
-            color: var(--text); text-decoration: none; transition: color 0.3s;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .link:hover { color: var(--gold); }
-
-        /* Load more */
-        .load-more-wrap {
-            display: none;
-            justify-content: center;
-            margin-top: 70px;
-        }
-        .load-more-btn {
-            padding: 16px 56px;
-            background: transparent;
-            border: 1px solid rgba(200,144,58,0.5);
-            color: var(--gold);
-            font-family: 'Cinzel', serif;
-            font-size: 0.8rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            cursor: none;
-            transition: background 0.3s, border-color 0.3s, color 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-        .load-more-btn:hover {
-            background: rgba(200,144,58,0.08);
-            border-color: var(--gold);
-        }
-        .load-more-btn:disabled {
-            opacity: 0.4;
-            pointer-events: none;
-        }
-
-        @media(max-width: 768px) {
-            nav { padding: 30px 20px; }
-            .collection { padding: 60px 20px 80px; }
-            .grid { grid-template-columns: 1fr; }
-            .section-title { font-size: 2.2rem; }
-        }
-    </style>
 </head>
 <body>
 
     <div class="cursor" id="cursor"></div>
     <div class="cursor-ring" id="cursorRing"></div>
 
-    <nav>
-        <a href="index.html" class="nav-back">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 12H5M12 19L5 12l7-7"/></svg>
-            AutoVault
-        </a>
-        <a href="index.html" class="nav-logo"><span>Auto</span><span>Vault</span></a>
-    </nav>
+    
 
     <header class="hero">
         <canvas id="hero-canvas"></canvas>
@@ -430,45 +243,33 @@
                 const cardWrap = document.createElement('div');
                 cardWrap.className = 'card-wrapper reveal-on-scroll';
 
+                
                 cardWrap.innerHTML = `
-                    <div class="smoke-container" id="smoke-${globalIndex}"></div>
-                    <div class="card">
-                        <div class="card-img-wrap">
-                            <img
-                                src="${car.image || ''}"
-                                alt="${car.title || 'Car'}"
-                                class="card-img"
-                                onerror="this.src='https://images.unsplash.com/photo-1544839304-c9a92207b0ec?q=80&w=800&auto=format&fit=crop';"
-                            />
-                        </div>
-                        <div class="card-info">
-                            <div class="brand">${car.brand || ''}</div>
-                            <div class="title">${car.title || 'Unknown'}</div>
-                            <div class="specs">
-                                <div class="spec-item">
-                                    <span class="spec-val">${car.year || '--'}</span>
-                                    <span class="spec-lbl">Year</span>
-                                </div>
-                                <div class="spec-item">
-                                    <span class="spec-val">${formatKms(car.kms_covered)}</span>
-                                    <span class="spec-lbl">Mileage</span>
-                                </div>
-                                ${car.fuel_type ? `
-                                <div class="spec-item">
-                                    <span class="spec-val">${car.fuel_type}</span>
-                                    <span class="spec-lbl">Fuel</span>
-                                </div>` : ''}
-                            </div>
-                            <div class="footer-row">
-                                <div class="price">${formatPrice(car.price, car.price_display)}</div>
-                                <a href="${car.link || '#'}" target="_blank" rel="noopener" class="link interactive">
-                                    View Details
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                                </a>
-                            </div>
-                        </div>
+                  <div class="car-card">
+                    <div class="cvis">
+                      <img src="${car.image || ''}" onerror="this.src='https://images.unsplash.com/photo-1544839304-c9a92207b0ec?q=80&w=800&auto=format&fit=crop';" />
                     </div>
+                    <div class="cbody">
+                      <div class="cname">${car.title || 'Unknown'}</div>
+                      <div class="cyear">${car.brand || ''}</div>
+                      <div class="cspecs">
+                          ${car.year ? `<span class="spill">${car.year}</span>` : ''}
+                          ${car.kms_covered ? `<span class="spill">${formatKms(car.kms_covered)}</span>` : ''}
+                          ${car.fuel_type ? `<span class="spill">${car.fuel_type}</span>` : ''}
+                      </div>
+                      <div class="cprice-row">
+                          <div>
+                              <span class="plbl">Estimated Value</span>
+                              <div class="pval">${formatPrice(car.price, car.price_display)}</div>
+                          </div>
+                      </div>
+                      <div class="cacts-strip">
+                          <a href="${car.link || '#'}" class="cas-btn cas-view">View Details</a>
+                      </div>
+                    </div>
+                  </div>
                 `;
+
 
                 grid.appendChild(cardWrap);
 
@@ -663,5 +464,35 @@
             }
         });
     </script>
+
+  <div id="cursor"></div>
+  <div id="cursor-follower"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="global-auth.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+    const cObj = document.getElementById('cursor');
+    const fObj = document.getElementById('cursor-follower');
+    if(cObj && fObj) {
+        let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+        gsap.to({}, 0.016, { repeat: -1, onRepeat: () => { posX += (mouseX - posX)/9; posY += (mouseY - posY)/9; gsap.set(fObj, {css: {left: posX, top: posY}}); gsap.set(cObj, {css: {left: mouseX, top: mouseY}}); } });
+        window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+    }
+    
+    // Add hover-target to cards dynamically
+    setInterval(() => {
+       document.querySelectorAll('.car-card:not(.hover-bound), a:not(.hover-bound), button:not(.hover-bound), .flt:not(.hover-bound)').forEach(c => {
+           c.classList.add('hover-bound', 'hover-target');
+           c.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
+           c.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
+       });
+       document.querySelectorAll('.car-card:not(.gsap-bound)').forEach((c, idx) => {
+          c.classList.add('gsap-bound');
+          gsap.fromTo(c, { opacity: 0, scale: 0.95, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: c, start: 'top bottom-=50', toggleActions: 'play none none none' } });
+       });
+    }, 500);
+  </script>
+
 </body>
 </html>

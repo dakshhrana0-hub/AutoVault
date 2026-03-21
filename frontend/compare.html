@@ -5,26 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Car Comparison – Find Your Perfect Deal</title>
     
-    <!-- Premium Typography: Inter for clean UI, Cinzel for luxury accents -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cinzel:wght@400;600&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <!-- Premium Typography: var(--font-body) for clean UI, var(--font-display) for luxury accents -->
+    <link href="https://fonts.googleapis.com/css2?family=var(--font-body):wght@300;400;500;600;700&family=var(--font-display):wght@400;600&family=var(--font-body):wght@300;400;500&display=swap" rel="stylesheet"/>
     <link href="styles.css" rel="stylesheet" />
     
     <style>
         /* ── GLOBAL / THEME OVERRIDES FOR COMPARE PAGE ── */
-        :root {
-            --neon-blue: #00f0ff;
-            --neon-blue-dim: rgba(0, 240, 255, 0.15);
-            --gold: #C8903A;
-            --dark-glass: rgba(15, 17, 21, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --font-ui: 'Inter', -apple-system, sans-serif;
-            --font-lux: 'Cinzel', serif;
-        }
+        
 
         body {
-            background: #050507; /* Charcoal/Black */
+             /* Charcoal/Black */
             color: #f5f5f7;
-            font-family: var(--font-ui);
+            
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             cursor: none;
@@ -70,7 +62,7 @@
             margin-bottom: 40px;
             line-height: 1.6;
         }
-        .comp-hero-sub strong { color: var(--neon-blue); font-weight: 500; }
+        .comp-hero-sub strong { color: var(--accent); font-weight: 500; }
 
         /* Search & Filter Bar */
         .search-bar {
@@ -119,7 +111,7 @@
         }
         .filter-select option { background: #111; color: #fff; }
         .search-btn {
-            background: var(--neon-blue);
+            background: var(--accent);
             color: #000;
             border: none;
             height: 48px;
@@ -154,8 +146,8 @@
             font-weight: 400;
             margin-bottom: 12px;
         }
-        .sec-title span { color: var(--gold); }
-        .sec-title.neon span { color: var(--neon-blue); }
+        .sec-title span { color: var(--accent); }
+        .sec-title.neon span { color: var(--accent); }
 
         /* ── 3-CAR CARDS GRID ── */
         .cars-grid {
@@ -179,7 +171,7 @@
         }
         .c-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(200,144,58,0.08);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255, 51, 0,0.08);
             border-color: rgba(255,255,255,0.15);
         }
         .platform-badge {
@@ -226,12 +218,12 @@
         .c-spec { display: flex; flex-direction: column; gap: 4px; }
         .c-spec-lbl { font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
         .c-spec-val { font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
-        .c-spec-val svg { stroke: var(--gold); }
+        .c-spec-val svg { stroke: var(--accent); }
 
         /* ── AI INSIGHTS PANEL ── */
         .ai-panel {
-            background: linear-gradient(135deg, rgba(0, 240, 255, 0.05) 0%, rgba(15,17,21,0.8) 100%);
-            border: 1px solid rgba(0, 240, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 51, 0, 0.05) 0%, rgba(15,17,21,0.8) 100%);
+            border: 1px solid rgba(255, 51, 0, 0.2);
             border-radius: 20px;
             padding: 40px;
             display: grid;
@@ -242,7 +234,7 @@
         }
         .ai-panel::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
         .ai-insight {
             display: flex; flex-direction: column; gap: 12px;
@@ -253,12 +245,12 @@
         }
         .ai-insight-head { display: flex; align-items: center; justify-content: space-between; }
         .ai-badge {
-            background: rgba(0, 240, 255, 0.1);
-            color: var(--neon-blue);
+            background: rgba(255, 51, 0, 0.1);
+            color: var(--accent);
             padding: 4px 10px; border-radius: 100px;
             font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
         }
-        .ai-badge.gold { background: rgba(200, 144, 58, 0.1); color: var(--gold); }
+        .ai-badge.gold { background: rgba(255, 51, 0, 0.1); color: var(--accent); }
         .ai-badge.green { background: rgba(46, 213, 115, 0.1); color: #2ed573; }
         
         .ai-val { font-size: 2rem; font-weight: 700; font-family: var(--font-lux); }
@@ -266,7 +258,7 @@
 
         /* ── 2-CAR SIDE-BY-SIDE DUEL ── */
         .duel-section {
-            background: linear-gradient(180deg, rgba(15,17,21,0) 0%, rgba(0, 240, 255, 0.03) 50%, rgba(15,17,21,0) 100%);
+            background: linear-gradient(180deg, rgba(15,17,21,0) 0%, rgba(255, 51, 0, 0.03) 50%, rgba(15,17,21,0) 100%);
             padding: 80px 40px;
             margin: 40px 0;
             border-top: 1px solid rgba(255,255,255,0.02);
@@ -299,7 +291,7 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
         .duel-card.winner {
-            border-color: rgba(0, 240, 255, 0.4);
+            border-color: rgba(255, 51, 0, 0.4);
             box-shadow: 0 10px 40px var(--neon-blue-dim);
         }
         .duel-card-img {
@@ -323,7 +315,7 @@
             font-size: 0.8rem;
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            color: var(--gold);
+            color: var(--accent);
             margin-top: 10px;
             font-family: var(--font-ui);
         }
@@ -339,7 +331,7 @@
         .duel-stat-row:last-child { border-bottom: none; }
         .duel-stat-lbl { color: rgba(255,255,255,0.4); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
         .duel-stat-val { font-weight: 600; }
-        .duel-stat-val.win { color: var(--neon-blue); }
+        .duel-stat-val.win { color: var(--accent); }
 
         /* ── COMPARISON TABLE ── */
         .comp-table-wrap {
@@ -372,7 +364,7 @@
             width: 25%;
         }
         .comp-table tr:last-child th, .comp-table tr:last-child td { border-bottom: none; }
-        .td-highlight { color: var(--neon-blue); font-weight: 600; }
+        .td-highlight { color: var(--accent); font-weight: 600; }
 
         /* ── IMAGE DAMAGE DETECTION ── */
         .damage-sec {
@@ -422,10 +414,10 @@
         }
         .damage-upload:hover {
             background: rgba(255,255,255,0.02);
-            border-color: var(--neon-blue);
+            border-color: var(--accent);
         }
         .damage-upload svg { stroke: rgba(255,255,255,0.3); margin-bottom: 20px; transition: stroke 0.3s; }
-        .damage-upload:hover svg { stroke: var(--neon-blue); }
+        .damage-upload:hover svg { stroke: var(--accent); }
 
         /* ── SAVE & EXPORT ── */
         .export-actions {
@@ -455,7 +447,7 @@
             transform: translateY(-2px);
         }
         .action-btn.primary {
-            background: var(--neon-blue);
+            background: var(--accent);
             color: #000;
             border: none;
         }
@@ -480,39 +472,17 @@
     <div class="cursor-ring" id="cursorRing"></div>
 
     <!-- ── NAV ── -->
-    <nav>
-        <a class="logo" href="index.html"><em>Auto</em>Vault</a>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li class="has-dropdown">
-                <a href="all_listing.html">Vehicles</a>
-                <div class="nav-dropdown">
-                    <div class="nav-dropdown-inner">
-                        <a href="prestige_collection.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Prestige Collection</a>
-                        <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Featured Models</a>
-                        <a href="all_listing.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Browse All</a>
-                        <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Saved Wishlist</a>
-                    </div>
-                </div>
-            </li>
-            <li class="has-dropdown">
-                <a href="compare.html" class="active">Compare</a>
-                <div class="nav-dropdown">
-                    <div class="nav-dropdown-inner">
-                        <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M16 3h5v5M4 20 21 3"/><path d="M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Side-by-Side</a>
-                        <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Performance</a>
-                        <a href="#"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Cost of Ownership</a>
-                    </div>
-                </div>
-            </li>
-            <li><a href="#">Brands</a></li>
-            <li><a href="#">Contact</a></li>
-        </ul>
-        <a class="nav-icon" href="login.html">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </a>
-    </nav>
-    <div class="nav-placeholder"></div>
+    <nav class="aura-nav">
+    <a href="index.html" class="logo hover-target">AutoVault</a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="hover-target">Home</a></li>
+      <li><a href="all_listing.html" class="hover-target">Vehicles</a></li>
+      <li><a href="prestige_collection.html" class="hover-target">Prestige</a></li>
+      <li><a href="#" class="hover-target">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth"></div>
+  </nav>
+    
 
     <!-- ── HERO SECTION ── -->
     <section class="comp-hero">
@@ -601,15 +571,15 @@
             </div>
 
             <!-- Card 2 -->
-            <div class="c-card" style="border-color: rgba(0, 240, 255, 0.3); box-shadow: 0 10px 30px var(--neon-blue-dim);">
-                <div class="platform-badge" style="background:var(--neon-blue); color:#000;">Cars24</div>
+            <div class="c-card" style="border-color: rgba(255, 51, 0, 0.3); box-shadow: 0 10px 30px var(--neon-blue-dim);">
+                <div class="platform-badge" style="background:var(--accent); color:#000;">Cars24</div>
                 <div class="c-img-wrap">
                     <img src="https://images.unsplash.com/photo-1610880846497-7257b23f6138?q=80&w=800&auto=format&fit=crop" alt="Mercedes E-Class" class="c-img">
                 </div>
                 <div class="c-info">
                     <h3 class="c-name">2022 Mercedes E350</h3>
                     <p class="c-sub">AMG Line</p>
-                    <div class="c-price">$42,900 <span style="color:var(--neon-blue); text-decoration:none; background:rgba(0,240,255,0.1); padding:2px 6px; border-radius:4px;">Great Price</span></div>
+                    <div class="c-price">$42,900 <span style="color:var(--accent); text-decoration:none; background:rgba(255, 51, 0,0.1); padding:2px 6px; border-radius:4px;">Great Price</span></div>
                     
                     <div class="c-specs">
                         <div class="c-spec">
@@ -711,11 +681,11 @@
 
             <!-- Contender 2 (Winner) -->
             <div class="duel-card winner">
-                <div class="platform-badge" style="top:12px; left:12px; background:var(--neon-blue); color:#000;">Cars24</div>
-                <span class="ai-badge" style="position:absolute; top:-12px; right:30px; background:var(--neon-blue); color:#000; font-size:0.6rem; padding:4px 12px; border-radius:20px; box-shadow:0 4px 10px rgba(0,240,255,0.3);">Top Pick</span>
+                <div class="platform-badge" style="top:12px; left:12px; background:var(--accent); color:#000;">Cars24</div>
+                <span class="ai-badge" style="position:absolute; top:-12px; right:30px; background:var(--accent); color:#000; font-size:0.6rem; padding:4px 12px; border-radius:20px; box-shadow:0 4px 10px rgba(255, 51, 0,0.3);">Top Pick</span>
                 <img src="https://images.unsplash.com/photo-1610880846497-7257b23f6138?q=80&w=800&auto=format&fit=crop" alt="Mercedes E-Class" class="duel-card-img">
                 <h3 class="c-name">2022 Mercedes E350</h3>
-                <div class="c-price" style="justify-content:center; margin-bottom:10px; color:var(--neon-blue);">$42,900</div>
+                <div class="c-price" style="justify-content:center; margin-bottom:10px; color:var(--accent);">$42,900</div>
                 <p class="c-sub" style="margin-bottom:0;">AMG Line</p>
 
                 <div class="duel-stats">
@@ -748,7 +718,7 @@
             <div class="ai-insight">
                 <div class="ai-insight-head">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-blue)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                         <span style="font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Price Prediction</span>
                     </div>
                     <span class="ai-badge">Lowest Price</span>
@@ -760,7 +730,7 @@
             <div class="ai-insight">
                 <div class="ai-insight-head">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                         <span style="font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Fair Deal Score</span>
                     </div>
                     <span class="ai-badge gold">Best Value</span>
@@ -925,8 +895,8 @@
              if(target) {
                  cursorIcon.style.width='20px'; cursorIcon.style.height='20px'; 
                  ringIcon.style.width='54px'; ringIcon.style.height='54px'; 
-                 ringIcon.style.borderColor='var(--neon-blue)';
-                 cursorIcon.style.background='var(--neon-blue)';
+                 ringIcon.style.borderColor='var(--accent)';
+                 cursorIcon.style.background='var(--accent)';
              }
         });
         document.addEventListener('mouseout', e => {
@@ -934,10 +904,47 @@
              if(target) {
                  cursorIcon.style.width='10px'; cursorIcon.style.height='10px'; 
                  ringIcon.style.width='36px'; ringIcon.style.height='36px'; 
-                 ringIcon.style.borderColor='rgba(200,144,58,.5)';
-                 cursorIcon.style.background='var(--gold)';
+                 ringIcon.style.borderColor='rgba(255, 51, 0,.5)';
+                 cursorIcon.style.background='var(--accent)';
              }
         });
     </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script>
+    // AURA Cursor
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    if (cursor && follower) {
+        let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+        gsap.to({}, 0.016, {
+          repeat: -1,
+          onRepeat: function() {
+            posX += (mouseX - posX) / 9; posY += (mouseY - posY) / 9;
+            gsap.set(follower, { css: { left: posX, top: posY } });
+            gsap.set(cursor, { css: { left: mouseX, top: mouseY } });
+          }
+        });
+        window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+    }
+    
+    // Dynamic Hover classes setup
+    setInterval(() => {
+       document.querySelectorAll('.c-card:not(.hover-bound), .duel-card:not(.hover-bound), .ai-insight:not(.hover-bound), .panel:not(.hover-bound), .car-card:not(.hover-bound)').forEach(c => {
+           c.classList.add('hover-bound', 'hover-target');
+           c.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
+           c.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
+       });
+       document.querySelectorAll('button:not(.hover-bound), input:not(.hover-bound), a:not(.hover-bound), select:not(.hover-bound)').forEach(c => {
+           c.classList.add('hover-bound', 'hover-target');
+           c.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
+           c.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
+       });
+    }, 1000);
+  </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="global-auth.js"></script>
 </body>
 </html>
