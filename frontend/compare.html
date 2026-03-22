@@ -45,6 +45,9 @@
                 linear-gradient(to bottom, rgba(5,5,7,0.3) 0%, rgba(5,5,7,0.95) 100%),
                 url('https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
             /* Audi/BMW style luxury dark background */
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
         }
         .comp-hero-title {
             font-family: var(--font-lux);
@@ -474,8 +477,8 @@
 <body>
 
     <!-- Custom Cursor (AutoVault Standard) -->
-    <div class="cursor" id="cursor"></div>
-    <div class="cursor-ring" id="cursorRing"></div>
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
 
     <!-- ── NAV ── -->
       <nav class="aura-nav">
@@ -484,6 +487,7 @@
       <li><a href="all_listing.html" class="hover-target">Models</a></li>
       <li><a href="compare.html" class="hover-target">Compare</a></li>
       <li><a href="prestige_collection.html" class="hover-target">Prestige</a></li>
+      <li><a href="price_prediction.html" class="hover-target">Valuation AI</a></li>
       
       <!-- Authentic Supabase Login Icon -->
       <li>
@@ -563,102 +567,8 @@
             <p style="color:var(--muted)">Analyzing 142 listings across integrated platforms</p>
         </div>
         
-        <div class="cars-grid">
-            <!-- Card 1 -->
-            <div class="c-card">
-                <div class="platform-badge">OLX Autos</div>
-                <div class="c-img-wrap">
-                    <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop" alt="BMW 5 Series" class="c-img">
-                </div>
-                <div class="c-info">
-                    <h3 class="c-name">2021 BMW 5 Series</h3>
-                    <p class="c-sub">530i M Sport</p>
-                    <div class="c-price">$38,500 <span>$41k MSRP</span></div>
-                    
-                    <div class="c-specs">
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Mileage</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 24,500 mi</span>
-                        </div>
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Fuel Type</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"/><path d="M11 6h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4"/></svg> Petrol</span>
-                        </div>
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Location</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> New York</span>
-                        </div>
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Ownership</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 1st Owner</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="c-card" style="border-color: rgba(255, 51, 0, 0.3); box-shadow: 0 10px 30px var(--neon-blue-dim);">
-                <div class="platform-badge" style="background:var(--accent); color:#000;">Cars24</div>
-                <div class="c-img-wrap">
-                    <img src="https://images.unsplash.com/photo-1610880846497-7257b23f6138?q=80&w=800&auto=format&fit=crop" alt="Mercedes E-Class" class="c-img">
-                </div>
-                <div class="c-info">
-                    <h3 class="c-name">2022 Mercedes E350</h3>
-                    <p class="c-sub">AMG Line</p>
-                    <div class="c-price">$42,900 <span style="color:var(--accent); text-decoration:none; background:rgba(255, 51, 0,0.1); padding:2px 6px; border-radius:4px;">Great Price</span></div>
-                    
-                    <div class="c-specs">
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Mileage</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 18,200 mi</span>
-                        </div>
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Fuel Type</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"/><path d="M11 6h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4"/></svg> Petrol</span>
-                        </div>
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Location</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> New Jersey</span>
-                        </div>
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Ownership</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 1st Owner</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="c-card">
-                <div class="platform-badge">CarDekho</div>
-                <div class="c-img-wrap">
-                    <img src="https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?q=80&w=800&auto=format&fit=crop" alt="Audi A6" class="c-img">
-                </div>
-                <div class="c-info">
-                    <h3 class="c-name">2021 Audi A6</h3>
-                    <p class="c-sub">Premium Plus 45 TFSI</p>
-                    <div class="c-price">$36,200 <span>$38k MSRP</span></div>
-                    
-                    <div class="c-specs">
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Mileage</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> 31,000 mi</span>
-                        </div>
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Fuel Type</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"/><path d="M11 6h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4"/></svg> Petrol</span>
-                        </div>
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Location</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> Connecticut</span>
-                        </div>
-                        <div class="c-spec">
-                            <span class="c-spec-lbl">Ownership</span>
-                            <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 2nd Owner</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="cars-grid" id="compare-grid">
+            <!-- Dynamic comparison cards injected via JS -->
         </div>
     </section>
 
@@ -669,113 +579,16 @@
             <p style="color:var(--muted)">Pinned comparison: The top two contenders across all integrated platforms.</p>
         </div>
         
-        <div class="duel-container">
-            <!-- Contender 1 -->
-            <div class="duel-card">
-                <div class="platform-badge" style="top:12px; left:12px;">OLX Autos</div>
-                <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop" alt="BMW 5 Series" class="duel-card-img">
-                <h3 class="c-name">2021 BMW 5 Series</h3>
-                <div class="c-price" style="justify-content:center; margin-bottom:10px;">$38,500</div>
-                <p class="c-sub" style="margin-bottom:0;">530i M Sport</p>
-
-                <div class="duel-stats">
-                    <div class="duel-stat-row">
-                        <span class="duel-stat-lbl">Mileage</span>
-                        <span class="duel-stat-val">24,500 mi</span>
-                    </div>
-                    <div class="duel-stat-row">
-                        <span class="duel-stat-lbl">0-60 Time</span>
-                        <span class="duel-stat-val">5.9s</span>
-                    </div>
-                    <div class="duel-stat-row">
-                        <span class="duel-stat-lbl">Reliability Score</span>
-                        <span class="duel-stat-val">82/100</span>
-                    </div>
-                    <div class="duel-stat-row">
-                        <span class="duel-stat-lbl">5-Yr Deprec.</span>
-                        <span class="duel-stat-val">42%</span>
-                    </div>
-                </div>
-                <button class="action-btn" style="width:100%; justify-content:center; margin-top:24px; padding:12px;">View Full Report</button>
-            </div>
-
-            <!-- VS Divider -->
-            <div class="duel-vs">
-                VS
-                <span>Direct Match</span>
-            </div>
-
-            <!-- Contender 2 (Winner) -->
-            <div class="duel-card winner">
-                <div class="platform-badge" style="top:12px; left:12px; background:var(--accent); color:#000;">Cars24</div>
-                <span class="ai-badge" style="position:absolute; top:-12px; right:30px; background:var(--accent); color:#000; font-size:0.6rem; padding:4px 12px; border-radius:20px; box-shadow:0 4px 10px rgba(255, 51, 0,0.3);">Top Pick</span>
-                <img src="https://images.unsplash.com/photo-1610880846497-7257b23f6138?q=80&w=800&auto=format&fit=crop" alt="Mercedes E-Class" class="duel-card-img">
-                <h3 class="c-name">2022 Mercedes E350</h3>
-                <div class="c-price" style="justify-content:center; margin-bottom:10px; color:var(--accent);">$42,900</div>
-                <p class="c-sub" style="margin-bottom:0;">AMG Line</p>
-
-                <div class="duel-stats">
-                    <div class="duel-stat-row">
-                        <span class="duel-stat-lbl">Mileage</span>
-                        <span class="duel-stat-val win">18,200 mi</span>
-                    </div>
-                    <div class="duel-stat-row">
-                        <span class="duel-stat-lbl">0-60 Time</span>
-                        <span class="duel-stat-val win">5.1s</span>
-                    </div>
-                    <div class="duel-stat-row">
-                        <span class="duel-stat-lbl">Reliability Score</span>
-                        <span class="duel-stat-val win">88/100</span>
-                    </div>
-                    <div class="duel-stat-row">
-                        <span class="duel-stat-lbl">5-Yr Deprec.</span>
-                        <span class="duel-stat-val win">38%</span>
-                    </div>
-                </div>
-                <button class="action-btn primary" style="width:100%; justify-content:center; margin-top:24px; padding:12px;">View Full Report</button>
-            </div>
+        <div class="duel-container" id="duel-container">
+            <!-- Dynamic duel injected via JS -->
         </div>
     </section>
 
     <!-- ── AI INSIGHTS PANEL ── -->
     <section class="comp-section">
         <h2 class="sec-title neon">AutoVault <span>AI</span> Insights</h2>
-        <div class="ai-panel">
-            <div class="ai-insight">
-                <div class="ai-insight-head">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                        <span style="font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Price Prediction</span>
-                    </div>
-                    <span class="ai-badge">Lowest Price</span>
-                </div>
-                <div class="ai-val">Audi A6</div>
-                <p class="ai-desc">Priced <strong>11% below</strong> the current market average. Expected depreciation over next 3 years is lower than category average.</p>
-            </div>
-            
-            <div class="ai-insight">
-                <div class="ai-insight-head">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        <span style="font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Fair Deal Score</span>
-                    </div>
-                    <span class="ai-badge gold">Best Value</span>
-                </div>
-                <div class="ai-val">94 / 100</div>
-                <p class="ai-desc">The <strong>Mercedes E350</strong> offers the highest value matrix considering its low mileage, 1st ownership status, and perfect maintenance record on Cars24.</p>
-            </div>
-
-            <div class="ai-insight">
-                <div class="ai-insight-head">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2ed573" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                        <span style="font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Damage Detection</span>
-                    </div>
-                    <span class="ai-badge green">Safest Buy</span>
-                </div>
-                <div class="ai-val">All Clean</div>
-                <p class="ai-desc">AI scan of 45 high-res OLX images reveals <strong>0 structural damages</strong> for the BMW 5 Series. Only minor cosmetic blemishes detected.</p>
-            </div>
+        <div class="ai-panel" id="ai-panel">
+            <!-- Dynamic insights injected via JS -->
         </div>
     </section>
 
@@ -783,83 +596,19 @@
     <section class="comp-section">
         <h2 class="sec-title">Deep-Dive <span>Specifications</span></h2>
         <div class="comp-table-wrap">
-            <table class="comp-table">
+            <table class="comp-table" id="comp-table">
                 <thead>
-                    <tr>
+                    <tr id="comp-table-head">
                         <th>Metric</th>
-                        <th>BMW 5 Series (OLX)</th>
-                        <th>Mercedes E350 (Cars24)</th>
-                        <th>Audi A6 (CarDekho)</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <th>Final Price</th>
-                        <td>$38,500</td>
-                        <td class="td-highlight">$42,900</td>
-                        <td>$36,200</td>
-                    </tr>
-                    <tr>
-                        <th>Odometer / Mileage</th>
-                        <td>24,500 miles</td>
-                        <td class="td-highlight">18,200 miles</td>
-                        <td>31,000 miles</td>
-                    </tr>
-                    <tr>
-                        <th>Engine Specs</th>
-                        <td>2.0L Turbo Inline-4</td>
-                        <td class="td-highlight">2.0L Turbo w/ Mild Hybrid</td>
-                        <td>2.0L Turbo TFSI</td>
-                    </tr>
-                    <tr>
-                        <th>Transmission</th>
-                        <td>8-Speed Automatic</td>
-                        <td>9-Speed Automatic</td>
-                        <td>7-Speed Dual-Clutch</td>
-                    </tr>
-                    <tr>
-                        <th>Combined MPG</th>
-                        <td>28 MPG</td>
-                        <td>26 MPG</td>
-                        <td class="td-highlight">29 MPG</td>
-                    </tr>
-                    <tr>
-                        <th>Insurance Est. (Yr)</th>
-                        <td>$1,850</td>
-                        <td>$2,100</td>
-                        <td class="td-highlight">$1,720</td>
-                    </tr>
+                <tbody id="comp-table-body">
                 </tbody>
             </table>
         </div>
     </section>
 
-    <!-- ── IMAGE DAMAGE DETECTION ── -->
-    <section class="comp-section">
-        <div class="sec-header">
-            <h2 class="sec-title neon">AI <span>Damage</span> Scan</h2>
-            <p style="color:var(--muted)">Upload seller images to let AutoVault Neural Engine detect scratches, dents, and repaints instantly.</p>
-        </div>
-        <div class="damage-sec">
-            <!-- Visual Mockup -->
-            <div class="damage-visual">
-                <img src="https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=1000&auto=format&fit=crop" alt="Car Bumper Scan">
-                
-                <div class="bounding-box" style="top: 70%; left: 15%; width: 120px; height: 60px;">
-                    <span class="box-label">Scratch (Minor)</span>
-                </div>
-                <div class="bounding-box" style="top: 50%; left: 80%; width: 80px; height: 80px;">
-                    <span class="box-label">Dent detected</span>
-                </div>
-            </div>
-            
-            <!-- Upload Area -->
-            <div class="damage-upload">
-                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <h3 style="font-size:1.5rem; margin-bottom:12px; font-weight:500;">Upload Car Photos</h3>
-                <p style="color:rgba(255,255,255,0.4); font-size:0.9rem; line-height:1.6;">Drag & drop JPG/PNG files from OLX or Cars24 here, or click to browse. Max size 10MB.</p>
-            </div>
-        </div>
+
 
         <!-- ── SAVE & EXPORT ── -->
         <div class="export-actions">
@@ -899,42 +648,6 @@
         <p style="color:rgba(255,255,255,0.2); font-size:0.7rem; margin-top:40px;">© 2026 AutoVault. All rights reserved.</p>
     </footer>
 
-    <script>
-        // ── CURSOR INTERACTION ──
-        const cursorIcon = document.getElementById('cursor');
-        const ringIcon   = document.getElementById('cursorRing');
-        let mx=window.innerWidth/2, my=window.innerHeight/2, rx=mx, ry=my;
-        
-        document.addEventListener('mousemove', e => { 
-             mx=e.clientX; my=e.clientY; 
-             cursorIcon.style.left=mx+'px'; cursorIcon.style.top=my+'px'; 
-        });
-        function animRing(){ 
-             rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; 
-             ringIcon.style.left=rx+'px'; ringIcon.style.top=ry+'px'; 
-             requestAnimationFrame(animRing); 
-        }
-        animRing();
-        
-        document.addEventListener('mouseover', e => {
-             const target = e.target.closest('a, button, .c-card, select, .damage-upload');
-             if(target) {
-                 cursorIcon.style.width='20px'; cursorIcon.style.height='20px'; 
-                 ringIcon.style.width='54px'; ringIcon.style.height='54px'; 
-                 ringIcon.style.borderColor='var(--accent)';
-                 cursorIcon.style.background='var(--accent)';
-             }
-        });
-        document.addEventListener('mouseout', e => {
-             const target = e.target.closest('a, button, .c-card, select, .damage-upload');
-             if(target) {
-                 cursorIcon.style.width='10px'; cursorIcon.style.height='10px'; 
-                 ringIcon.style.width='36px'; ringIcon.style.height='36px'; 
-                 ringIcon.style.borderColor='rgba(255, 51, 0,.5)';
-                 cursorIcon.style.background='var(--accent)';
-             }
-        });
-    </script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
@@ -955,26 +668,279 @@
         window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
     }
     
-    // Dynamic Hover classes setup
-    setInterval(() => {
-       document.querySelectorAll('.c-card:not(.hover-bound), .duel-card:not(.hover-bound), .ai-insight:not(.hover-bound), .panel:not(.hover-bound), .car-card:not(.hover-bound)').forEach(c => {
-           c.classList.add('hover-bound', 'hover-target');
-           c.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
-           c.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
-       });
-       document.querySelectorAll('button:not(.hover-bound), input:not(.hover-bound), a:not(.hover-bound), select:not(.hover-bound)').forEach(c => {
-           c.classList.add('hover-bound', 'hover-target');
-           c.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
-           c.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
-       });
-       document.querySelectorAll('.c-card:not(.gsap-bound), .duel-card:not(.gsap-bound)').forEach((c) => {
-          c.classList.add('gsap-bound');
-          gsap.fromTo(c, { x: -100, y: 50, opacity: 0, rotationY: -35, scale: 0.9 }, { x: 0, y: 0, opacity: 1, rotationY: 0, scale: 1, duration: 0.8, ease: "power4.out", scrollTrigger: { trigger: c, start: 'top bottom-=50', toggleActions: 'play none none none' } });
-       });
-    }, 1000);
+
   </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
 <script src="global-auth.js"></script>
+<script>
+    // ── COMPARE PAGE LOGIC ──
+    gsap.registerPlugin(ScrollTrigger);
+
+    class CompareManager {
+        constructor() {
+            this.cars = [];
+            this.grid = document.getElementById('compare-grid');
+            this.duel = document.getElementById('duel-container');
+            this.aiPanel = document.getElementById('ai-panel');
+            this.tableHead = document.getElementById('comp-table-head');
+            this.tableBody = document.getElementById('comp-table-body');
+            
+            this.init();
+        }
+
+        async init() {
+            try {
+                let saved = JSON.parse(localStorage.getItem('compareList') || '[]');
+                if (saved.length > 0) {
+                    this.cars = saved;
+                } else {
+                    // Fallback demo
+                    const url = `${SUPABASE_URL}/rest/v1/cars?select=id,title,brand,price,price_display,year,kms_covered,fuel_type,transmission,location,image,link&limit=2&order=price.desc`;
+                    const res = await fetch(url, { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } });
+                    this.cars = await res.json();
+                }
+                
+                if(this.cars && this.cars.length > 0) {
+                    this.renderCards();
+                    this.renderDuel();
+                    this.renderInsights();
+                    this.renderTable();
+                    
+                    setTimeout(() => { this.bindDynamicHover(); }, 500);
+                } else {
+                    this.grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px; font-size:1.2rem;">No vehicles selected to compare. <br><br> <a href="all_listing.html" class="action-btn primary" style="display:inline-flex; width:auto;">Browse Inventory</a></div>';
+                    this.duel.innerHTML = '';
+                    this.tableBody.innerHTML = '';
+                    this.tableHead.innerHTML = '';
+                }
+            } catch(err) {
+                console.error("Failed to load compare data:", err);
+            }
+        }
+        
+        formatPrice(price, display) {
+            if (display) return display;
+            if (!price) return '--';
+            return '₹' + Number(price).toLocaleString('en-IN'); 
+        }
+
+        formatKms(kms) {
+            if (!kms && kms !== 0) return '--';
+            return (+kms).toLocaleString('en-IN') + ' km';
+        }
+
+        escape(str) {
+            if(!str) return '';
+            return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+        }
+        
+        renderCards() {
+            const badges = ["OLX Autos", "Cars24", "CarDekho"];
+            
+            this.grid.innerHTML = this.cars.map((c, i) => `
+                <div class="c-card reveal-chunk" ${i === 1 ? 'style="border-color: rgba(255, 51, 0, 0.3); box-shadow: 0 10px 30px var(--neon-blue-dim);"' : ''}>
+                    <div class="platform-badge" ${i === 1 ? 'style="background:var(--accent); color:#000;"' : ''}>${badges[i%3]}</div>
+                    <div class="c-img-wrap">
+                        <img src="${c.image ? this.escape(c.image) : ''}" onerror="this.src='https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop';" alt="${this.escape(c.title)}" class="c-img">
+                    </div>
+                    <div class="c-info">
+                        <h3 class="c-name">${c.year ? c.year + ' ' : ''}${this.escape(c.title || 'Unknown')}</h3>
+                        <p class="c-sub">${this.escape(c.brand)}</p>
+                        <div class="c-price">${this.formatPrice(c.price, c.price_display)} ${i === 1 ? '<span style="color:var(--accent); text-decoration:none; background:rgba(255, 51, 0,0.1); padding:2px 6px; border-radius:4px;">Great Price</span>' : '<span>MSRP</span>'}</div>
+                        
+                        <div class="c-specs">
+                            <div class="c-spec">
+                                <span class="c-spec-lbl">Mileage</span>
+                                <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${this.formatKms(c.kms_covered)}</span>
+                            </div>
+                            <div class="c-spec">
+                                <span class="c-spec-lbl">Fuel Type</span>
+                                <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v16"/><path d="M11 6h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4"/></svg> ${this.escape(c.fuel_type) || '--'}</span>
+                            </div>
+                            <div class="c-spec">
+                                <span class="c-spec-lbl">Transmission</span>
+                                <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> ${this.escape(c.transmission) || '--'}</span>
+                            </div>
+                            <div class="c-spec">
+                                <span class="c-spec-lbl">Location</span>
+                                <span class="c-spec-val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> ${this.escape(c.location) || '--'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        renderDuel() {
+            if(this.cars.length < 2) return;
+            const c1 = this.cars[0];
+            const c2 = this.cars[1];
+            
+            this.duel.innerHTML = `
+                <!-- Contender 1 -->
+                <div class="duel-card reveal-chunk">
+                    <div class="platform-badge" style="top:12px; left:12px;">OLX Autos</div>
+                    <img src="${c1.image ? this.escape(c1.image) : ''}" onerror="this.src='https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800&auto=format&fit=crop';" alt="${this.escape(c1.title)}" class="duel-card-img">
+                    <h3 class="c-name">${c1.year ? c1.year + ' ' : ''}${this.escape(c1.title)}</h3>
+                    <div class="c-price" style="justify-content:center; margin-bottom:10px;">${this.formatPrice(c1.price, c1.price_display)}</div>
+                    <p class="c-sub" style="margin-bottom:0;">${this.escape(c1.brand)}</p>
+
+                    <div class="duel-stats">
+                        <div class="duel-stat-row">
+                            <span class="duel-stat-lbl">Mileage</span>
+                            <span class="duel-stat-val">${this.formatKms(c1.kms_covered)}</span>
+                        </div>
+                        <div class="duel-stat-row">
+                            <span class="duel-stat-lbl">Fuel</span>
+                            <span class="duel-stat-val">${this.escape(c1.fuel_type)}</span>
+                        </div>
+                        <div class="duel-stat-row">
+                            <span class="duel-stat-lbl">Trans</span>
+                            <span class="duel-stat-val">${this.escape(c1.transmission)}</span>
+                        </div>
+                    </div>
+                    <a href="${this.escape(c1.link) || '#'}" target="_blank" class="action-btn" style="width:100%; justify-content:center; margin-top:24px; padding:12px; text-decoration:none;">View Listing</a>
+                </div>
+
+                <!-- VS Divider -->
+                <div class="duel-vs reveal-chunk">
+                    VS
+                    <span>Direct Match</span>
+                </div>
+
+                <!-- Contender 2 (Winner) -->
+                <div class="duel-card winner reveal-chunk">
+                    <div class="platform-badge" style="top:12px; left:12px; background:var(--accent); color:#000;">Cars24</div>
+                    <span class="ai-badge" style="position:absolute; top:-12px; right:30px; background:var(--accent); color:#000; font-size:0.6rem; padding:4px 12px; border-radius:20px; box-shadow:0 4px 10px rgba(255, 51, 0,0.3);">Top Pick</span>
+                    <img src="${c2.image ? this.escape(c2.image) : ''}" onerror="this.src='https://images.unsplash.com/photo-1610880846497-7257b23f6138?q=80&w=800&auto=format&fit=crop';" alt="${this.escape(c2.title)}" class="duel-card-img">
+                    <h3 class="c-name">${c2.year ? c2.year + ' ' : ''}${this.escape(c2.title)}</h3>
+                    <div class="c-price" style="justify-content:center; margin-bottom:10px; color:var(--accent);">${this.formatPrice(c2.price, c2.price_display)}</div>
+                    <p class="c-sub" style="margin-bottom:0;">${this.escape(c2.brand)}</p>
+
+                    <div class="duel-stats">
+                        <div class="duel-stat-row">
+                            <span class="duel-stat-lbl">Mileage</span>
+                            <span class="duel-stat-val win">${this.formatKms(c2.kms_covered)}</span>
+                        </div>
+                        <div class="duel-stat-row">
+                            <span class="duel-stat-lbl">Fuel</span>
+                            <span class="duel-stat-val win">${this.escape(c2.fuel_type)}</span>
+                        </div>
+                        <div class="duel-stat-row">
+                            <span class="duel-stat-lbl">Trans</span>
+                            <span class="duel-stat-val win">${this.escape(c2.transmission)}</span>
+                        </div>
+                    </div>
+                    <a href="${this.escape(c2.link) || '#'}" target="_blank" class="action-btn primary" style="width:100%; justify-content:center; margin-top:24px; padding:12px; text-decoration:none; color:#000;">View Listing</a>
+                </div>
+            `;
+        }
+        
+        async renderInsights() {
+            if(!this.cars[0]) return;
+            this.aiPanel.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--accent); font-family:var(--font-display);">Generating AI Insights...</div>';
+            
+            try {
+                let prompt = "";
+                if (this.cars.length === 1) {
+                    let c = this.cars[0];
+                    prompt = `I am looking at a ${c.year} ${c.brand} ${c.title} with ${c.kms_covered} km driven, ${c.fuel_type}, ${c.transmission}. It is listed for Rs. ${c.price}. Is it worth it for that price? Give a decisive verdict.`;
+                } else {
+                    prompt = "I am comparing these vehicles:\n" + this.cars.map(c => `- ${c.year} ${c.brand} ${c.title} (${c.kms_covered} km, ${c.fuel_type}, ${c.transmission}): Listed for Rs. ${c.price}`).join("\n") + "\nAssess the group of cars presented. Give a comparison and declare a decisive final verdict on which option is the greatest value proposition.";
+                }
+
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + GROQ_API_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: "llama3-8b-8192", messages: [{role: "user", content: prompt}], max_tokens: 250 })
+                });
+                const data = await res.json();
+                const verdict = data.choices[0].message.content.replace(/\n/g, '<br/>');
+
+                this.aiPanel.innerHTML = `
+                    <div class="ai-insight reveal-chunk" style="grid-column:1/-1;">
+                        <div class="ai-insight-head">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                <span style="font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">AI Verdict</span>
+                            </div>
+                            <span class="ai-badge gold">AutoVault AI</span>
+                        </div>
+                        <p class="ai-desc" style="font-size:1.1rem; color:#fff; line-height:1.8; margin-top:20px;">${verdict}</p>
+                        <button onclick="localStorage.removeItem('compareList'); location.reload();" class="action-btn" style="margin-top:20px;">Clear Comparison List</button>
+                    </div>
+                `;
+            } catch(e) {
+                console.error(e);
+                this.aiPanel.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#ff3300;">Error communicating with AI.</div>';
+            }
+        }
+
+        renderTable() {
+            if(this.cars.length === 0) return;
+            
+            let headHTML = '<th>Metric</th>';
+            this.cars.forEach(c => {
+                headHTML += `<th>${this.escape(c.title)}</th>`;
+            });
+            this.tableHead.innerHTML = headHTML;
+            
+            let priceRow = '<th>Final Price</th>';
+            let milesRow = '<th>Odometer / Mileage</th>';
+            let transRow = '<th>Transmission</th>';
+            let fuelRow = '<th>Fuel Type</th>';
+            let locationRow = '<th>Location</th>';
+
+            this.cars.forEach((c, idx) => {
+                const hl = idx === 1 ? ' class="td-highlight"' : '';
+                priceRow += `<td${hl}>${this.formatPrice(c.price, c.price_display)}</td>`;
+                milesRow += `<td${hl}>${this.formatKms(c.kms_covered)}</td>`;
+                transRow += `<td>${this.escape(c.transmission || '--')}</td>`;
+                fuelRow += `<td>${this.escape(c.fuel_type || '--')}</td>`;
+                locationRow += `<td>${this.escape(c.location || '--')}</td>`;
+            });
+
+            this.tableBody.innerHTML = `
+                <tr>${priceRow}</tr>
+                <tr>${milesRow}</tr>
+                <tr>${transRow}</tr>
+                <tr>${fuelRow}</tr>
+                <tr>${locationRow}</tr>
+            `;
+        }
+
+        bindDynamicHover() {
+            document.querySelectorAll('.c-card:not(.hover-bound), .duel-card:not(.hover-bound), .ai-insight:not(.hover-bound)').forEach(c => {
+               c.classList.add('hover-bound', 'hover-target');
+               c.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
+               c.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
+           });
+           
+           document.querySelectorAll('.reveal-chunk:not(.gsap-bound)').forEach((c) => {
+              c.classList.add('gsap-bound');
+              gsap.fromTo(c, { x: -50, y: 30, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.8, ease: "power3.out", scrollTrigger: { trigger: c, start: 'top bottom-=20', toggleActions: 'play none none none' } });
+           });
+        }
+    }
+
+    function initCompareApp() {
+        if (!window.compareApp) {
+            window.compareApp = new CompareManager();
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCompareApp);
+    } else {
+        initCompareApp();
+    }
+    
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted && !window.compareApp) {
+            initCompareApp();
+        }
+    });
+</script>
 </body>
 </html>
