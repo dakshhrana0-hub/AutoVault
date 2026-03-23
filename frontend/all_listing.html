@@ -6,11 +6,11 @@
     <title>The Vault — All Vehicles</title>
     
     <link href="styles.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     
     <style>
         /* ── PAGE SPECIFIC STYLES ── */
-        body { padding-top: 80px; overflow-x: hidden; background: var(--dark, #0a0a0c); font-family: var(--font-body, 'Inter'); }
+        body { padding-top: 80px; overflow-x: clip; background: var(--dark, #0a0a0c); font-family: var(--font-body, 'Inter'); }
         
         .showroom-hero {
             position: relative; width: 100vw; height: 50vh; min-height: 400px;
@@ -131,9 +131,8 @@
         .cas-view:hover::before { transform: translateX(100%) skewX(-15deg); }
 
         /* Full page loader */
-        #page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #0a0a0c; z-index: 9999; display: flex; align-items: center; justify-content: center; color: #ff3300; font-family: 'Syncopate', sans-serif; font-size: 1.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.35em; transition: opacity 0.8s ease; flex-direction: column; }
-        .loader-ring { width: 50px; height: 50px; border: 2px solid rgba(255, 51, 0, 0.15); border-top: 2px solid #ff3300; border-radius: 50%; margin-bottom: 35px; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        #page-loader { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0a0a0c; z-index: 9999; display: flex; align-items: center; justify-content: center; color: #ff3300; font-family: 'Inter', sans-serif; font-size: 1.2rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4em; transition: opacity 0.8s ease; }
+        .loader-ring { width: 50px; height: 50px; border: 1.5px solid rgba(255,51,0,0.15); border-top-color: #ff3300; border-radius: 50%; margin-bottom: 25px; }
     </style>
 </head>
 <body>
@@ -173,8 +172,8 @@
 
     <div id="page-loader">
         <div style="display:flex; flex-direction:column; align-items:center;">
-            <div class="loader-ring"></div>
-            <div>Accessing Vault...</div>
+            <div class="loader-ring" id="gsap-ring"></div>
+            <div id="gsap-text" style="white-space:nowrap;">ACCESSING VAULT...</div>
         </div>
     </div>
 
@@ -261,6 +260,12 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
         
+        // ── PRELOADER GSAP TIMELINE ──
+        const loaderTl = gsap.timeline({ repeat: -1 });
+        loaderTl.to("#gsap-ring", { rotation: 360, duration: 1.2, ease: "power2.inOut" })
+                .to("#gsap-ring", { scale: 1.2, duration: 0.6, ease: "power1.inOut", yoyo: true, repeat: 1 }, "<")
+                .to("#gsap-text", { letterSpacing: "0.6em", opacity: 0.5, duration: 1.2, ease: "power1.inOut", yoyo: true, repeat: 1 }, "<");
+        
         // Custom Cursor Logic
         const cObj = document.getElementById('cursor');
         const fObj = document.getElementById('cursor-follower');
@@ -314,20 +319,27 @@
             async init() {
                 try {
                     let allFetched = [];
-                    let offset = 0;
-                    const limit = 1000;
-                    const loaderText = this.loader.querySelector('div div:last-child');
-                    if(loaderText) loaderText.innerText = "Accessing Vault...";
                     
-                    while (true) {
-                        const url = `${SUPABASE_URL}/rest/v1/cars?select=id,title,brand,price,price_display,year,kms_covered,fuel_type,transmission,location,image,link&tier=eq.standard&limit=${limit}&offset=${offset}&order=price.desc`;
-                        const res = await fetch(url, { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } });
-                        const chunk = await res.json();
-                        allFetched.push(...chunk);
-                        
-                        if (chunk.length < limit) break;
-                        offset += limit;
+                    const countUrl = `${SUPABASE_URL}/rest/v1/cars?select=id&tier=eq.standard`;
+                    const countRes = await fetch(countUrl, { 
+                        method: 'HEAD', 
+                        headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}`, 'Prefer': 'count=exact' } 
+                    });
+                    
+                    const rangeHeader = countRes.headers.get('content-range');
+                    const match = rangeHeader ? rangeHeader.match(/\/(\d+)/) : null;
+                    const totalCount = match ? parseInt(match[1]) : 15000;
+                    
+                    const promises = [];
+                    const limit = 1000;
+                    for (let offset = 0; offset < totalCount; offset += limit) {
+                        const chunkUrl = `${SUPABASE_URL}/rest/v1/cars?select=id,title,brand,price,price_display,year,kms_covered,fuel_type,transmission,location,image,link&tier=eq.standard&limit=${limit}&offset=${offset}&order=price.desc`;
+                        promises.push(fetch(chunkUrl, { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } }).then(r => r.json()));
                     }
+
+                    const chunks = await Promise.all(promises);
+                    chunks.forEach(chunk => allFetched.push(...chunk));
+                    
                     this.allCars = allFetched;
                     
                     this.populateFilterOptions();

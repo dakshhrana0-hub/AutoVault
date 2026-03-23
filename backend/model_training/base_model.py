@@ -68,8 +68,10 @@ warnings.filterwarnings('ignore')
 # ═══════════════════════════════════════════════════════════════════════════
 # CONFIG
 # ═══════════════════════════════════════════════════════════════════════════
-ORD_CSV              = "data/merged_datasets/merged_ordinary_dataset.csv"
-MODEL_DIR            = "models"
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+ORD_CSV              = os.path.join(BASE_DIR, "data/merged_datasets/merged_ordinary_dataset.csv")
+MODEL_DIR            = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models")
 os.makedirs(MODEL_DIR, exist_ok=True)
 
 OPTUNA_TRIALS        = 50
@@ -421,6 +423,7 @@ def train_xgboost_default(X_train, y_train, pipeline_cols):
         n_estimators=500, learning_rate=0.05, max_depth=7,
         subsample=0.8, colsample_bytree=0.8,
         reg_alpha=0.1, reg_lambda=1.0,
+        monotone_constraints={'year': 1, 'log_kms': -1},
         random_state=RANDOM_STATE, n_jobs=-1, verbosity=0
     ))
     pipe.fit(X_train[pipeline_cols], y_train)
@@ -448,6 +451,7 @@ def fine_tune_xgboost(X_train, y_train, pipeline_cols, n_trials=OPTUNA_TRIALS):
             'reg_alpha':         trial.suggest_float('reg_alpha',         1e-8, 10.0, log=True),
             'reg_lambda':        trial.suggest_float('reg_lambda',        1e-8, 10.0, log=True),
             'gamma':             trial.suggest_float('gamma',             0.0, 5.0),
+            'monotone_constraints': {'year': 1, 'log_kms': -1},
             'random_state': RANDOM_STATE, 'n_jobs': -1, 'verbosity': 0,
         }
         smoothing = trial.suggest_float('smoothing', 1.0, 100.0)
@@ -486,7 +490,9 @@ def fine_tune_xgboost(X_train, y_train, pipeline_cols, n_trials=OPTUNA_TRIALS):
             cols=['brand', 'model', 'brand_model'], smoothing=best_smoothing
         )),
         ('model', XGBRegressor(
-            **best_params, random_state=RANDOM_STATE, n_jobs=-1, verbosity=0
+            **best_params, 
+            monotone_constraints={'year': 1, 'log_kms': -1},
+            random_state=RANDOM_STATE, n_jobs=-1, verbosity=0
         )),
     ])
     best_pipe.fit(X_train[pipeline_cols], y_train)

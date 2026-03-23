@@ -965,7 +965,7 @@
     /* ── REAL ML PREDICTION LOGIC ── */
     async function simulatePrediction(brand, model, year, kms, fuel, trans) {
       try {
-        const res = await fetch('http://127.0.0.1:5000/predict', {
+        const res = await fetch('http://127.0.0.1:5001/predict', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ brand, model, year, kms, fuel, trans })
@@ -1160,6 +1160,17 @@
     }
   </script>
   <script src="global-auth.js"></script>
+  <script>
+      document.addEventListener('DOMContentLoaded', async function() {
+          var sb = window.supabaseClient || (window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null);
+          if (sb) {
+              var s = await sb.auth.getSession().catch(function(){ return null; });
+              if (!s || !s.data || !s.data.session) {
+                  window.location.href = 'login.html';
+              }
+          }
+      });
+  </script>
 </body>
 
 </html>
