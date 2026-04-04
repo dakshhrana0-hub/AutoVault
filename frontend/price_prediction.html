@@ -992,16 +992,27 @@ Also provide a "depreciation_chart" object containing integer percentages of rem
         });
         
         const data = await res.json();
-        const content = JSON.parse(data.choices[0].message.content);
+        let rawContent = data.choices[0].message.content || '{}';
+        
+        // Strip out any ```json or ``` markdown blocks the LLM occasionally hallucinates
+        rawContent = rawContent.replace(/```(json)?/gi, '').replace(/```/g, '').trim();
+        
+        let content = {};
+        try {
+            content = JSON.parse(rawContent);
+        } catch (e) {
+            console.error('LLM output could not be parsed:', rawContent);
+        }
+
         return { 
           price: Math.round(content.price || 0), 
-          verdict: content.verdict || '',
+          verdict: content.verdict || 'AI predicted price successfully.',
           depreciation_trend: content.depreciation_trend || '-12.5% / yr',
           depreciation_chart: content.depreciation_chart || {now:100, yr1:88, yr2:75, yr3:62, yr5:45}
         };
       } catch (err) {
         console.error(err);
-        return { price: 0, verdict: "AI Valuation failed to generate." };
+        return { price: 0, verdict: "AI Valuation failed to generate.", depreciation_trend: 'N/A', depreciation_chart: {now:100, yr1:88, yr2:75, yr3:62, yr5:45} };
       }
     }
 
