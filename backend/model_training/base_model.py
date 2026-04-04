@@ -608,7 +608,7 @@ def predict_price(brand: str, model_name: str, year: int,
     -------
     float -- predicted price in Rs.
     """
-    pipeline  = joblib.load(os.path.join(MODEL_DIR, 'xgb_finetuned.pkl'))
+    pipeline  = joblib.load(os.path.join(MODEL_DIR, 'nn_model.pkl'))
     encoders  = joblib.load(os.path.join(MODEL_DIR, 'encoders.pkl'))
     feat_cols = joblib.load(os.path.join(MODEL_DIR, 'feature_columns.pkl'))
 
@@ -618,6 +618,9 @@ def predict_price(brand: str, model_name: str, year: int,
 
     brand       = str(brand).strip()
     model_name  = str(model_name).strip()
+    
+    # Run through the normalizer to fix casing issues (e.g. 'bmw mw' -> 'BMW M5')
+    brand, model_name = extract_brand_model(f"{brand} {model_name}")
     brand_model = f"{brand} {model_name}"
 
     row = {

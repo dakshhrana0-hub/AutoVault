@@ -5,11 +5,7 @@ from flask_cors import CORS
 
 # Add root folder to sys.path so model_training can be imported correctly
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from backend.model_training.base_model import predict_price, LeakFreeTargetEncoder
-
-# Fix for joblib looking for LeakFreeTargetEncoder in __main__
-import __main__
-__main__.LeakFreeTargetEncoder = LeakFreeTargetEncoder
+from backend.model_training.nn_model import get_predicted_price as predict_price
 
 app = Flask(__name__)
 CORS(app)

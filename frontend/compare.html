@@ -859,9 +859,14 @@
     <!-- Preloader -->
     <div class="preloader">
         <div class="loader-text">
-            <span class="char" style="color: var(--accent, #ff3300);">A</span><span class="char" style="color: var(--accent, #ff3300);">N</span><span class="char" style="color: var(--accent, #ff3300);">A</span><span class="char">L</span><span class="char">Y</span><span class="char">S</span><span class="char">I</span><span class="char">S</span>
+            <span class="char" style="color: var(--accent, #ff3300);">A</span><span class="char"
+                style="color: var(--accent, #ff3300);">N</span><span class="char"
+                style="color: var(--accent, #ff3300);">A</span><span class="char">L</span><span
+                class="char">Y</span><span class="char">S</span><span class="char">I</span><span class="char">S</span>
         </div>
-        <div class="progress"><div class="progress-bar"></div></div>
+        <div class="progress">
+            <div class="progress-bar"></div>
+        </div>
     </div>
 
     <!-- Custom Cursor (AutoVault Standard) -->
@@ -1034,10 +1039,10 @@
     <script src="config.js"></script>
     <script src="global-auth.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             var sb = window.supabaseClient || (window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null);
             if (sb) {
-                var s = await sb.auth.getSession().catch(function(){ return null; });
+                var s = await sb.auth.getSession().catch(function () { return null; });
                 if (!s || !s.data || !s.data.session) {
                     window.location.href = 'login.html';
                 }
@@ -1047,12 +1052,12 @@
     <script>
         // ── COMPARE PAGE LOGIC ──
         gsap.registerPlugin(ScrollTrigger);
-        
+
         // Preloader Animation
         const tlLoader = gsap.timeline();
         tlLoader.to(".progress-bar", { width: "100%", duration: 1.5, ease: "power3.inOut" })
-        .to(".loader-text .char", { y: "0%", stagger: 0.1, duration: 0.8, ease: "power4.out" }, "-=0.5")
-        .to(".preloader", { yPercent: -100, duration: 1.2, ease: "power4.inOut", delay: 0.5 });
+            .to(".loader-text .char", { y: "0%", stagger: 0.1, duration: 0.8, ease: "power4.out" }, "-=0.5")
+            .to(".preloader", { yPercent: -100, duration: 1.2, ease: "power4.inOut", delay: 0.5 });
 
         class CompareManager {
             constructor() {
@@ -1354,7 +1359,7 @@
                         let userName = "Driver";
                         let nameEl = document.getElementById('navName');
                         if (nameEl && nameEl.innerText && nameEl.innerText !== 'GUEST') userName = nameEl.innerText;
-                        
+
                         document.getElementById('duel-verdict').innerHTML = `<strong>Hey ${userName}!</strong><br/><br/>` + aiText.replace(/\n/g, '<br/>');
                     } else {
                         document.getElementById('duel-verdict').innerHTML = 'Verdict unavailable at this time.';
