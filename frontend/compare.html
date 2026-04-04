@@ -1036,7 +1036,7 @@
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <script src="config.js"></script>
+    <script src="/api/config"></script>
     <script src="global-auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function () {
@@ -1346,9 +1346,9 @@
                         "stop": null
                     };
 
-                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    const res = await fetch('/api/chat', {
                         method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + GROQ_API_KEY, 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
 
@@ -1406,9 +1406,9 @@
                         "stop": null
                     };
 
-                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    const res = await fetch('/api/chat', {
                         method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + GROQ_API_KEY, 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
 
@@ -1562,6 +1562,22 @@
             }
         });
     </script>
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: 4rem;">
+        <div class="footer-huge">AutoVault</div>
+        <div class="footer-content">
+            <div class="footer-cta reveal-fade">
+            Ready to take the wheel?<br>
+            <a href="all_listing.html" class="hover-target">Configure Yours</a>
+            </div>
+            <ul class="footer-links-btm reveal-fade">
+            <li><a href="mailto:autoovault@gmail.com" class="hover-target">Contact Support</a></li>
+            <li><a href="#" class="hover-target">Instagram</a></li>
+            <li><a href="#" class="hover-target">Twitter</a></li>
+            <li><a href="#" class="hover-target">Legal</a></li>
+            </ul>
+        </div>
+    </footer>
 </body>
 
 </html>

@@ -266,10 +266,26 @@
     <div id="cursor-follower"></div>
 
     <!-- SCRIPTS -->
+    <footer class="footer" style="margin-top: 4rem;">
+        <div class="footer-huge">AutoVault</div>
+        <div class="footer-content">
+            <div class="footer-cta reveal-fade">
+            Ready to take the wheel?<br>
+            <a href="all_listing.html" class="hover-target">Configure Yours</a>
+            </div>
+            <ul class="footer-links-btm reveal-fade">
+            <li><a href="mailto:autoovault@gmail.com" class="hover-target">Contact Support</a></li>
+            <li><a href="#" class="hover-target">Instagram</a></li>
+            <li><a href="#" class="hover-target">Twitter</a></li>
+            <li><a href="#" class="hover-target">Legal</a></li>
+            </ul>
+        </div>
+    </footer>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
+    <script src="/api/config"></script>
     <script src="global-auth.js"></script>
     
     <script>
@@ -653,9 +669,9 @@
 
             try {
                 const prompt = `I am looking at a ${year} ${brand} ${title} with ${kms} km driven, ${fuel}, ${trans}. It is listed for Rs. ${price}. Is it worth it for that price? Give a decisive 2-3 line verdict.`;
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                const res = await fetch('/api/chat', {
                     method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + GROQ_API_KEY, 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ model: "llama3-8b-8192", messages: [{role: "user", content: prompt}], max_tokens: 150 })
                 });
                 const data = await res.json();

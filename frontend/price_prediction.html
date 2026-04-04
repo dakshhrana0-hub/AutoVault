@@ -864,16 +864,19 @@
   </section>
 
   <!-- Footer -->
-  <footer class="footer" style="background: #000; padding: 10vw 5vw 2vw; position: relative;">
-    <div class="footer-huge"
-      style="font-family: var(--font-display); font-size: 18vw; font-weight: 800; text-transform: uppercase; text-align: center; color: rgba(255,255,255,0.03); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: none;">
-      AutoVault</div>
-    <div class="footer-content"
-      style="position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: flex-end;">
-      <div class="footer-cta reveal-fade" style="font-size: 3vw; font-family: var(--font-display); font-weight: 600;">
-        Ready to take the wheel?<br><a href="all_listing.html" class="hover-target"
-          style="color: var(--accent); text-decoration: none;">Configure Yours</a>
+  <footer class="footer">
+    <div class="footer-huge">AutoVault</div>
+    <div class="footer-content">
+      <div class="footer-cta reveal-fade">
+        Ready to take the wheel?<br>
+        <a href="all_listing.html" class="hover-target">Configure Yours</a>
       </div>
+      <ul class="footer-links-btm reveal-fade">
+        <li><a href="mailto:autoovault@gmail.com" class="hover-target">Contact Support</a></li>
+        <li><a href="#" class="hover-target">Instagram</a></li>
+        <li><a href="#" class="hover-target">Twitter</a></li>
+        <li><a href="#" class="hover-target">Legal</a></li>
+      </ul>
     </div>
   </footer>
 
@@ -882,7 +885,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
   <!-- Supabase Config & SDK -->
-  <script src="config.js" onerror="console.warn('config.js missing — auth features disabled.');"></script>
+  <script src="/api/config" onerror="console.warn('/api/config missing — auth features disabled.');"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
   <script>
@@ -979,10 +982,9 @@ Also provide a "depreciation_chart" object containing integer percentages of rem
             "temperature": 0.7
         };
 
-        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        const res = await fetch('/api/chat', {
             method: 'POST',
             headers: { 
-                'Authorization': `Bearer ${GROQ_API_KEY}`, 
                 'Content-Type': 'application/json' 
             },
             body: JSON.stringify(payload)
@@ -1229,9 +1231,9 @@ Also provide a "depreciation_chart" object containing integer percentages of rem
       btnPredict.innerHTML = '<span>Generating AI Verdict...</span>';
       try {
         const prompt = "I am comparing these vehicles:\\n" + results.map(r => "- " + r.year + " " + r.name + " (" + r.kms + " km, " + r.fuel + ", " + r.trans + "): Predicted Price Rs. " + r.price).join("\\n") + "\\nGive a 2-3 line concise guide comparing these prices and clearly suggest which car to buy. Be decisive and not vague.";
-        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        const groqRes = await fetch('/api/chat', {
            method: 'POST',
-           headers: { 'Authorization': 'Bearer ' + GROQ_API_KEY, 'Content-Type': 'application/json' },
+           headers: { 'Content-Type': 'application/json' },
            body: JSON.stringify({
                model: "llama3-8b-8192",
                messages: [{role: "user", content: prompt}],

@@ -169,7 +169,46 @@ nav.aura-nav {
   border: 1px solid var(--glass-border);
 }
 
+/* ── FOOTER ── */
+.footer {
+  background: #000; padding: 10vw 5vw 2vw;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  position: relative; overflow: hidden;
+}
+.footer-huge {
+  font-family: var(--font-display);
+  font-size: 18vw; font-weight: 800; line-height: 0.75;
+  text-transform: uppercase; letter-spacing: -0.05em;
+  text-align: center; color: rgba(255,255,255,0.03);
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  white-space: nowrap; pointer-events: none;
+}
+.footer-content {
+  position: relative; z-index: 10;
+  display: flex; justify-content: space-between; align-items: flex-end;
+}
+.footer-cta { font-size: 3vw; font-family: var(--font-display); font-weight: 600; line-height: 1.2; }
+.footer-cta a {
+  color: var(--accent); text-decoration: none;
+  position: relative; display: inline-block;
+}
+.footer-cta a::after {
+  content:''; position: absolute; left:0; bottom:-5px; width:100%; height:2px; background:var(--accent);
+  transform: scaleX(0); transform-origin: right; transition: transform 0.4s ease;
+}
+.footer-cta a:hover::after { transform: scaleX(1); transform-origin: left; }
+.footer-links-btm {
+  display: flex; gap: 2rem; list-style: none;
+}
+.footer-links-btm a {
+  color: rgba(255,255,255,0.5); text-decoration: none;
+  font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em;
+  transition: color 0.3s;
+}
+.footer-links-btm a:hover { color: #fff; }
+
 @media(max-width: 768px) {
   nav.aura-nav { padding: 1.5rem 2rem; }
   .aura-nav .nav-links { display: none; }
+  .footer-content { flex-direction: column; align-items: flex-start; gap: 3rem; }
 }
