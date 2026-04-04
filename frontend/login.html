@@ -373,7 +373,7 @@
 
       function $(id) { return document.getElementById(id); }
       function isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
-      function getRedirectUrl() { return window.location.origin + '/frontend/login.html'; }
+      function getRedirectUrl() { return window.location.origin + '/login.html'; }
       function errMsg(err) {
         if (!err) return 'Something went wrong.';
         var raw = err.message || (err.error && err.error.message) || JSON.stringify(err);
@@ -483,7 +483,7 @@
           if (res.error) { setLoading(btn, false); return showBanner('err-signin', errMsg(res.error)); }
           var p = await fetchProfile(res.data.user.id); redirectHandled = true;
           showSuccessOverlay('Welcome back, ' + displayName(res.data.user, p), 'Initializing interface...');
-          setTimeout(() => window.location.href = '/frontend/index.html', 1600);
+          setTimeout(() => window.location.href = '/index.html', 1600);
         } catch(e) { setLoading(btn, false); showBanner('err-signin', 'Network connection failed.'); }
       }
 
@@ -501,7 +501,7 @@
           if (res.error) return showBanner('err-signup', errMsg(res.error));
           if (res.data.user && res.data.session) {
             redirectHandled = true; showSuccessOverlay('Identity Created.', 'Accessing interface...');
-            setTimeout(() => window.location.href = '/frontend/index.html', 1600);
+            setTimeout(() => window.location.href = '/index.html', 1600);
           } else if (res.data.user) showVerifyNotice(email);
           else showBanner('err-signup', 'Account exists.', 'error');
         } catch(e) { setLoading(btn, false); showBanner('err-signup', 'Network connection failed.'); }
@@ -512,7 +512,7 @@
         var email = $('si-email').value.trim();
         if (!email || !isEmail(email)) return showBanner('err-signin', 'Enter email first, then click Forgot.');
         if (!sb) return noAuth('err-signin');
-        var r = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/frontend/reset-password.html' });
+        var r = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/reset-password.html' });
         if (r.error) return showBanner('err-signin', errMsg(r.error));
         showBanner('ok-signin', 'Reset link dispatched.', 'success');
       }
@@ -529,10 +529,10 @@
           if (r.error) { showBanner('err-signin', 'Link expired.', 'error'); return false; }
           redirectHandled = true;
           if (type === 'recovery') {
-            showSuccessOverlay('Identity verified', 'Redirecting...'); setTimeout(() => window.location.href='/frontend/reset-password.html', 1600);
+            showSuccessOverlay('Identity verified', 'Redirecting...'); setTimeout(() => window.location.href='/reset-password.html', 1600);
           } else {
             var prof = await fetchProfile(r.data.session.user.id);
-            showSuccessOverlay('Verified, ' + displayName(r.data.session.user, prof), 'Accessing interface...'); setTimeout(() => window.location.href='/frontend/index.html', 1600);
+            showSuccessOverlay('Verified, ' + displayName(r.data.session.user, prof), 'Accessing interface...'); setTimeout(() => window.location.href='/index.html', 1600);
           }
           return true;
         } catch(e) { return false; }
@@ -547,12 +547,12 @@
           if ((evt === 'SIGNED_IN' || evt === 'USER_UPDATED') && session) {
             redirectHandled = true; var prof = await fetchProfile(session.user.id);
             showSuccessOverlay('Welcome, ' + displayName(session.user, prof), 'Initializing interface...');
-            setTimeout(() => window.location.href = '/frontend/index.html', 1600);
+            setTimeout(() => window.location.href = '/index.html', 1600);
           }
         });
         sb.auth.getSession().then(r => {
           if (redirectHandled) return;
-          if (r.data && r.data.session) { redirectHandled = true; window.location.href = '/frontend/index.html'; }
+          if (r.data && r.data.session) { redirectHandled = true; window.location.href = '/index.html'; }
         }).catch(()=>{});
 
         $('btn-signin').addEventListener('click', handleSignIn); $('btn-signup').addEventListener('click', handleSignUp);
